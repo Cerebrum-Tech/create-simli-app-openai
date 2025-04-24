@@ -475,18 +475,58 @@ const SimliOpenAI: React.FC<SimliOpenAIProps> = ({
     console.log("Stopping interaction...");
     setIsLoading(false);
     setError("");
+    
+    // Stop recording and clear audio buffers
     stopRecording();
-    setIsAvatarVisible(false);
+    
+    // Clear Simli client buffers and close connection
+    simliClient?.ClearBuffer();
     simliClient?.close();
-    openAIClientRef.current?.disconnect();
+    
+    // Close OpenAI client and WebSocket connection
+    if (openAIClientRef.current) {
+      openAIClientRef.current.disconnect();
+      openAIClientRef.current = null;
+    }
+    
+    // Close audio context and clean up audio resources
     if (audioContextRef.current) {
-      audioContextRef.current?.close();
+      audioContextRef.current.close();
       audioContextRef.current = null;
     }
-    stopRecording();
+    
+    // Clear audio chunk queue
+    audioChunkQueueRef.current = [];
+    isProcessingChunkRef.current = false;
+    
+    // Reset states
+    setIsAvatarVisible(false);
+    setIsRecording(false);
+    setUserMessage("...");
+    
+    // Reset video and audio elements
+    if (videoRef.current) {
+      videoRef.current.srcObject = null;
+    }
+    if (audioRef.current) {
+      audioRef.current.srcObject = null;
+    }
+    
+    // Close data channel if it exists
+    if (dataChannelRef.current) {
+      dataChannelRef.current.close();
+      dataChannelRef.current = null;
+    }
+    
+    // Call onClose callback
     onClose();
-    console.log("Interaction stopped");
-  }, [stopRecording]);
+    console.log("Interaction stopped and all resources cleaned up");
+    
+    // Reload the page after a short delay to ensure cleanup is complete
+    setTimeout(() => {
+      window.location.reload();
+    }, 500);
+  }, [stopRecording, onClose]);
 
   /**
    * Simli Event listeners
