@@ -4,6 +4,7 @@ import React, { useCallback, useRef, useState } from "react";
 import { SimliClient } from "simli-client";
 import VideoBox from "./Components/VideoBox";
 import cn from "./utils/TailwindMergeAndClsx";
+import { getJson } from "serpapi";
 
 interface SimliOpenAIProps {
   simli_faceid: string;
@@ -16,6 +17,26 @@ interface SimliOpenAIProps {
 }
 
 const simliClient = new SimliClient();
+
+// Example tool functions
+const toolFunctions = {
+  getCurrentTime: () => {
+    return { success: true, time: new Date().toLocaleTimeString() };
+  },
+  searchGoogle: async ({ query }: { query: string }) => {
+    try {
+      const response = await fetch(`/api/search?q=${encodeURIComponent(query)}`);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error("Error searching Google:", error);
+      return { success: false, error: "Failed to search Google" };
+    }
+  }
+};
 
 const SimliOpenAI: React.FC<SimliOpenAIProps> = ({
   simli_faceid,
@@ -41,6 +62,7 @@ const SimliOpenAI: React.FC<SimliOpenAIProps> = ({
   const streamRef = useRef<MediaStream | null>(null);
   const processorRef = useRef<ScriptProcessorNode | null>(null);
   const isFirstRun = useRef(true);
+  const dataChannelRef = useRef<RTCDataChannel | null>(null);
 
   // New refs for managing audio chunk delay
   const audioChunkQueueRef = useRef<Int16Array[]>([]);
@@ -60,6 +82,12 @@ const SimliOpenAI: React.FC<SimliOpenAIProps> = ({
         videoRef: videoRef.current,
         audioRef: audioRef.current,
         enableConsoleLogs: true,
+        onVideoStream: (stream: MediaStream) => {
+          if (videoRef.current) {
+            videoRef.current.srcObject = stream;
+            videoRef.current.play();
+          }
+        }
       };
 
       simliClient.Initialize(SimliConfig as any);
@@ -68,54 +96,179 @@ const SimliOpenAI: React.FC<SimliOpenAIProps> = ({
   }, [simli_faceid]);
 
   /**
-   * Initializes the OpenAI client, sets up event listeners, and connects to the API.
+   * Initializes the OpenAI client with WebRTC and tool calling capabilities.
    */
   const initializeOpenAIClient = useCallback(async () => {
     try {
       console.log("Initializing OpenAI client...");
-      openAIClientRef.current = new RealtimeClient({
-        model: openai_model,
-        apiKey: process.env.NEXT_PUBLIC_OPENAI_API_KEY,
-        dangerouslyAllowAPIKeyInBrowser: true,
-      });
-
-      await openAIClientRef.current.updateSession({
-        instructions: initialPrompt,
-        voice: openai_voice,
-        turn_detection: { type: "server_vad" },
-        input_audio_transcription: { model: "whisper-1" },
-      });
-
-      // Set up event listeners
-      openAIClientRef.current.on(
-        "conversation.updated",
-        handleConversationUpdate
-      );
-
-      openAIClientRef.current.on(
-        "conversation.interrupted",
-        interruptConversation
-      );
-
-      openAIClientRef.current.on(
-        "input_audio_buffer.speech_stopped",
-        handleSpeechStopped
-      );
-      // openAIClientRef.current.on('response.canceled', handleResponseCanceled);
-
       
-      await openAIClientRef.current.connect().then(() => {
-        console.log("OpenAI Client connected successfully");
-        openAIClientRef.current?.createResponse();
-        startRecording();
+      // Create WebRTC connection
+      const peerConnection = new RTCPeerConnection();
+      
+      // Create data channel for tool calling
+      const dataChannel = peerConnection.createDataChannel('oai-events');
+      dataChannelRef.current = dataChannel;
+
+      // Set up data channel event handlers
+      dataChannel.onopen = () => {
+        console.log('Data channel opened');
+        configureTools();
+      };
+
+      dataChannel.onmessage = async (event) => {
+        const msg = JSON.parse(event.data);
+        if (msg.type === 'response.function_call_arguments.done') {
+          const fn = toolFunctions[msg.name as keyof typeof toolFunctions];
+          if (fn) {
+            console.log(`[Tool Call] Calling function ${msg.name} with arguments:`, msg.arguments);
+            const args = JSON.parse(msg.arguments);
+            const result = await fn(args);
+            console.log(`[Tool Response] Function ${msg.name} returned:`, result);
+            
+            // Send function result back to OpenAI
+            dataChannel.send(JSON.stringify({
+              type: 'conversation.item.create',
+              item: {
+                type: 'function_call_output',
+                call_id: msg.call_id,
+                output: JSON.stringify(result),
+              },
+            }));
+            
+            // Request next response
+            dataChannel.send(JSON.stringify({ type: "response.create" }));
+          }
+        }
+      };
+
+      // Configure tools
+      const configureTools = () => {
+        const event = {
+          type: 'session.update',
+          session: {
+            modalities: ['text', 'audio'],
+            tools: [
+              {
+                type: 'function',
+                name: 'getCurrentTime',
+                description: 'Gets the current time',
+              },
+              {
+                type: 'function',
+                name: 'searchGoogle',
+                description: 'Searches Google for information about flight times',
+                parameters: {
+                  type: 'object',
+                  properties: {
+                    query: { 
+                      type: 'string', 
+                      description: 'The search query to look up on Google' 
+                    },
+                  },
+                  required: ['query'],
+                },
+              },
+            ],
+          },
+        };
+        dataChannel.send(JSON.stringify(event));
+      };
+
+      // Set up audio handling for OpenAI response
+      peerConnection.ontrack = (event) => {
+        if (audioRef.current) {
+          const audioStream = event.streams[0];
+          
+          // Convert the audio stream to audio data for Simli
+          const audioContext = new AudioContext({ sampleRate: 16000 });
+          const source = audioContext.createMediaStreamSource(audioStream);
+          const processor = audioContext.createScriptProcessor(1024, 1, 1);
+          
+          // Create a buffer to accumulate audio data
+          const audioBuffer: Int16Array[] = [];
+          let lastProcessTime = 0;
+          
+          processor.onaudioprocess = (e) => {
+            const inputData = e.inputBuffer.getChannelData(0);
+            const audioData = new Int16Array(inputData.length);
+            
+            // Convert float32 to int16
+            for (let i = 0; i < inputData.length; i++) {
+              const sample = Math.max(-1, Math.min(1, inputData[i]));
+              audioData[i] = Math.floor(sample * 32767);
+            }
+            
+            // Add to buffer
+            audioBuffer.push(audioData);
+            
+            // Process buffer every 50ms to maintain sync
+            const now = Date.now();
+            if (now - lastProcessTime >= 50) {
+              while (audioBuffer.length > 0) {
+                const chunk = audioBuffer.shift();
+                if (chunk) {
+                  // Convert to Uint8Array for Simli
+                  const uint8Array = new Uint8Array(chunk.buffer);
+                  simliClient.sendAudioData(uint8Array);
+                }
+              }
+              lastProcessTime = now;
+            }
+          };
+          
+          source.connect(processor);
+          processor.connect(audioContext.destination);
+        }
+      };
+
+      // Get microphone access and add to peer connection
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      stream.getTracks().forEach(track => {
+        peerConnection.addTransceiver(track, { direction: 'sendrecv' });
+      });
+
+      // Create and send offer
+      const offer = await peerConnection.createOffer();
+      await peerConnection.setLocalDescription(offer);
+
+      // Get session token
+      const response = await fetch('/api/session', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          model: openai_model,
+          instructions: initialPrompt,
+          voice: openai_voice,
+        }),
+      });
+      const data = await response.json();
+      const EPHEMERAL_KEY = data.client_secret.value;
+
+      // Connect to OpenAI Realtime API
+      const baseUrl = 'https://api.openai.com/v1/realtime';
+      const answerResponse = await fetch(`${baseUrl}?model=${openai_model}`, {
+        method: 'POST',
+        body: offer.sdp,
+        headers: {
+          Authorization: `Bearer ${EPHEMERAL_KEY}`,
+          'Content-Type': 'application/sdp',
+        },
+      });
+      const answer = await answerResponse.text();
+      await peerConnection.setRemoteDescription({
+        sdp: answer,
+        type: 'answer',
       });
 
       setIsAvatarVisible(true);
+      setIsRecording(true);
     } catch (error: any) {
       console.error("Error initializing OpenAI client:", error);
       setError(`Failed to initialize OpenAI client: ${error.message}`);
     }
-  }, [initialPrompt]);
+  }, [initialPrompt, openai_model, openai_voice]);
 
   /**
    * Handles conversation updates, including user and assistant messages.
@@ -282,62 +435,12 @@ const SimliOpenAI: React.FC<SimliOpenAIProps> = ({
   };
 
   /**
-   * Starts audio recording from the user's microphone.
-   */
-  const startRecording = useCallback(async () => {
-    if (!audioContextRef.current) {
-      audioContextRef.current = new AudioContext({ sampleRate: 24000 });
-    }
-
-    try {
-      console.log("Starting audio recording...");
-      streamRef.current = await navigator.mediaDevices.getUserMedia({
-        audio: true,
-      });
-      const source = audioContextRef.current.createMediaStreamSource(
-        streamRef.current
-      );
-      processorRef.current = audioContextRef.current.createScriptProcessor(
-        2048,
-        1,
-        1
-      );
-
-      processorRef.current.onaudioprocess = (e) => {
-        const inputData = e.inputBuffer.getChannelData(0);
-        const audioData = new Int16Array(inputData.length);
-        let sum = 0;
-
-        for (let i = 0; i < inputData.length; i++) {
-          const sample = Math.max(-1, Math.min(1, inputData[i]));
-          audioData[i] = Math.floor(sample * 32767);
-          sum += Math.abs(sample);
-        }
-
-        openAIClientRef.current?.appendInputAudio(audioData);
-      };
-
-      source.connect(processorRef.current);
-      processorRef.current.connect(audioContextRef.current.destination);
-      setIsRecording(true);
-      console.log("Audio recording started");
-    } catch (err) {
-      console.error("Error accessing microphone:", err);
-      setError("Error accessing microphone. Please check your permissions.");
-    }
-  }, []);
-
-  /**
    * Stops audio recording from the user's microphone
    */
   const stopRecording = useCallback(() => {
-    if (processorRef.current) {
-      processorRef.current.disconnect();
-      processorRef.current = null;
-    }
-    if (streamRef.current) {
-      streamRef.current.getTracks().forEach((track) => track.stop());
-      streamRef.current = null;
+    if (dataChannelRef.current) {
+      dataChannelRef.current.close();
+      dataChannelRef.current = null;
     }
     setIsRecording(false);
     console.log("Audio recording stopped");

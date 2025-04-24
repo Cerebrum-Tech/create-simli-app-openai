@@ -18,11 +18,11 @@ interface avatarSettings {
 // Customize your avatar here
 const avatar: avatarSettings = {
   name: "Ong",
-  openai_voice: "alloy",
+  openai_voice: "shimmer",
   openai_model: "gpt-4o-realtime-preview-2024-12-17", // Use "gpt-4o-mini-realtime-preview-2024-12-17" for cheaper and faster responses
   simli_faceid: "d80690a1-e554-4e25-9415-de6505f61e67",
   initialPrompt:
-    `You are a helpful AI assistant named Cere. chat with me like a friend. give very short answers. You work for the Istanbul Airport.
+    `You are a helpful AI assistant named Cere. chat with me like a friend. give very short answers. You work for the Istanbul Airport. Make tool calls if necessary.
     Here is the knowledge base:
     Şehir merkezine nasıl giderim?
 Şehir merkezine toplu taşıma araçları ya da taksi kullanarak ulaşabilirsiniz. Toplu taşıma
