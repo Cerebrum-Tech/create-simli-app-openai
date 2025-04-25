@@ -63,6 +63,7 @@ const SimliOpenAI: React.FC<SimliOpenAIProps> = ({
   const processorRef = useRef<ScriptProcessorNode | null>(null);
   const isFirstRun = useRef(true);
   const dataChannelRef = useRef<RTCDataChannel | null>(null);
+  const isIntentionalDisconnect = useRef(false);
 
   // New refs for managing audio chunk delay
   const audioChunkQueueRef = useRef<Int16Array[]>([]);
@@ -280,7 +281,7 @@ const SimliOpenAI: React.FC<SimliOpenAIProps> = ({
     if (item.type === "message" && item.role === "assistant") {
       console.log("Assistant message detected");
       if (delta && delta.audio) {
-        const downsampledAudio = downsampleAudio(delta.audio, 24000, 42000);
+        const downsampledAudio = downsampleAudio(delta.audio, 24000, 16000);
         audioChunkQueueRef.current.push(downsampledAudio);
         if (!isProcessingChunkRef.current) {
           processNextAudioChunk();
@@ -408,7 +409,7 @@ const SimliOpenAI: React.FC<SimliOpenAIProps> = ({
     // Cut off at slightly less than the Nyquist frequency of the target sample rate
     const filteredData = applyLowPassFilter(
       audioData,
-      outputSampleRate * 0.45, // Slight margin below Nyquist frequency
+      outputSampleRate * 0.60, // Slight margin below Nyquist frequency
       inputSampleRate
     );
 
@@ -452,6 +453,7 @@ const SimliOpenAI: React.FC<SimliOpenAIProps> = ({
   const handleStart = useCallback(async () => {
     setIsLoading(true);
     setError("");
+    isIntentionalDisconnect.current = false; // Reset the flag when starting
     onStart();
 
     try {
@@ -473,6 +475,7 @@ const SimliOpenAI: React.FC<SimliOpenAIProps> = ({
    */
   const handleStop = useCallback(() => {
     console.log("Stopping interaction...");
+    isIntentionalDisconnect.current = true; // Mark as intentional disconnect
     setIsLoading(false);
     setError("");
     
@@ -522,10 +525,12 @@ const SimliOpenAI: React.FC<SimliOpenAIProps> = ({
     onClose();
     console.log("Interaction stopped and all resources cleaned up");
     
-    // Reload the page after a short delay to ensure cleanup is complete
-    setTimeout(() => {
-      window.location.reload();
-    }, 500);
+    // Only reload if it was an intentional disconnect
+    if (isIntentionalDisconnect.current) {
+      setTimeout(() => {
+        window.location.reload();
+      }, 500);
+    }
   }, [stopRecording, onClose]);
 
   /**
@@ -545,9 +550,18 @@ const SimliOpenAI: React.FC<SimliOpenAIProps> = ({
         if (audioContextRef.current) {
           audioContextRef.current?.close();
         }
+        
+        // If it was an unexpected disconnection, trigger restart
+        if (!isIntentionalDisconnect.current) {
+          console.log("Unexpected disconnection detected, triggering restart...");
+          handleStop();
+          setTimeout(() => {
+            handleStart();
+          }, 1000);
+        }
       });
     }
-  }, []);
+  }, [handleStart, handleStop]);
 
   return (
     <>
@@ -572,7 +586,7 @@ const SimliOpenAI: React.FC<SimliOpenAIProps> = ({
               <IconSparkleLoader className="h-[20px] animate-loader" />
             ) : (
               <span className="font-abc-repro-mono font-bold w-[164px]">
-                Test Interaction
+                Start
               </span>
             )}
           </button>
@@ -586,7 +600,7 @@ const SimliOpenAI: React.FC<SimliOpenAIProps> = ({
                 )}
               >
                 <span className="font-abc-repro-mono group-hover:text-black font-bold w-[164px] transition-all duration-300">
-                  Stop Interaction
+                  Stop
                 </span>
               </button>
             </div>

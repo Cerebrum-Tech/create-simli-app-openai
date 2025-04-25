@@ -1,7 +1,6 @@
 "use client";
 import React, { use, useEffect, useState } from "react";
 import SimliOpenAI from "./SimliOpenAI";
-import DottedFace from "./Components/DottedFace";
 import SimliHeaderLogo from "./Components/Logo";
 import Navbar from "./Components/Navbar";
 import Image from "next/image";
@@ -629,7 +628,19 @@ const Demo: React.FC = () => {
       <Navbar />
       <div className="flex flex-col items-center gap-6 bg-effect15White p-6 pb-[40px] rounded-xl w-full">
         <div>
-          {showDottedFace && <DottedFace />}
+          {showDottedFace && (
+            <div className="flex justify-center p-32">
+              <video 
+                autoPlay 
+                loop 
+                muted 
+                playsInline
+                className="w-[500px] h-auto"
+              >
+                <source src="/loop2.mp4" type="video/mp4" />
+              </video>
+            </div>
+          )}
           <SimliOpenAI
             openai_voice={avatar.openai_voice}
             openai_model={avatar.openai_model}
