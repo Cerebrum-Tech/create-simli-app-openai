@@ -156,7 +156,7 @@ const SimliOpenAI: React.FC<SimliOpenAIProps> = ({
               {
                 type: 'function',
                 name: 'searchGoogle',
-                description: 'Searches Google for information about flight times',
+                description: 'Searches Google for information about flight times, weather and other information',
                 parameters: {
                   type: 'object',
                   properties: {
@@ -280,7 +280,7 @@ const SimliOpenAI: React.FC<SimliOpenAIProps> = ({
     if (item.type === "message" && item.role === "assistant") {
       console.log("Assistant message detected");
       if (delta && delta.audio) {
-        const downsampledAudio = downsampleAudio(delta.audio, 24000, 16000);
+        const downsampledAudio = downsampleAudio(delta.audio, 24000, 42000);
         audioChunkQueueRef.current.push(downsampledAudio);
         if (!isProcessingChunkRef.current) {
           processNextAudioChunk();
