@@ -35,6 +35,27 @@ const toolFunctions = {
       console.error("Error searching Google:", error);
       return { success: false, error: "Failed to search Google" };
     }
+  },
+  searchKnowledgeBase: async ({ question }: { question: string }) => {
+    try {
+      const response = await fetch('/api/knowledge-base', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ question }),
+      });
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      const data = await response.json();
+      return { success: true, data };
+    } catch (error) {
+      console.error("Error searching knowledge base:", error);
+      return { success: false, error: "Failed to search knowledge base" };
+    }
   }
 };
 
@@ -153,6 +174,11 @@ const SimliOpenAI: React.FC<SimliOpenAIProps> = ({
                 type: 'function',
                 name: 'getCurrentTime',
                 description: 'Gets the current time',
+                parameters: {
+                  type: 'object',
+                  properties: {},
+                  required: [],
+                },
               },
               {
                 type: 'function',
@@ -167,6 +193,21 @@ const SimliOpenAI: React.FC<SimliOpenAIProps> = ({
                     },
                   },
                   required: ['query'],
+                },
+              },
+              {
+                type: 'function',
+                name: 'searchKnowledgeBase',
+                description: 'Searches the internal knowledge base for HR related information',
+                parameters: {
+                  type: 'object',
+                  properties: {
+                    question: {
+                      type: 'string',
+                      description: 'The question to search in the knowledge base'
+                    },
+                  },
+                  required: ['question'],
                 },
               },
             ],
