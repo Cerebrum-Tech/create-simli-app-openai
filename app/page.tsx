@@ -21,593 +21,786 @@ const avatar: avatarSettings = {
   openai_model: "gpt-4o-realtime-preview-2024-12-17", // Use "gpt-4o-mini-realtime-preview-2024-12-17" for cheaper and faster responses
   simli_faceid: "d80690a1-e554-4e25-9415-de6505f61e67",
   initialPrompt:
-    `You are a helpful AI assistant named Cere. chat with me like a friend. give very short answers. You work for the Istanbul Airport. Make tool calls if necessary.
+    `You are a helpful AI assistant named Cere. chat with me like a friend. give very short answers. You work for the Cerebrum Tech. Make tool calls if necessary.
+
     Here is the knowledge base:
-    Şehir merkezine nasıl giderim?
-Şehir merkezine toplu taşıma araçları ya da taksi kullanarak ulaşabilirsiniz. Toplu taşıma
-imkanları için HAVAİST ve İETT web sitelerini kontrol edebilirsiniz.
-HAVAİST otobüsleri nerelerden kalkmaktadır?
-Havalimanımızdaki HAVAİST ve İETT otobüslerinin kalktığı ulaşım katına giden yolcu ve gelen
-yolcu katlarının giriş kapıları öncesinde bulunan asansörlerle -2 katına inerek ve
-yönlendirmelerde Ulaşım Katı tabelasını takip ederek ulaşabilirsiniz.
-HAVAİST araçları için nakit ile ödeme yapabilir miyim?
-Havaist'e binerken ödemeler bilet satış noktaları veya belirlenen ara duraklardan nakit olarak,
-araç içerisinde banka/kredi kartı ile yapılabilir, ayrıca biniş öncesinde Havaist mobil uygulaması
-veya web adresi üzerinden online ödeme ile araçlara binişte kullanmak üzere QR kod alınabilir.
-Otobüs ücretlerini nereden öğrenebilirim?
-Havalimanımızda hizmet veren Havaist otobüslerinin fiyatlarını havaist web sitesinden
-öğrenebilirsiniz.
-Havalimanından şehre metro ile gidebilir miyim?
-Gayrettepe – İstanbul Havalimanı metrosundan Kağıthane, Hasdal, Kemerburgaz, Göktürk,
-İhsaniye duraklarına ulaşım sağlayabilirsiniz.
-Otopark ücretlerini nereden öğrenebilirim?
-Otopark ücretlerini web sitemizden ulaşım ve otopark sayfalarına giderek öğrenebilirsiniz.
-Otopark ödeme işlemleri hangi yollarla gerçekleştirebilirim?
-Abonelik dışındaki otopark ödemelerinizi katlı otoparkta Kırmızı otopark P3 katı manuel ödeme
-gişesi ve Mor otopark P3 katında bulunan manuel ödeme gişesinden, otopark içinde kırmızı ve
-mor P3 katlarındaki, P5 katındaki yürüyen bantların yanındaki, P2 çıkış noktalarındaki L02
-aksında ve P6 teras katındaki asansörlerin yanındaki toplam 30 adet bulunan otomatik ödeme
-cihazlarından nakit ve kredi kartı ile giden yolcu katı danışma noktalarından ve Apple/Android
-cihazınıza yükleyeceğiniz İstanbul Airport mobil uygulamamız üzerinden de kredi kartı ile
-gerçekleştirebilirsiniz.
-Otoparkta abonelik nasıl yaptırırım?
-15 günlük, 30 günlük abonelik işlemlerinizi katlı otoparka giriş yaptıktan sonra 3 saat içerisinde
-Kırmızı otopark P3 katı manuel ödeme gişesi, Mor Otopark P3 katındaki manuel ödeme
-gişesinde ya da giden yolcu katındaki danışma noktalarında gerçekleştirebilirsiniz. Giden yolcu
-katındaki danışma noktalarında sadece kredi kartı ile ödeme yapılabilmektedir. 15 günlük kısasüreli abonelik işlemlerini aynı zamanda katlı otoparka giriş yaptıktan sonra 1 saat içerisinde
-otoparktaki otomatik ödeme cihazları aracılığıyla da gerçekleştirilebilirsiniz.
-Otoparkınızda araç yıkama mevcut mu?
-Otoparkımızda R katında araç yıkama hizmeti bulunmakta olup bu hizmetten araçlarını valeye
-teslim eden misafirlerimiz yararlanabilmektedir.
-Havalimanında vale hizmeti var mı?
-Havalimanımızda vale hizmeti verilmektedir. Vale hizmeti almak isteyen misafirlerimiz araçlarını
-valeye teslim ederken görevli vale personeline belirtmeleri şartıyla otopark kısa süreli
-aboneliklerinden de faydalanabilirler.
-Vale araç teslim alma ve teslim etme noktaları nerede?
-Giden yolcu katında 3 numaralı giriş kapısı karşısında Mor otopark P6 katında ,5 numaralı giriş
-kapısı karşısında Kırmızı Otopark P6 katında ve CIP de olmak üzere toplam 3 adet vale teslim
-noktası mevcuttur. Gelen yolcu katında katlı otopark içinde 9 numaralı kapının karşısında mor
-otopark P3 katında ve 13 numaralı kapının karşısında Kırmızı otopark P3 katında 2 adet vale
-teslim alma noktası bulunmaktadır.
-Vale ücreti ne kadar?
-Havalimanımızda verilen vale hizmeti ücreti 350 TL'dir. Ücrete otopark parklanma bedeli dahil
-değildir.
-Aracım Otopark içerisinde arızalandı ne yapabilirim?
-otopark personeli ile iletişime geçmeniz durumunda gerekli yönlendirmeler yapılacaktır.
-X-Ray tarayıcısının sağlığıma bir zararı olur mu?
-İstanbul Havalimanında kullandığımız X-Ray cihazları ile sadece eşyalarınızın kontrolleri
-yapılmaktadır. Kullanılan diğer tarama sistemlerinde (kapı ve el tipi dedektörler) x-ray teknolojisi
-kullanılmamaktadır.
-Güvenlik tarayıcısından geçmek yerine alternatif bir yöntemle
-taranmayı tercih edebilir miyim?
-Kontrol noktası görevlilerinin belirleyeceği alternatif bir yöntemle (el ile arama, kabin araması)
-taranmayı tercih edebilirsiniz.Çocuklar güvenlik taramasından geçmek zorunda mı?
-Havalimanlarında uygulanan kurallar gereğince özel yolcu kategorisinde bulunan çocukların
-güvenlik kontrolleri elle yapılabilmektedir.
-Hamileyim kalp pilim var. X-Ray taraması veya metal dedektörden
-geçmem gerekiyor mu?
-Havalimanımızda özel yolcu kategorisinde bulunan çocuk, hamile, kalp pili taşıyan
-yolcularımızın güvenlik kontrolleri elle yapılabilmektedir.
-Kalp pilim var X-Ray taraması veya metal dedektörden geçmem
-gerekiyor mu?
-Havalimanımızda özel yolcu kategorisinde bulunan çocuk, hamile, kalp pili taşıyan
-yolcularımızın güvenlik kontrolleri elle yapılabilmektedir.
-Havalimanında güvenlik noktasından neleri geçirebilirim?
-Havalimanında güvenlik noktalarından geçebilecek malzemelerle ilgili bilgiyi Sivil Havacılık
-Genel Müdürlüğü'nün web sitesi üzerinden bulabilirsiniz. Uçağa alamayacağınız yasaklı
-maddelerle ilgili olarak seyahat edeceğiniz havayolu şirketi ile de iletişime geçebilirsiniz.
-X-Ray tarayıcısı tarafından üretilen görüntüyü görebilir miyim?
-Konu hakkında yasal olarak başvuru yapmanız halinde başvurunuz incelenerek size bilgi
-verilecektir.
-Bebeğimin araba koltuğunu uçakta kullanmak için güvenlikten
-geçirebilir miyim?
-Bebek araba koltuğuna yönelik yapılan güvenlik kontrollerinde herhangi bir yasaklı/kısıtlı madde
-içermedikçe güvenlik kontrol noktalarından geçmesi sorun teşkil etmemektedir. Ancak, bebek
-araba koltuğunun uçak kabininde taşınması ile ilgili seyahat edilecek havayolu şirketi ile
-iletişime geçmenizi öneririz.
-Biyometrik pasaport kontrol noktası var mı?
-Havalimanı giden ve gelen yolcu pasaport kontrol bölgelerinde bulunan toplam 30 ünite
-biyometrik geçiş bankosu, Türkiye Cumhuriyeti vatandaşlarına ve gerekli kriterleri sağlayan
-misafirlerimize hizmet sunmaktadır. Kullanım detayları için Nüfus ve Vatandaşlık İşleri Genel
-Müdürlüğü'nün web sitesini ziyaret edebilirsiniz.Havalimanında gümrüksüz alandan yaptığım alışveriş ürünlerini uçak
-kabininde taşıyabilir miyim?
-Gümrüksüz alandan almış olduğunuz ürünlerin uçak kabininde taşınması ile ilgili bilgiyi
-havayollarınızdan alabilirsiniz.
-Buz paketi veya sıvı soğutma torbası taşıyabilir miyim?
-Buz paketinin içerisinde herhangi bir sıvı olmaması durumunda sıvı kısıtlamasına tabi
-tutulmadan kabin bagajı olarak taşınabilir.
-Büyük (over-size) bagajlar için süreç nedir?
-Büyük ya da garip şekilli bagajlarınızı 7 numaralı giriş kapımızda mevcut bulunan büyük bagaj X-
-Ray'inden geçirmeniz gerekmektedir. C, E, G, L, N ve R check-in adalarında bulunan büyük bagaj
-kontuarlarından uçak altına yollayabileceğiniz bagajlarınızı havalimanına getirmeden önce
-seyahat edeceğiniz havayolu şirketi ile irtibata geçmenizi öneririz.
-Güvenlik taraması kamera filmini etkiler mi?
-Milli Sivil Havacılık Güvenlik Programı uyarınca ''Profesyonel sinema filmi taşıyan kişilerin
-taşıdıkları filmler bu kişilerin yanında bulunan "Şarj Çadırı" ile kontrol edilmektedir. "Şarj Çadırı"
-yok ise taşıyan kişinin onayı ile güvenlik cihazı ile taranmalı, şahsın rıza göstermemesi
-durumunda bu filmin geçişine müsaade edilmemektedir.
-Silahımla nasıl seyahat edeceğim?
-Havalimanımızda bulunan 1., 5. ve 7. kapılarda bulunan silah teslim noktalarından silahınızı
-teslim ederek uçuşunuzu gerçekleştirebilirsiniz.
-Bir eşya güvenlik kontrolünde reddedilirse ne olur?
-Güvenlik kontrolü sırasında Milli Sivil Havacılık Güvenlik Programı'nda belirtilen yasaklı öğelerin
-tespit edilmesi durumunda bu eşyaların geçişine müsaade edilmez ve imha kutusuna atılır.
-İmha kutusuna atılan eşyaların tekrar geri alınması mümkün değildir. Bu kaybı yaşamamanız için
-havalimanına gelmeden önce Sivil Havacılık Genel Müdürlüğü web sitesi üzerinden güvenlik
-kısıtlamalarını incelemenizi ve seyahat edeceğiniz havayolu şirketi ile iletişime geçmenizi
-öneririz.
-Elektronik ve elektrikli aletler (dizüstü bilgisayarlar, MP3 çalarlar veya
-portatif DVD oynatıcılar) taşıyabilir miyim?Taşınabilir bilgisayarlar, tabletler ve diğer büyük elektrikli eşyaların mevcut kılıf ya da
-çantalarından çıkarılarak X-ray cihazından ayrı olarak geçirilmesi ve elektronik cihazın
-çalıştırılarak kontrol edilmesi gerekmektedir. Eğer cihaz çalışmıyorsa ya da personelde bir
-şüphe oluşursa ilave güvenlik yöntemleri doğrultusunda cihaz Patlayıcı İz Tespit cihazı ile
-taranmaktadır.
-El bagajımda elektronik sigara taşıyabilir miyim?
-Seyahatinizde uçağa almak istediğiniz elektronik sigara ile ilgili olarak seyahat edeceğiniz
-havayolu şirketi ile iletişime geçmelisiniz.
-Bebeğim olmadan seyahat etsem bile anne sütü taşıyabilir miyim?
-Milli Sivil Havacılık Güvenlik Programı tarafından belirlenmiş olan kurallara göre 100 ml. üstü
-olan tüm sıvılar hava aracı kabini içerisinde taşınması konusunda kısıtlamaya tabidir ve anne
-sütü de bebek yolcu olmadığı durumlarda bu kısıtlama kapsamında değerlendirilir. 100 ml. 'ye
-kadar olan sıvılar 100 ml. kaplar içerisinde 20*20 sıvı poşetine sığacak şekilde kişi başı bir poşet
-(sıvı poşetleri kontrol noktalarımızda bulunmaktadır) olmak üzere hava aracı kabininde
-taşınılabilmektedir. Taşınacak sıvı maddelerin geçişine güvenlik cihazları ile kontrol edildikten
-sonra müsaade edilmektedir.
-Sıvı bebek maması, hazır süt, soya sütü, pirinç sütü veya sterilize su
-taşıyabilir miyim?
-100 ml. üstünde olan bebek mamaları bebeğin de uçakta seyahat ediyor olması ve mama
-miktarının yolculuk süresince yeterli olması durumunda taşınabilmektedir. Bu maddeler
-güvenlik cihazları ile kontrol edildikten sonra geçişlerine müsaade edilir.
-Uçuştan önce alıkonan eşyalarımı nasıl geri alabilirim?
-Güvenlik kontrolü sırasında Milli Sivil Havacılık Güvenlik Programı tarafından belirlenmiş olan
-yasaklı öğeler kapsamındaki eşyaların tespiti durumunda bu eşyaların geçişine müsaade
-edilmez ve imha kutusuna atılır. İmha kutusuna atılan eşyaların tekrar geri alınması mümkün
-değildir.
-El bagajımda ilaç alabilir miyim?
-El bagajında taşınmak istenen ilaçlar yolcunun kimliğini belirten bir reçeteye yazılı olmak veya
-yolcunun bu ilaçları kullanması gerektiğini belirten bir sağlık raporunun ibrazı ile orijinal
-ambalajında ve makul miktarlarda olmak koşuluyla müsaade edilir. Konuyla ilgili ayrıntılı bilgiye
-Gümrük Bakanlığı'nın adresinden ulaşabilirsiniz.
-Kabin içerisinde sağlık ürünü (embriyo, doku, organ vb.) taşıyabilir
-miyim?
-Kabin içerisinde sağlık ürünlerinin geçişine Organ ve Dokuların Havayolu ile Sevk EdilmesiHakkında Protokol'de yazan hususlar doğrultusunda izin verilmektedir. Havalimanımızdan
-sadece transfer gerçekleştirecek olsanız bile bu tip ürünlerin taşınması için Sağlık
-Bakanlığı'ndan almış olduğunuz onay belgesini güvenlik kontrol noktalarında sunmanız
-gerekmektedir.
-El bagajında insülin ve hipodermik iğneleri alabilir miyim?
-El bagajında insülin iğnelerinin taşınması, yolcu kimliğinin belirtildiği bir reçete veya yolcunun
-bu ilaçları kullanması gerektiğini belirten bir sağlık raporunun ibrazı ile ve iğneler orijinal
-ambalajında olmak koşuluyla geçişine müsaade edilir. Ancak, uçuş süresi boyunca yeterli
-olması beklenen ilaç miktarlarında havalimanı güvenlik komisyonu kararları doğrultusunda
-değişiklik olabilmektedir. Hipodermik iğnelerin ise kabin içerisinde taşınması yasak olup, uçak
-altı bagajı olarak taşınması hususunda havayolu şirketinden bilgi alınması gerekmektedir.
-Ücretsiz bagaj hakkim ne kadar?
-Ücretsiz bagaj haklarınızı öğrenmek için biletinizi aldığınız havayolunuzla iletişime geçebilirsiniz.
-Bagajımı nereye emanet edebilirim?
-Gelen yolcu katında iki adet bulunan "Bagaj Emanet" alanlarına ve giden yolcu katındaki emanet
-bagaj dolaplarına ücretli olarak bagajınızı emanet edebilirsiniz. Bu alanların konum bilgisine
-havalimanı haritamız ya da IOS/Android cihazınıza yükleyeceğiniz Istanbul Airport mobil
-uygulamamız üzerinden ulaşabilirsiniz.
-Havalimanında bagaj arabaları (trolley) ücretli mi?
-Havalimanımızdaki bagaj arabaları depozito yöntemiyle kullanılmaktadır. Bagaj arabası
-dispenserlerinden nakit, DEBIT kartınız ya da NFC ile ödeme yaptığınızda sistemden bagaj
-arabanızın üzerinde QR kod bulunan fişle beraber alabilirsiniz. Bagaj arabanızı geri vermek
-istediğinizde, dispenser QR kodunuzu okutup ödediğiniz depozito ücretini geri alabilirsiniz.
-Dispenserin ürettiği QR kod ile almış olduğunuz bagaj arabası eşleştiğinden, arabayı teslim
-ederken doğru QR kodu okuttuğunuzdan emin olmalısınız.
-Havalimanı içerisinde bagaj tasıma (Porter) hizmeti bulunmakta mıdır?
-Havalimanı giden yolcu katı 2, 5 ve 7 numaralı girişlerin yakınında bulunan istasyonlarda
-bulunan görevliler aracılığı ile fazla eşyalarınızın görevliler tarafından taşınmasını
-sağlayabilirsiniz. Gelen yolcu katında ise bagaj bantlarımızın bulunduğu alandaki görevlilerimiz
-aracılığı ile fazla eşyalarınızın taşınmasını sağlayarak seyahatinizi konforlu bir şekilde
-tamamlayabilirsiniz.
-Terminalde eşyamı unuttum ne yapmam lazım?
-Havalimanı terminal binası içerisinde eşyanızı unutmanız halinde web sitemizde bulunan kayıp
-eşya formunu doldurabilir, 444 1 442 çağrı merkezinizi arayabilir ya da 444 1 442 numaralı
-Whatsapp hattımız üzerinden başvuruda bulunabilirsiniz.Kimlik, Pasaport, ID card, Green card vb. resmi nitelik taşıyan evrağımı
-kaybettim, ne yapmalıyım?
-Kıymetli evrak statüsünde bulunan ehliyet, pasaport, kimlik, gemi adamı cüzdanı, vb. evraklar
-başka bir eşyanın içerisinde değil ise havalimanı emniyet birimine yönlendirilir. Bu durumda
-evrağınızın sorgusu için havalimanı Emniyet Müdürlüğü'ne 444 1 442 numarası üzerinden ya da
-bizzat havalimanına gelerek başvuruda bulunabilirsiniz. Evrağınız başka bir eşyanın içerisinde
-ise eşyanız havalimanı kayıp eşya ofisine yönlendirilir. Bu durumda sorgu için web sitemizde
-bulunan kayıp eşya formunu doldurabilir, 444 1 442 çağrı merkezimizi arayabilir ya da 444 1 442
-numaralı Whatsapp hattımız üzerinden başvuruda bulunabilirsiniz.
-Kayıp eşyam bulunmuş. Nereden alabilirim?
-Terminalde bulunan eşyanıza giden yolcu katında 7. giriş kapısının ilerisinde R check-in
-adasının karşısında bulunan Kayıp ve Buluntu Eşya Ofisimizden ulaşabilirsiniz. Ofisimizin tam
-konumuna IOS/Android cihazınıza yükleyeceğiniz Istanbul Airport uygulamamızdaki haritada
-üzerinden ulaşabilirsiniz.
-Uçuştan önce alıkonan eşyalarımı nasıl geri alabilirim?
-Güvenlik kontrolü sırasında Milli Sivil Havacılık Güvenlik Programı tarafından belirlenmiş olan
-yasaklı öğeler kapsamındaki eşyaların tespiti durumunda bu eşyaların geçişine müsaade
-edilmez ve imha kutusuna atılır. İmha kutusuna atılan eşyaların tekrar geri alınması mümkün
-değildir. Bu kaybı yaşamamanız için havalimanına gelmeden önce Sivil Havacılık Genel
-Müdürlüğü'nün web sitesi adresinden güvenlik kısıtlamalarını incelemenizi ve seyahat
-edeceğiniz havayolu şirketi ile iletişime geçmenizi öneririz.
-El bagajımda ilaç alabilir miyim?
-El bagajında taşınmak istenen ilaçlar yolcunun kimliğini belirten bir reçeteye yazılı olmak veya
-yolcunun bu ilaçları kullanması gerektiğini belirten bir sağlık raporunun ibrazı ile orijinal
-ambalajında ve makul miktarlarda olmak koşuluyla müsaade edilir. Konuyla ilgili ayrıntılı bilgiye
-Gümrük Bakanlığı'nın web adresinden ulaşabilirsiniz.
-Bagaj bandından bagajımı alamadım. Ne yapmalıyım?
-Bagajınızın bagaj bandından çıkmaması veya kayıp olması durumunda henüz bagaj alım
-noktasındaysanız, ilgili yönlendirmelerle havayolunuza bağlı çalışan yer hizmetleri şirketinin
-kayıp eşya ofisinde kayıp bagajınızın kaydını yaptırabilirsiniz. Bagaj alım noktasında değilseniz
-isim soyisim, uçuşunuza ait tarih, saat, destinasyon, uçuş kodu bilgileri, varsa uçuş biletinizin ya
-da bagaj etiketinizin fotoğrafı ve bagajınızla ilgili renk, büyüklük gibi bilgileri sağlayarak havayolu
-şirketinizle iletişime geçebilirsiniz.
-Bagajım hasarlı olarak geldi ne yapmalıyım?
-Bagajınızın hasarlı gelmesi durumunda eğer havalimanındaysanız ilgili yönlendirmelerle
-havayolunuza bağlı çalışan yer hizmetleri şirketinin kayıp eşya ofisi ile irtibata geçip tutanaktutturabilirsiniz. Havalimanında değilseniz araştırma yapılabilmesi için isim soyisim, uçuşunuza
-ait tarih, saat, destinasyon, uçuş kodu bilgileri ve varsa uçuş biletinize, bagajınıza ve bagaj
-etiketinize ait fotoğrafları sağlayarak havayolu şirketinizle iletişime geçebilirsiniz.
-Özel gereksinimli yolcular için ne gibi hizmetler bulunmaktadır?
-Yaşlı, engelli ya da hamile gibi havalimanı süreçlerinde özel gereksinimi bulunabilen
-misafirlerimiz için havalimanımızda birçok olanak ve uygulamalar bulunmaktadır. Bu olanak ve
-uygulamalar hakkında detaylı bilgi alabilmek için istairport resmi websitesini inceleyebilirsiniz.
-Havalimanında hareket kabiliyeti kısıtlı yolcular için özel tuvalet
-bulunuyor mu?
-Havalimanımız genelinde her tuvalet bölgesinde hareket kabiliyeti kısıtlı yolcularımız için
-tasarlanmış engelli tuvaletlerimiz bulunmaktadır. Sesli "boş/dolu" uyarısı veren tuvaletlerimizin
-kapısı, kapı yanındaki hareket sensörü ile dışa doğru açılmakta içeri girdikten sonra butonla kapı
-kilitlenebilmektedir. Bunların yanında 5 adet engelli tuvaletinde hasta tuvaletli tekerlekli
-sandalyeler bulunmaktadır:
-Tekerlekli sandalyemle güvenlik noktasından geçebilir miyim?
-Güvenlik uygulamaları esnasında yürüyüp yürüyememe durumunuza göre sandalye sizden ayrı
-olarak veya bütünüyle kontrol işlemine tabi tutularak geçişiniz sağlanmaktadır.
-Engelli yolcular için otoparkta park yeriniz var mi?
-Havalimanımızda her kat ve otopark bölgesinde giriş kapılarına daha yakın konumda bulunan
-toplam 910 kapasiteli engelli araç park yerlerimiz bulunmaktadır. Bunun yanında
-otoparklarımızda engelli misafirlerimiz için tuvaletler de bulunmaktadır.
-Havalimanında görme engelliler için kılavuz yollar bulunuyor mu?
-Havalimanımızda 1, 3 ve 7. girişlerdeki kaldırımlardan danışma noktasına kadar kılavuz
-yollarımız bulunmaktadır.Aynı şekilde gelen misafirlerimiz için iç hatlar ve dış hatlar bagaj alım
-noktalarından çıkış noktasına ve ulaşım katında da kılavuz yollarımız bulunmaktadır.Kılavuz
-yollarla beraber havalimanımızda ilgili havayolundan asistanlık hizmeti almadan, uçuş kapısına
-kadar kendisi gitmek isteyen görme engelli misafirlerimiz için "Engelsiz Rota" uygulamasını İç
-Hatlar Giden Yolcu rotasında hayata geçirdik. 1 ve 3 numaralı kapılardan terminale giriş
-yaptığınızda engelsiz yolu kullanarak check-in adalarına, ikinci güvenlik noktasına ve uçuş
-kapılarına ulaşabilirsiniz. Ana bir rota çizdiğimiz, tek şeritli hissedilebilir bir yüzey olan "Engelsiz
-Rota", uçuş kapıları bölgesinde uçuş kapılarının olduğu noktalarda ve tuvaletlerde uyarıcı
-yüzeye sahiptir. Mobil uygulamamızı indirerek harita kısmında "Sesli Adımlar ile Aç" özelliğini
-açarsanız istediğiniz rotaya sesli yönlendirmelerle ulaşabilir ve telefonunuzu tuttuğunuz yöndeki
-mekan hakkında bilgi sahibi olabilirsiniz.Havalimanında güvenlik ve pasaport noktalarında engelli, hamile
-yolcular için Öncelikli geçiş bulunuyor mu?
-1., 3. ve 7. girişlerde kılavuz yollar boyunca takip edebileceğiniz, engelli ve hamile geçiş önceliği
-tanınan güvenlik geçişlerimiz bulunmaktadır. Bunun dışında pasaport kontrol bölgelerinde
-engelli ve hamile misafirlerimiz için ayrı geçiş güzergahları tanımlanmıştır.
-Havalimanında asistanlık hizmetini nasıl alabilirim?
-Asistanlık hizmeti havayolları tarafından sağlanmaktadır. Hizmet talebi için havayolunuzun web
-sitesini ziyaret edebilirsiniz. Havayolunuza talebinizi önceden bildirmeniz ve rezervasyon
-yaptırmanız hizmet bekleme sürenizi azaltacaktır. Havalimanımıza geldiğinizde giriş kapılarının
-öncesinde bulunan asistan çağrı telefonları aracılığıyla ilgili havayolu hizmet sağlayıcısına
-ulaşabilirsiniz. İlgili personelin gelmesini ilk giriş kapısı ardında bulunan bankta dinlenerek
-bekleyebilirsiniz.
-Görünmeyen engele sahip bireyler için sunulan ayçiçeği yaka kartını
-nereden alacağım?
-Ayçiçeği yaka kartını danışma noktalarımızdan talep edebilirsiniz.
-Görünmeyen engele sahip bireyler için sunulan ayçiçeği yaka kartı için
-herhangi bir rapor talep ediliyor mu?
-Ayçiçeği yaka kartı için herhangi bir rapor sunmanıza gerek yoktur.
-Görünmeyen engele sahip bireyler için sunulan yaka kartı güvenlik
-geçislerinde öncelik ve ayricalık sağlayacak mi?
-Bu yaka kartı güvenlik geçişlerinde herhangi bir öncelik ve ayrıcalık sağlamamaktadır. Ancak
-güvenlik personelimiz sizleri tanıyacak, daha fazla zamana ve desteğe ihtiyacınız olabileceğini
-bilecektir.
-Başvurunuzun ve raporunuzun incelenmesi akabinde "Çok Özel Misafir Kartı"nız
-hazırlanacaktır. Bir sonraki uçuşunuzu belirtmeniz ya da havalimanımıza gelmeden önce çağrı
-merkezimiz (444 1 442) ya da assist@igairport.aero maili üzerinden bize ulaşmanız durumunda
-kartınız size en yakın danışma noktasına bırakılacaktır.
-Çok Özel Misafir Kartı' nı bir kere almanız durumunda daha sonraki yolculuklarınızda sadece
-kartınızı taşımanız yeterli olacaktır.
-Çok Özel Misafir Odasında neler var?
-Çok özel misafir odasında çizgi film oynayan bir TV, uçuşları takip edebileceğiniz uçuş bilgi
-ekranı, oturma alanları, sünger oyuncak ve çocuk masa/sandalyesi bulunmaktadır. Odanın
-içinde duvarları sünger malzemeyle kaplanmış olan bir de "Sessiz Oda" bulunmaktadır.Erişilebilir Havalimanı kapsaminda hizmet veren Özel Yolcu Hizmet
-noktalarını kimler kullanabilmektedir?
-Check-in'den önce daha sakin bir alana ihtiyacı olan, elektrikli tekerlekli sandalyesini şarj
-etmek isteyen misafirler kapı öncesindeki telefonu kullanarak bu odalardan
-faydalanabilmektedirler. Oda içinde protezini çıkarıp uçak altına vermek isteyen misafirler için
-de kapalı bir alan ve misafirlerin stressiz bir şekilde check-in zamanını beklemelerine yardımcı
-olacak olan uçuş bilgi ekranları bulunmaktadır.
-Havalimanında ücretsiz Wi-Fi bulunuyor mu?
-Havalimanımızda bir saat ücretsiz kullanabileceğiniz Wi-Fi hizmetimiz bulunmaktadır.
-Hizmetten SMS ya da pasaport numarası girişi yoluyla yararlanabilirsiniz.
-Wi-Fi a nasıl bağlanabilirim?
-Havalimanımızda bir saat ücretsiz kullanabileceğiniz Wi-Fi hizmetimiz bulunmaktadır.
-Hizmetten SMS ya da pasaport numarası girişi yoluyla yararlanabilirsiniz.
-Havaalanı içerisinde eczane var mıdır?
-Havalimanı giden yolcu katı check-in (kara tarafı) bölgesinde 2 adet, gelen yolcu katında 1 adet
-olmak üzere 3 adet eczane misafirlerimize hizmet vermektedir. Pasaport kontrol sonrası (hava
-tarafı) ve transfer alanında gümrük mevzuatı gereğince eczane bulunamamaktadır. Eczane
-ihtiyacı bulunan misafirlerimiz danışma noktalarımıza müracaat etmeleri halinde kendilerine
-gerekli yardım sağlanmaktadır.
-Havalimanı içerisinde Banka &ATM var midır?
-Havalimanımız içerisinde banka şubeleri ve ATM'ler bulunmaktadır. Detaylı bilgiye üzerinden,
-konum bilgilerine web sitemiz ya da IOS/Android cihazınıza yükleyeceğiniz Istanbul Airport mobil
-uygulamamızdaki haritalar üzerinden ulaşabilirsiniz.
-Havalimanı içerisinde bagaj sarma hizmeti var midir?
-Havalimanında giden yolcu 3 ve 5 numaralı giriş kapı bölgelerinde bagaj sarma hizmeti
-bulunmaktadır.
-Havalimanı içerisinde harç pulu satın alınabilecek noktalar mevcut
-mudur?
-Harç pulunuzu giden yolcu katı pasaport kontrol noktası hemen öncesinde Türkiye Cumhuriyeti
-Maliye Bakanlığı tarafından konumlandırılmış harç pulu cihazlarından nakit veya kredi kartı ile
-satın alabilirsiniz. Bununla beraber ödemeyi bankalar aracılığıyla da gerçekleştirebilir, pasaport
-geçişinde dekont ibrazı ile geçişinizi sağlayabilirsiniz.Havalimanında sağlık hizmeti var mi?
-Havalimanı içerisinde bulunan Şafak Sağlık kliniğinde 7/24 ücretli poliklinik hizmeti
-verilmektedir.
-Havalimanında kargo hizmeti var mi?
-Havalimanı içerisinde giden yolcu katında bulunan PTT, UPS Kargo, Jetiz Kargo ile kargo
-işlemlerinizi gerçekleştirebilirsiniz. Bu alanların konum bilgisine havalimanı haritamız ya da
-IOS/Android cihazınıza yükleyeceğiniz Istanbul Airport mobil uygulamamız üzerinden
-ulaşabilirsiniz.
-İş başvurusu nasıl yapabilirim?
-Mevcut açık pozisyonları incelemek ve başvuru yapmak için İGA Airport web sitemiz üzerinden
-detayları öğrenebilirsiniz.
-Yolculara uygulanan havalimanı vergisi nedir?
-DHMİ Genel Müdürlüğünce ihale edilen KÖİ Projeleri kapsamında Havalimanı/Terminal
-İşletmecileri tarafından işletilen havalimanları/terminallerde; giden yolculara, terminallerde
-verilen hizmet ve sağlanan kolaylıklar karşılığında havayollarından alınan vergidir.
-Terminal panolarına nasıl reklam verebilirim?
-İstanbul Havalimanı'nda yer alan reklam alanları, sponsorluklar, marka işbirlikleri, tanıtım
-standı kiralama ve organizasyon hizmetleri hakkında bilgi almak ve/veya talepte bulunmak için
-advertising@igairport.com adresine mail atabilir veya 0212 601 41 00 numaralı telefona
-ulaşılabilirsiniz.
-Mobil uygulama hangi dilleri destekliyor?
-İstanbul Airport uygulaması Türkçe ve İngilizce dillerini desteklemektedir. Misafirimiz
-telefonunu bu dillerden hangisi ile kullanıyorsa, uygulamanın o dili destekleyen versiyonu
-açılacaktır. Yani telefonunuz Türkçe ise Türkçe uygulama, İngilizce ise İngilizce uygulama
-açılacaktır.
-Yaşlı yolcular için sunduğunuz ayrıcalıklı hizmetler var mi?
-65 yaş ve üstü misafirlerimiz, güvenlik ve pasaport bölgelerinde sıra beklemeden İGA Fast Track
-geçişlerini ücretsiz olarak kullanabilirler. Bununla birlikte belirli rota üzerinde ilerleyen İGA
-Buggy araçlarından da ücretsiz olarak yararlanabilirler.Eğitimli personeller eşliğinde, İGA
-Premium hizmetlerinden faydalanarak seyahatini gerçekleştirmek isteyen misafirlerimiz
-igapass.com web sitesi ya da çağrı merkezimiz üzerinden Meet&Greet Special rezervasyonu
-yaptırabilirler. Meet&Greet hizmeti 65 yaş ve üstü misafirlerimize %35 indirimli olarak
-sunulmaktadır.Dış hatlar pasaport sonrası D uçuş kapıları öncesinde bulunan özel uyku
-kabinleri olarak geçen İGA Sleepod 65 yaş ve üstü misafirlerimize %35 indirimli olarak
-sunulmaktadır.Demans, Alzhiemer hastası olan, sessiz bir alanda beklemeye ihtiyacı
-olan yolcular için sunduğunuz hizmetler var mi?
-Sessiz ve sakin bir ortama ihtiyaç duyabilecek demanslı misafirlerimiz için "Çok Özel Misafir
-Odası" imkanı sağlıyoruz. istairport.com web sitesinde İGA Yanımda sayfasından başvuru
-yaparak Çok Özel Misafir Kartı alan misafirlerimiz uçuş kapıları bölgesindeki Çok Özel Misafir
-odalarında vakit geçirebilir, belirli bir rota üzerinde ilerleyen İGA Buggy araç hizmetinden bir
-refakatçisiyle birlikte ücretsiz faydalanabilir, engelli öncelikli güvenlik geçişlerinden kartlarını
-göstererek öncelikli olarak geçebilirler.Check-in bölgesinde B ve M check-in adalarında bulunan
-Özel Yolcu Hizmet Noktaları da sessiz, sakin bir ortama ihtiyaç duyan misafirlerimize hizmet
-vermektedir.
-Aynı zamanda demans, otizm, kaygı bozukluğu gibi fark edilemeyen, desteğe ve hassasiyetle
-yaklaşılmaya ihtiyacı olabilecek misafirlerimiz danışma noktalarımızdan ücretsiz ayçiçeği yaka
-kartı alarak çalışanlarımıza görünür olabilirler.
-Pasaport sonrasında eczaneden ilaç almam gerekirse ne yapmayalım?
-Pasaport sonrasında ilaç ihtiyacı olan misafirlerimiz en yakın danışmaya belirterek kara
-tarafındaki eczanelerden ilaç temin edebilir. 65 yaş ve üzerindeki misafirlerimiz için ücretsiz
-teslimat yapılmaktadır.
-Havalimanında tekerlekli sandalye bulabilir miyim?
-Tekerlekli sandalye ve asistan eşliğinde seyahat etmek isteyen misafirlerimiz ilgili havayolu
-şirketine en az 48 saat önce haber vererek ücretsiz asistanlık hizmeti için rezervasyon
-yaptırabilirler. Tekerlekli sandalyeye ihtiyacı olan yolcu yakını misafirlerimiz pasaport
-öncesindeki danışmalardan ücretsiz tekerlekli sandalye talep edebilirler.
-Yetişkin bezi değiştirmem için uygun bir alan mevcut mu?
-Havalimanımızda yatarak alt değişim ihtiyacı duyan misafirlerimiz için yüksekliği ayarlanabilir
-yatak ünitelerine sahip yetişkin alt değişim odalarımız bulunmaktadır. Giden yolcu pasaport
-öncesinde, giden yolcu dış hatlar pasaport kontrol sonrasında ve giden yolcu iç hatlar G3
-kapıları bölgesinde birer adet, gelen yolcu dış hatlar ve iç hatlar bagaj alım bölgelerinde birer
-adet olmak üzere toplam beş adet yetişkin alt değiştirme odası bulunmaktadır.
-Kendi tekerlekli sandalyem ile yolculuk yapmak istiyorum,
-havalimanına/havalimanından ulaşımımı nasıl sağlarım?
-Hareket kısıtlılığı yaşayan ve tekerlekli sandalyesiyle yolculuk etmek isteyen misafirlerimiz,
-erişilebilir taksileri, İETT otobüslerini ve Havaist'in erişilebilir midibüslerini kullanabilir.
-Erişilebilir taksiyi kullanmak isteyen misafirlerimiz gelen yolcu katı karşılama bölgesinde
-bulunan taksi masasına ya da havalimanı taksi iletişim kanallarına ulaşarak taleplerini
-bildirebilirler. (Taksi iletişim no:0850 780 7734 )iGA Pass üyelik paketleri hizmet detayları ve ücretleri nelerdir?
-İGA Pass Üyelik Paketi içerik ve İGA Pass web sitesi üzerinden inceleyebilirsiniz.
-iGA Pass hangi havalimanlarında geçerlidir?
-İGA Pass şu anda sadece İstanbul Havalimanı'nda geçerlidir.
-iGA Pass hizmet ve satış noktaları İstanbul Havalimani içerisinde
-nerede yer alıyor?
-Havalimanı içerisinde giden yolcu katında 3 adet hizmet ve satış noktamız bulunmaktadır. Bir
-tanesi iç hatlar geçişinde D kontuarında, diğeri dış hatlar geçişinde M kontuarında ve sonuncusu
-pasaport geçişinden sonra information noktasının bitişiğinde yer almaktadır.
-iGA Lounge nerededir?
-İGA Lounge dış hatlar giden yolcu katında hizmet vermektedir. Lounge konumlarına havalimanı
-haritamız ya da IOS/Android cihazınıza yükleyeceğiniz Istanbul Airport mobil uygulamamız
-üzerinden ulaşabilirsiniz.
-IGA Lounge içerisindeki hizmetler nelerdir?
-4.400 m2 alanda 585 kişiye aynı anda oturma kapasitesi sunulmaktadır.Açık Büfesinde lezzetli
-ikramların sunulduğu İGA Lounge'ta ücretsiz olarak masaj hizmeti de verilmektedir. Duşlarımız
-ve dinlenme koltuklarımızda transfer yolcularımıza rahatlama imkanının yanı sıra çocuklu
-ailelerin çocuklarının eğlenceli anlar yaşayacağı çocuk oyun alanımız, iş insanlarının çalışmaya
-devam edebilmesi için konforlu business alanımız toplantı odalarımız ve sessiz odalarımız ile
-bulunmaktadır.
-Istanbul Havalimanı'ndaki Loungelar nelerdir? Nasıl yararlanabilirim?
-İstanbul Havalimanı'ndaki tek ortak Lounge alanı iGA Lounge'dır. iGA Lounge'dan yararlanmak
-için iGA Lounge hizmetini satın almalı ya da iGA Pass üyelik paketlerinden birine sahip
-olmalısınız. Ayrıca anlaşmalı olduğumuz havayollarından biri ile uçuyor veya anlaşmalı
-olduğumuz kurumlardan birinin müşterisi iseniz ve kurumunuz/havayolunuz size iGA Lounge
-giriş hakkı veriyorsa yine iGA Lounge hizmetimizden yararlanabilirsiniz.
-İstanbul Havalimanı'nda iç hatlarda THY Business yolcuları ve Frequent Flyer kart sahiplerinin
-kullanımı için THY İç Hat CIP Lounge, dış hatlarda da Star Alliance Business yolcuları ve
-Frequent Flyer kart sahipleri kullanımı için dış hat Türk Hava Yolları Lounge bulunmaktadır. Aynı
-zamanda Skyteams üyesi havayollarına hizmet veren Skyteam Lounge'da dış hatlarda
-misafirlerimize hizmet vermektedir.
-Lounge konumlarına havalimanı haritamız ya da IOS/Android cihazınıza yükleyeceğiniz Istanbul
-Airport mobil uygulamamız üzerinden ulaşabilirsiniz.
-Buggy durakları nerelerdedir?Boarding kartınızda yer alan uçuş kapı numarasına göre ilgili Buggy durağını bulabilirsiniz.
-Buggy hizmetini nasil satin alabilirim?
-İGA Pass web sitesi üzerinden
-IGA Meet and Greet hizmet detaylar ve ücretleri nelerdir?
-Hem iç hatlarda hem de dış hatlarda hizmet gösteren Karşılama & Uğurlama paketlerimiz Gelen
-Yolcu, Giden Yolcu ve Transfer yolcuların ihtiyaçlarına göre tasarlanmıştır. Hizmet ve paket
-ücretlerine web sitesi ya da İstanbul Airport mobil uygulaması üzerinden ulaşabilirsiniz.
-iGA Meet and Greet hizmeti için nasıl rezervasyon yaptırabilirim?
-İGA Meet & Greet Hizmeti rezervasyon sistemi ile çalışmaktadır. Talep ettiğiniz saat ve tarihte
-uygun karşılama asistanlarımız olması durumunda rezervasyonunuz onaylandığına dair size bilgi
-iletilir. İGA Meet & Greet hizmeti için rezervasyonunuzu igapass web sitesi üzerinden
-yapabilirsiniz.
-iGA Fast Track hizmetinden nasıl yararlanabilirim?
-Fast Track hizmetinden yararlanabilmek için İGA Pass üyelik paketlerinden birine sahip olmanız
-yeterli. Detaylar için iga pass web sitesi üzerinden üyelik paketlerimizi inceleyebilirsiniz.
-IGA Fast Track noktalari nerelerdedir?
-Terminal giriş kapılarında giden yolcular için; 1. kapı İç hatlar, 3 ve 7 numaralı Dış hatlar terminal
-giriş kapılarındaki güvenlik noktaları,
-Dış hat gelen yolcu, dış hat giden yolcu katı ve transfer katında yer alan pasaport kontrol
-noktalarında İGA Fast Track hizmeti yer almaktadır.
-IGA Pass dahilinde vale & otopark hizmetinden yararlanabiliyor
-muyum?
-Vale ve Otopark hizmetlerinden İGA Pass üyelik paketleri ile yararlanabilirsiniz. Detaylar için iga
-pass websitesi üzerinden üyelik paketlerimizi inceleyebilirsiniz.
-Evcil hayvanımla uçabilir miyim?
-Havalimanı güvenlik kontrol noktalarında seyahat edeceğiniz evcil hayvanınızın havacılık
-güvenliği kapsamında gerekli kontrolleri yapılmaktadır. Konu ile ilgili detaylı bilgiyi TicaretBakanlığı websitesi üzerinden alabilirsiniz. Ancak taşımak istediğiniz evcil hayvanınız için
-seyahat edeceğiniz havayolu şirketi ile de iletişime geçmenizi öneririz.
-Uçuşların kalkış ve varis bilgilerini nasıl öğrenebilirim?
-Havalimanımızdan kalkan uçuşlarla ilgili güncel bilgileri ist airport websitemiz üzerinden
-öğrenebilirsiniz.
-Güncel uçuş bilgilerini ya da uçuşumun rötar/iptal durumunu nereden
-ögrenebilirim?
-Havalimanımızdan kalkan uçuşlarla ilgili güncel bilgileri ist airport websitemiz üzerinden
-öğrenebilirsiniz.
-İstanbul Havalimanı üzerinden aktarmalı uçuşum var, vize almama
-gerek var mi?
-Yurtdışından gelip İstanbul Havalimanı üzerinden tekrar yurt dışına transfer uçuş
-gerçekleştirecek olmanız durumunda güvenlik kontrol noktamızdan geçtikten sonra giden yolcu
-katına çıkarak bir sonraki uçuşunuza devam edebilirsiniz. Ancak valiz almanız veya bir nedenle
-ülkeye giriş yapmanız gerekiyorsa pasaport kontrol noktamızdan da geçmek durumunda
-olduğunuz için Türkiye vizesine sahip olmanız gerekmektedir.
-Duty Free den almış olduğum ürün kusurlu ne yapmalıyım?
-Konu hakkındaki bilgiyi unifree websitesi üzerinden alabilirsiniz.
-Uçuşum rötar yaptı ya da iptal oldu, yolcu haklarım nelerdir?
-Uçuşunuzun rötar yapması ya da iptal olması durumunda, sahip olduğunuz yolcu hakları
-hakkındaki detaylı bilgiyi Sivil Havacılık Genel Müdürlüğü'nün web sitesi üzerinden öğrenebilir,
-ilgili başvuruyu havayolunuza yapabilirsiniz.
-Dış hatlar geliş yolculuğumda Duty Free alım limiti ne kadar?
-Havalimanımızdan gerçekleştireceğiniz dış hatlar geliş yolculuğunuzda Duty Free limitlerinizi
-Unifree web sitesi üzerinden öğrenebilirsiniz.
-Aktarma uçağım ertelenirse veya uçağımı kaçırırsam ne yapacağım?
-Aktarma yapacağınız uçağınızın ertelenmesi ya da farklı bir nedenle uçağı kaçırmanız
-durumunda ilgili havayolu şirketinizin transfer masasına müracaat ederek bilgi alabilirsiniz.
-Transfer masalarına ulaşmak için havalimanı haritamıza ulaşabilir ya da IOS/Android cihazınıza
-yükleyeceğiniz Istanbul Airport mobil uygulamamız ile bulunduğunuz yerden rotanızı
-oluşturabilirsiniz.Aktarmalı uçuşuma kadar havalimanında nerede dinlenebilirim?
-Terminalimizde birçok bölgede ücretsiz dinlenebileceğiniz napzone'lar bulunmaktadır. Bununla
-beraber dış hatlar giden yolcu bölgesinde bulunan uyku kabinlerinde ücreti karşılığında
-dinlenebilirsiniz. Aynı zamanda terminalimizde içinde bulunan hava tarafındaki 174 odası ve
-kara tarafındaki 277 odası ile her iki bölümünde misafirlerini akıllı tasarım ve teknolojilerle
-tanıştıran YOTEL imzalı otelimizde dinlenebilirsiniz. Yotel imzalı otelimize yotel websitesi
-üzerinden ya da istanbul.reservation@yotel.com mail adresi aracılığıyla rezervasyon
-yaptırabilirsiniz.
-Havalimanında çocukların eğlenebileceği alanlar bulunmakta midir?
-Minik yolcularımız için giden yolcu katında uçuş kapılarının bulunduğu her iskelemizde birer
-adet olmak üzere toplam 5 noktada çocuk oyun alanı bulunmaktadır. Bu oyun alanlarının
-konumuna havalimanı haritamız ya da IOS/Android cihazınıza yükleyeceğiniz Istanbul Airport
-mobil uygulamamız üzerinden ulaşabilirsiniz.
-Aktarmalı uçuşumda valizimi almama gerek var mi?
-Valizinizin otomatik olarak aktarılıp aktarılmayacağı ile ilgili bilgiyi havayolunuzdan
-öğrenebilirsiniz.
-Yurtdışından kaç adet telefon/bilgisayar/tablet getirebilirim?
-Yurt dışından ülkemize giriş yaparken yanınızda getirebileceğiniz elektronik cihazlar hakkında
-detaylı bilgiyi Ticaret Bakanlığı web sitesi üzerinden alabilirsiniz.
-Havalimaninda hangi restoran ve kafeler var?
-Havalimanımızda bulunan restoran ve kafeler hakkındaki bilgiyi ist airport web sitemiz
-üzerinden alabilir, konumlarına internet sitemizdeki havalimanı haritamızdan ya da IOS/Android
-mobil cihazlarınıza yükleyeceğiniz Istanbul Airport mobil uygulamamızdaki harita üzerinden
-ulaşabilirsiniz.
-Yurtdışından aldığım ürünü nereye kaydettirebilirim?
-Yurt dışından ülkemize gelirken yanınızda getirmiş olduğunuz cihazların kayıt işlemlerini e-
-devlet üzerinden gerçekleştirebilirsiniz.
-Havalimanında bebeğimi emzirmek için odalar var mi?
-Havalimanımızda bebeğinizi emzirip, bebeğinizin altını değiştirebileceğiniz giden yolcu uçuş
-kapısı iskelelerinin her birinde 2'şer adet, giden yolcu katı check-in bölgesinde 1 adet, gelen
-yolcu karşılama alanında 1 adet, transfer bölgesinde 1 adet olmak üzere toplam 13 adet
-emzirmeye müsait bebek bakım odamız bulunmaktadır. Aşağıda haritada belirtilen bu
-odalarımızın konumuna aynı zamanda havalimanı haritamız ya da IOS/Android cihazınıza
-yükleyeceğiniz Istanbul Airport mobil uygulamamız üzerinden ulaşabilirsiniz.
-Havalimanında hangi mağazalar var?Havalimanımızda kara tarafı ve iç hatlarda bulunan mağazalar hakkındaki bilgileri web sitemiz
-üzerinden alabilir, bu mağazaların konumlarına havalimanı haritamızdan ya da IOS/Android
-mobil cihazlarınıza yükleyeceğiniz Istanbul Airport mobil uygulamamızdaki harita üzerinden
-ulaşabilirsiniz.
-İstanbul Havalimanı'ndan vize alabilir miyim?
-Uçak kapılarından indikten sonra pasaport öncesinde vizeye tabi olan ülke vatandaşları için 2
-adet vize ofisi bulunmaktadır. Bu ofisler aracılığıyla vize alımı her ülke vatandaşı için değişiklik
-göstermektedir. Vize işleminde problem yaşamamak için Türkiye'ye gelmeden önce evisa
-websitesi üzerinden ön bilgi alabilir ve başvuru yapabilirsiniz.
-Otel rezervasyonunu nereden yapabilirim?
-Terminal içerisinde konumlanan Yotel imzalı otelimize Yotel web sitesi üzerinden ya da
-istanbul.reservation@yotel.com mail adresi aracılığıyla rezervasyon yaptırabilirsiniz.
-Havalimanında otel bulunuyor mu?
-Terminal içinde hava tarafındaki 174 odası ve kara tarafındaki 277 odası ile her iki bölümünde
-misafirlerini akıllı tasarım ve teknolojilerle tanıştıran YOTEL imzalı otelimiz bulunmaktadır. Otel
-için web sitesi üzerinden rezervasyon yaptırabilirsiniz.
-Havalimanında bebeğimin altını değiştirebileceğim odalar bulunuyor mu?
-Havalimanımızda her tuvalet bölgesinde bebeğinizin altını değiştirebileceğiniz aile odaları
-bulunmaktadır. Bununla beraber havalimanımızda bebeğinizi emzirebileceğiniz 13 adet bebek
-bakım odası bulunmaktadır.
-Uçuşumu kaçırdım, havayolum Trans Avia. Nereye gitmeliyim?
-Transfer katı HAVAŞ yer hizmetleri ofisine gitmelisiniz.
-Uçuşumu kaçırdım, havayolum Trans Avia. Nereye gitmeliyim?
-F1-D1-A2 kapıları yanında TK CARE POINT noktasından alabilirisiniz.
-Çocuğum kayboldu, 6 yaşında. Yardım eder misiniz?
-Çocuğun eşgal bilgisi, kıyafet detayı, velisinin ekran görüntüsü, varsa çocuğun fotoğrafı istenip
-tüm saha ekibi ile paylaşılır. Yolcuyu BVLGARI arkası polis noktasına yönlendirip 20 dk içinde
-bulunmazda yeniden bize bağlanması söylenir.Yabancı uyruklu yakınım öğlen 3'te geldi hala çıkmadı nereye
-sorabilirim?
-Check-in bölgesi Paşabahçe yanı polis merkezi ve 1 n'olu giriş yanı göç ofislerine danışılabilir.
-Uçaktan indirilen tekerlekli sandalyedeki yolcularımız nereye kadar
-getirilir?
-Personelin havalimanı dışına (otopark gibi) alanlara gitmesi yasak sadece çıkış kapısına kadar
-eşlik edebiliyor yolcuya. (Air Clinic)
-Personelim nerden kart, apron tedarik edebilirim?
-A kontuarında PTT ofisinin yanında kart basım mevcuttur.
-Pasaportumu/kimliğimi havalimanı içerisinde kaybettim ne
-yapabilirim?
-Giden yolcu katı Paşabahçe mağazası yanında polis merkezi bulunmaktadır, onlardan yardım
-alabilirsiniz.
-Uçakta yolcum rahatsızlanmış nereden bilgi alabilirim?
-Medicana ile görüşmeniz gerekmekte.
-Yolcumuz hava tarafında geçti hatayla bizim pasaportlar da onda kaldı
-nasıl ona ulaşıp pasaportumuzu alabiliriz?
-Kara tarafı polis merkezinden yardım istenebilir.
-Başka ülke vatandaşıyım vize almam gerekiyor mu?
-evisa web sitesi üzerinden kontrol sağlayabilir misiniz?
-Dış hatlar bagaj alımı içerisinde el bagajımı unuttum nasıl alabilirim?
-Dış hatlar bagaj alımı çıkışının önünde beklerseniz yanınıza bir kayıp eşya personeli gelecek ve
-konuyla ilgili size yardımcı olacak.
-Dış hatlar uçuşum var, pasaport kontrolünü geçtikten sonra ihram
-odaları mevcut mu?Evet, dilerseniz pasaport kontrolünü geçtikten sonra F9 ve D3 kapıları yakınında ihram giyinme
-odalarını bulabilirsiniz.
-Hava limanı içerisinde temiz hava terası var mıdır acaba?
-Pasaport kontrolünü geçtikten sonra dış hatlarda B1 ve F8 kapılarının yanlarında temiz hava
-terasları bulunmaktadır.
-Tax Free para iadesini nereden alabilirim?
-Pasaport kontrolünün hemen yanında tax free ofisi mevcut oradan para iadenizi alabilirsiniz.
-Çoçuk oyun alanları nerededir?
-Dilerseniz A6, B4, D2 ve F9 kapılarının yakınlarında çocuk oyun alanlarını bulabilirsiniz.
-İzole yemek alanlarını nerede bulabilirim?
-Kara tarafı food court, dış hatlar için ise F ve A-B kapılarına giderkenki food court alanlarında
-izole yemek alanları mevcut.
-Ücretsiz su sebilleri ne tarafta?
-D2, B1, A2, F1 ve yotelair yakınında su sebillerini bulabilirsiniz.
-İlaçlarımı muhafaza edebileceğim buzdolaplarını nerede bulabilirim?
-A2A, C4, E4 VE D kapılarına inmeden önceki asansörlerin yakınında buzdolaplarını
-bulabilirsiniz.
-Hava limanı içerisinde evcil hayvan bakım odası mevcut mu?
-D piere inmeden İga Sleepod karşısında ve A-B kapılarına giderken İga lounge yakınında evcil hayvan
-odaları bulunmaktadır.
-Otopark için aylık abonman nasıl yapabilirim?
-P3 katı otopark ödeme noktası, 2-5 numaralı danışmalardan veya İga Airport uygulaması
-üzerinden işlemlerinizi yapabilirsiniz.Özel yolcu odaları nerede?
-Dilerseniz B3, A2 VE G6 kapılarının yanında özel misafir odaları mevcut.
-Hava limanı içerisinde çocuğumu kaybettim ne yapmam gerek?
-Çocuğunuz 15 yaş ve altındaysa danışmalardan kayıp çocuk anonsu talebinde bulabilirsiniz.
-Cuma namazımı nerede kılabilirim?
-Gelen yolcu katında 12 numaralı kapı karşısındaki mescit ve havalimanı cami de kılabilirsiniz.
-Terminal çıkışında veya cami çıkışında otopark ödemesi yapabilir
-miyim?
-Cami ve terminal çıkışlarında otopark ödeme otomatları mevcut.`,
+    BES, SAĞLIK VE HAYAT SİGORTALARI PROSEDÜRÜ
+Örnek Sorular :
+Eşime ve çocuklarıma sağlık sigortası yaptırabilir miyim?
+BES’e ne zaman başvurabilirim?
+İşten ayrılırsam BES’im iptal olur mu?
+Topluluk şirketleri arasında geçiş yaparsam sigortamı devam ettirebilir miyim?
+Katkı payına nasıl karar veriliyor?
+KAPSAM
+Bu prosedür, toplu iş sözleşmesi kapsamı dışında kalan ve belirsiz süreli iş sözleşmesi ile görev yapan
+beyaz yakalı çalışanları kapsar.
+SORUMLULUK
+Bu prosedürün güncellenmesinden Şirket İnsan Kaynakları Fonksiyonu sorumludur.
+PERİYOD
+Bu prosedür, Holding’den gelecek düzenlemeler çerçevesinde ve Şirket tarafından uygulanması sırasında
+ortaya çıkan ihtiyaçlar dahilinde güncellenir.
+Genel Esaslar
+BES kurum katkısı, sağlık sigortası ve hayat sigortası uygulaması, prosedürün “Kapsam” bölümünde
+belirtilen tüm çalışanlar için geçerlidir. Uzman ve üzeri pozisyonlarda çalışanlara tüm bu yan menfaatlerin
+sağlanması zorunludur. Diğer pozisyonlarda çalışanlar için, kademe bazında olmak şartıyla seçici uygulama
+yapılabilir.
+Belirli süreli iş sözleşmesi ile görev yapan beyaz yakalı çalışanlara sağlık ve/veya hayat sigortası sağlanıp
+sağlanmayacağı, bu prosedürdeki prensipler çerçevesinde, şirketin inisiyatifindedir.
+Çalışanlar, ödenen BES katkı payları ile sağlık ve hayat sigortası primlerine ilişkin vergi matrahı indirim
+hakkından öncelikle işverenin yararlanacağını kabul eder. Artan vergi indirim tutarı olması halinde, çalışan
+bu tutardan kendisi için yararlanır.
+Bireysel Emeklilik Sistemi
+Çalışma Süresi
+Çalışanların emeklilik dönemlerinde yaşam standartlarının korunması için Bireysel Emeklilik Sistemi’ne
+katılımlarını teşvik amacıyla kurum katkısı yapılır. 6 aylık çalışma süresini dolduran çalışanlar sisteme dahil
+olma hakkını kazanır. Bu sürenin hesabında Topluluk şirketlerinde geçen süreler de göz önündebulundurulur.
+1 Ocak 2010 tarihinden sonra Toplulukta görev yapmaya başlayan çalışanların BES sözleşmeleri, detayları
+hakediş (vesting) sistemine göre düzenlenir. Bu tarihten önce Topluluk’ ta görev yapmaya başlayan ve
+halihazırda BES sisteminde olan çalışanların mevcut sözleşmeleri devam edecektir. Ayrıca bu tarihten
+önce Topluluk’ ta görev yapmaya başlamakla birlikte 1 Ocak 2010’dan sonra ilk kez BES sistemine dahil
+olan çalışanların BES sözleşmeleri de hakediş sistemi olmaksızın
+düzenlenecektir.
+Topluluk şirketlerinden askerlik nedeniyle ayrılan bir çalışan tekrar işe başladığında BES kurum katkısı işe
+giriş tarihinden itibaren tekrar başlar. Askerlik harici bir nedenle iş sözleşmesi sona eren bir çalışan tekrar
+işe başladığında ise, BES kurum katkısından yararlanması için ise yeniden 6 aylık çalışma süresini
+doldurması gerekmektedir. Ayrıca askerlik harici bir nedenle iş sözleşmesi sona erip tekrar işe başlayan
+çalışanların yeni BES sözleşmeleri, detayları hakediş sistemine göre
+düzenlenecektir.
+İşe giriş tarihinin ayın 5’inden sonra olması durumunda; çalışan, BES kurum katkısından, 6 aylık çalışma
+süresini doldurduğu tarihi takip eden aydan itibaren yararlanabilecektir.
+Kurum Katkısı
+Bireysel emeklilik sistemi gönüllü katılıma dayalı olduğu için, işveren sadece sisteme dahil
+olmak isteyen çalışanlar için kurum katkısı öder. Kurum katkısının başlayabilmesi için çalışanın İnsan
+Kaynakları’ ndan talep ederek kendisinin doldurduğu bireysel emeklilik başvuru formunu ve kurum
+excelini tekrar İnsan Kaynakları Fonksiyonu’ na iletmesi gereklidir.
+Kurum katkısı aylık brüt ücretin %3'ü kadardır, ancak bu tutar devletin belirlediği vergi matrahından
+indirim sınırını aşamaz (bu sınır şu anda aylık asgari ücret tutarı kadardır). Sisteme dahil olmak isteyen bir
+çalışan, aylık brüt ücretin %3’ü kadar veya altında katkıda bulunmak istemesi halinde işveren de ilgili tutar
+kadar katkıda bulunur.
+Çalışan isterse taahhüt ettiği tutarın (%3) üzerinde de katkıda bulunabilir. Ancak her durumda kurum
+katkısı %3 ile sınırlıdır.
+İşveren, sadece aylık brüt ücret (yıllık 12 maaş) için katkı payı öder. Bunun dışında kalan ödemeler
+(ikramiye vb.) için kurum katkısı ödenmez.
+Çalışan, belirli koşulları sağlayarak Bireysel Emeklilik Sisteminden ayrılabilir. Bu durumda;
+• Çalışanın, söz konusu talebini, bireysel emeklilik sözleşmesinin bulunduğu emeklilik
+şirketine doğrudan iletmesi gereklidir.
+• Çalışanın ayrılma talebi ilgili ayın sonu itibarıyla işleme alınır ve kurum katkısı sonlandırılır.Sistemden ayrılan bir çalışan, sisteme tekrar dahil olabilir ancak kurum katkısının tekrar
+başlaması, sadece bir kereye mahsustur. Kurum katkısının tekrar başlaması için, sistemden çıkış tarihinden
+itibaren 6 aylık çalışma süresinin yeniden tamamlanması gerekir. Ayrıca çalışanla yapılacak yeni BES
+sözleşmesi, detayları 7.2.2.9 no.lu maddede yer alan hakediş sistemine göre düzenlenir. Çalışan, kurum
+katkısından tekrar yararlanmaya başlama talebini de 6 aylık süre tamamlandığında kendisinin doldurduğu
+bireysel emeklilik başvuru formu ve kurum exceli aracılığıyla İnsan Kaynakları Fonksiyonu’ na
+bildirmelidir.
+Ücretsiz izin alan bir çalışan için işveren, ücretsiz izinde olduğu süre boyunca kurum katkısına
+ara verir. Ay içinde ücretsiz izne ayrılan ve/veya ücretsiz izinden dönen çalışan için işveren o ay çalışılan
+gün kadar katkı payı öder.
+Sistem dışında geçirilen süreler, emekliliğe hak kazanmak için gereken 10 yıllık sürenin hesaplanmasında
+dikkate alınmayacaktır.
+Hakediş (vesting) sistemi esasları aşağıdaki gibidir:
+Sistemde Geçirilen Süre
+1 yıldan az
+1-2 yıl arası (1 yıl dahil)
+2-3 yıl arası (2 yıl dahil)
+3 yıl ve daha fazla
+Hak Edilecek Kurum Katkısı Oranı
+0%
+25%
+50%
+100%
+Hakediş süresini tamamlamadan Topluluk şirketlerinden askerlik nedeniyle ayrılan bir çalışan tekrar işe
+başladığında, hakediş süresi kaldığı yerden devam eder.
+Bireysel Emeklilik Şirketi
+Kurum katkısı sadece Şirketin belirleyeceği bireysel emeklilik şirketi ile yapılan sözleşmeler için geçerlidir.
+Çalışanın Bireysel Emeklilik hesabını başka bir Bireysel Emeklilik şirketine aktarması halinde kurum
+katkısı sonlandırılır. Çalışanlardan Bireysel Emeklilik Sistemine giriş aidatı alınmaz ve yönetim gideri
+kesintisi yapılmaz. Bu prosedür ve/veya şirket uygulaması kapsamında yer almadığı için kurum katkısı
+yapılmayan ancak kendileri katkı payı ödemek isteyen çalışanlar da söz konusu avantajlardan
+yararlanabilir.
+Emekliliğe Hak Kazanma
+Bireysel emeklilik sisteminde emekliliğe hak kazanma koşulları yasa ve yönetmeliklerce belirlenmiştir.
+Mevcut durumda emekliliğe hak kazanmak için en az 10 yıl (120 ay) prim ödemek ve en az 56 yaşındaolmak gerekmektedir. Hak sahibine yapılacak ödemelerden gelir vergisi stopajı yapılacaktır. Stopaj nihai
+vergilendirmedir. Stopaj oranları aşağıdaki tabloda belirtilmiştir:
+Sistemden Çıkma Şekli
+10 yıldan önce sistemden
+çıkma
+Vergi İstisnasıStopaj
+Yok15%
+10 yıl katkı payı ödemekle
+birlikte, 56 yaşından önce
+sistemden çıkmaYok10%
+Emekliliğe Hak Kazanma (10
+yıl + 56 Yaş / Ölüm ve25%5%
+Personel Hareketleri
+1 Ocak 2010 tarihinden önce Toplulukta görev yapmaya başlayan bir çalışan başka bir Topluluk şirketine
+transfer olursa, yeni şirketindeki BES sözleşmesi hakediş sistemi olmaksızın düzenlenir. 1 Ocak 2010
+tarihinden sonra toplulukta görev yapmaya başlayan bir çalışan, eski şirketinde hakediş süresini
+tamamladıktan sonra başka bir Topluluk şirketine transfer olursa, yeni şirketindeki BES sözleşmesi hakediş
+sistemi olmaksızın düzenlenir. Eski şirketinde hakediş süresini tamamlamadan transfer olması durumunda
+ise, yeni şirketindeki BES sözleşmesi hakediş sistemine göre düzenlenir. Ancak yeni hakediş süresi, eski
+şirketinde sistemde geçirdiği süre düşülerek hesaplanır. Yukarıda belirtilen durumların tamamında,
+çalışanın eski şirketinde biriken kurum katkısının tamamı çalışanın BES hesabına aktarılır. Ay içerisinde
+Topluluk şirketleri arasında transfer olan bir çalışanın o aya ait kurum katkısı eski ve yeni şirketlerinde
+kıstelyevm olarak yatırılır. Belirli süreli iş sözleşmesi ile çalışırken, belirsiz süreli iş sözleşmesine geçen
+çalışanların BES uygulamasında ilk işe giriş tarihleri dikkate alınır. Sistemdeki bir çalışanın Topluluk’ tan
+ayrılması durumunda, kurum katkısı ayrılış tarihi itibarıyla sonlandırılır.Sağlık Sigortası
+Planlar
+Topluluk çalışanlarına sağlanacak sağlık sigortası planları aşağıdaki şekilde belirlenmiştir:
+Pozisyon Grubu
+Plan
+Kapsam
+Yurtiçi ve yurtdışında limitsiz yatarak ve
+ayakta tedavi; yılda bir defa check-up hakkı
+Yurtiçi ve yurtdışında limitsiz yatarak ve
+ayakta tedavi; yılda bir defa check-up hakkı
+Yurtiçinde belli limitler dahilinde yatarak ve
+ayakta tedavi
+Yurtiçinde belli limitler dahilinde yatarak ve
+ayakta tedavi
+Genel MüdürPlatinGenel Müdür YardımcısıPlatinFabrika Müdürü / DirektörPlatinGrup MüdürüAltınMüdür / MüşavirAltınYurtiçinde belli limitler dahilinde yatarak ve
+ayakta tedavi
+Yönetici / ŞefGümüşYurtiçinde belli limitler dahilinde yatarak ve
+ayakta tedavi
+Kıdemli Uzman / Mühendis / Uzman / Uzman Yardımcısı /
+Müşteri Temsilcisi / Müşteri Sorumlusu / Sevkiyat
+Sorumlusu / Liman Operasyon Amiri / Yönetici AsistanıGümüşYurtiçinde belli limitler dahilinde yatarak ve
+ayakta tedavi
+EkoYurtiçinde belli limitler dahilinde yatarak ve
+ayakta tedavi
+Diğer Beyaz Yakalı Tüm Pozisyonlar
+Çalışanlara sağlanan sağlık sigortası planından bağımlıları da (eş ve çocukları) yararlanabilir. Eşe ve çocuğa
+yapılacak sağlık sigortasına ait prim ödemeleri çalışana aittir. Medeni durum değişikliklerinde, çalışan
+evlenme tarihi itibarıyla eşini sağlık sigortası kapsamına dahil edebilir. Bu amaçla söz konusu talebini,
+gerekli belgelerle birlikte, İnsan Kaynakları Fonksiyonu’ na iletmelidir.
+Çalışanların yeni doğan bebekleri için sigorta taleplerini 15 gün içinde İnsan Kaynakları Fonksiyonu’ na
+iletmeleri gerekmektedir. Yeni doğan bebekler doğumdan 15 gün sonra sigorta kapsamına
+alınabilmektedir.
+Platin grubu bağımlıları check-up hakkından faydalanamazlar.
+Diğer sigorta şirketlerinden sigortası olan çalışan ve bağımlılarının Şirket’in sağladığı sağlık sigortasına
+geçişinde kazanılmış hakları korunarak sigortalarının devamı sağlanacaktır.
+Sağlık Sigortası Şirketi
+Çalışanlara sağlanacak tüm sağlık sigortası poliçeleri Şirket’in belirleyeceği sigorta şirketinden yapılır.Sözleşmeler yıllık olarak düzenlenir ve her yıl yenilenir.
+Personel Hareketleri
+Bu prosedürün kapsamındaki işe yeni başlayan çalışanlara, işe giriş tarihi itibarıyla sağlık sigortası
+yaptırılır.
+Ancak sağlık sigortasının başlatılabilmesi için çalışanın kademe değişikliği nedeniyle farklı bir plana geçiş
+yapan bir çalışan ve bağımlıları için atanma tarihi itibarıyla yeni planın şartları geçerli olur. Ay içerisinde
+Topluluk şirketleri arasında transfer olan bir çalışanın o aya ait prim ödemesini eski şirketi yapar. Takip
+eden aydan itibaren prim ödemelerini yeni şirketi yapmaya başlar. Topluluk’ tan ayrılan bir çalışanın (ve
+varsa bağımlılarının) sağlık sigortası, ilgili ayın sonuna kadar geçerli olur. Kişi isterse, kendisi ve
+bağımlılarına ait sağlık sigortasını, prim ödemelerini kendisi yapmak şartıyla, içinde bulunulan yılın
+sonuna
+kadar devam ettirebilir (4857 sayılı İş Kanunu’nun 25/II. maddesi uyarınca iş sözleşmesi feshedilmemiş
+olmak kaydı ile).
+Ücretsiz İzin
+Çalışana ait sağlık sigortası, çalışanın ücretsiz izinde geçirdiği süreler boyunca da geçerlidir.
+Ayrılan Grup Sağlık Sigortası
+Topluluk şirketlerinden birinde çalışırken aşağıda belirtilen koşullara uygun olarak işten ayrılan veya
+emekli olan ve sağlık sigortası kapsamında yer alan kişiler ve varsa bağımlıları, isterlerse
+Emeklil Grup Sağlık Sigortası (Ayrılan Grup Sağlık Sigortası)” ndan faydalanabilir. Bu
+haktan faydalanabilmek için;
+• Topluluk şirketlerinde en az 5 yıllık kesintisiz çalışma süresini tamamlamış olmak,
+• 4857 sayılı İş Kanunu’nun 25/II. maddesi uyarınca iş sözleşmesi feshedilmemiş olmak,
+• Ayrıldığı tarih itibarıyla en az 1 yıl Holding Grup Sağlık Sigortası kapsamında yer
+almak gerekir.
+• Yukarıdaki koşulların tümünü yerine getirmek kaydıyla herhangi bir statü ve yaş sınırı
+bulunmamaktadır.
+Ayrılan Grup Sağlık Sigortası’nda standart bir plan söz konusudur ve tüm ayrılanlar bu plandan faydalanır.
+Sadece çalışırken platin plan kapsamında olan kişilerin, Holding onayı ile, ayrıldıktan sonra da platin
+planda devam etmesi mümkün olabilir.
+Kişi talebini, sigortasına ara vermeksizin işten ayrılma tarihinden itibaren iki ay içerisinde Şirket’inanlaşmalı olduğu sigorta şirketine iletir. Bu şartlarla ve kesintisiz olarak bir önceki maddede belirtilen
+Holding Grup Sağlık Sigortası’na eşdeğer planda devam etmesi koşulu ile kişinin kazanılmış
+hakları devam edecektir.
+Ayrılan Grup Sağlık Sigortası’nın yenileme tarihindeki prim hesabı, bu grubun kendi iç tazminat/prim
+özelliklerine göre belirlenecektir. Bu çerçevede grubun hasar/prim ödemeleri göz önünde bulundurularak
+Topluluk çalışanlarına uygulanan fiyattan farklı bir fiyat uygulanabilir. Prim ödemeleri %25 peşin+5 taksitte
+bireysel olarak sağlık sigortası şirketine ödenir.
+Hayat Sigortası
+Planlar
+Hayat sigortası teminatları maaşın katları olarak belirlenir. Şirketler, çalışanlarını kademe bazında
+gruplayarak her kademe için hayat sigortası teminatına baz teşkil edecek bir maaş düzeyi belirler ve bu
+düzeyleri her yıl gözden geçirir. Çalışanlara sağlanacak hayat sigortası planları pozisyonlar bazında
+aşağıdaki şekilde belirlenmiştir:
+Pozisyon Grubu
+Plan
+Kapsam
+Genel MüdürPlatinVefat: 20 kat
+Kazaen Vefat: +10 kat (toplam 30 kat)
+Genel Müdür YardımcısıPlatinVefat: 20 kat
+Kazaen Vefat: +10 kat (toplam 30 kat)
+Fabrika Müdürü / DirektörPlatinKazaen maluliyet: 20 kat
+Hastalık sonucu maluliyet: 20 kat
+Tehlikeli hastalaıklar: 20 kat
+AltınVefat: 20 kat
+Kazaen vefat: +10 kat (toplam 30 kat)
+Kazaen maluliyet: 20 kat
+Hastalık sonucu maluliyet: 20 kat
+AltınVefat: 20 kat
+Kazaen vefat: +10 kat (toplam 30 kat)
+Kazaen maluliyet: 20 kat
+Hastalık sonucu maluliyet: 20 kat
+Yönetici / ŞefGümüşVefat: 20 kat
+Kazaen vefat: +10 kat (toplam 30 kat)
+Kazaen maluliyet: 20 kat
+Kıdemli Uzman / Uzman / Mühendis / Uzman
+Yardımcısı / Sevkiyat Sorumlusu / Liman
+Operasyon Amiri / Müşteri Temsilcisi / Müşteri
+SorumlusuGümüşVefat: 20 kat
+Kazaen vefat: +10 kat (toplam 30 kat)
+Kazaen maluliyet: 20 kat
+Grup Müdürü
+Müdür / MüşavirDiğer Tüm Pozisyonlar*
+•
+Ferdi Kaza
+Kazaen vefat: 30 kat
+Kazaen maluliyet: 20 kat
+Diğer tüm pozisyonlara Toplu İş Sözleşmesi kapsamı dışında kalan mavi yakalı pozisyonlar da
+dahildir.
+Hayat Sigortası Şirketi
+Çalışanlara sağlanacak tüm hayat ve ferdi kaza sigortası poliçeleri Şirket’in belirleyeceği sigorta
+şirketinden yapılır. Sözleşmeler yıllık olarak düzenlenir ve her yıl yenilenir.
+Personel Hareketleri
+İşe yeni başlayan çalışanlara, işe giriş tarihi itibarıyla hayat sigortası yaptırılır. Kademe değişikliği nedeniyle
+farklı bir plana geçiş yapan bir çalışan için atanma tarihi itibarıyla yeni planın şartları geçerli olur. Ay
+içerisinde Topluluk şirketleri arasında transfer olan bir çalışanın o aya ait prim ödemesini eski şirketi yapar.
+Takip eden aydan itibaren prim ödemelerini yeni şirketi yapmaya başlar. Topluluk’ tan ayrılan bir çalışanın
+hayat sigortası, ilgili ayın sonuna kadar geçerli olur.
+Ücretsiz İzin
+Çalışana ait hayat sigortası, çalışanın ücretsiz izinde geçirdiği süreler boyunca da geçerlidir.
+
+Örnek Sorular:
+•
+•
+•
+•
+•
+•
+•
+Eğitim taleplerimi kime iletmeliyim?
+Benim için bireysel eğitim talebi oluşturabilir misin? (burada task’i gerçekleştirmesini
+bekliyoruz)
+Eğitim sertifikamı ne yapmalıyım?
+Bu yıl almam gereken eğitimleri nereden görebilirim?
+Koçluk desteği alabilir miyim?
+Bir üst pozisyona aday olabilmek için almam gereken eğitimleri öğrenebilir miyim?
+Şirketimizde güncel olarak hangi eğitim fırsatları bulunmaktadır?
+EĞİTİM PROSEDÜRÜ
+KAPSAM
+Bu prosedür, bu şirkette çalışan herkesi kapsar. Şirket öncelikli gelişim alanı olarak belirlenen yetkinliklere
+göre planlanan “Şirket Genel Eğitimleri”; çalışanın uzmanlık alanındaki bilgi ve becerilerini geliştirmeye
+yönelik işe özel eğitim, konferans, seminer vb. programlardan oluşan “Fonksiyon Eğitimleri”; çalışanın
+spesifik gelişim ihtiyaçlarına yönelik gerçekleştirilen “Bireysel Gelişim” uygulama ve programları;
+Oryantasyon, İş Sağlığı ve Güvenliği, Çevre ve Zorunlu İşbaşı Eğitimleri bu kapsam dahilindedir.
+TANIMLAR
+İnsan Kaynakları : İK İş Ortakları ve İK Uzmanları
+Çalışan : Şirkette İş Sözleşmesi ile Görev Yapanlar
+Eğitim : Çalışanların bilgi ve becerilerini arttıran, davranış ve tutumlarında
+olumlu değişimler yapan, kişisel ve mesleki gelişimlerine katkıda bulunan sınıf içi, açık hava ya da e-
+öğrenme yöntemiyle toplu veya bireysel olarak gerçekleştirilen her türlü kurs, seminer, konferans, zirve,
+çalıştay, koçluk/mentorluk gibi çalışanların gelişimine yönelik eylemlerin tümü eğitim olarak adlandırılır.
+SORUMLULUK
+Çalışanlarımız ve bağlı oldukları yöneticileri gelişim sürecinin ilk sorumlularıdır. Sürecin planlama,
+koordinasyon, yürütüm, kontrol/takip, etkinlik ölçümü ve bu prosedürün yürütme ve revizyonundan İK İş
+Ortakları sorumludur.
+İş sağlığı ve Güvenliği ile ilgili eğitimlerinin belirlenmesinden ve planlanmasından İş Sağlığı ve Güvenliği
+Müdürlüğü sorumludur.
+Çevre eğitimlerinin belirlenmesinden ve planlanmasından Hammaddeler ve Çevre Müdürlüğü
+sorumludur.
+Kalite Yönetim Sistemi ve Ürün Güvenliği eğitimlerinin yapılmasından Kalite Yönetim Temsilcileri
+sorumludur.
+Enerji Yönetim sistemi eğitimlerinin yapılmasından Enerji Yöneticileri sorumludur.Bu prosedür; İnsan Kaynakları Genel Müdür Yardımcısı tarafından onaylandığı tarih itibariyle yürürlüğe
+girer.
+PERİYOD
+Eğitim programları yıllık hazırlanır. Bu prosedür, uygulanması sırasında ortaya çıkan ihtiyaçlar dahilinde
+güncellenir.
+İLGİLİ KAYNAK KAYITLAR
+EN ISO 9001 Kalite Yönetim Sistemi
+ISO 14001 Çevre Yönetim Sistemi
+ISO 45001 İş Sağlığı ve Güvenliği Yönetim Sistemi
+ISO 50001 Enerji Yönetim Sistemi
+Kanuni ve Yasal Gereklilikler
+Entegre Yönetim Sistemi Politikası
+Prosedürler
+Kalite, Çevre, İSG ve Enerji Yönetim Sistemi Dokümantasyonu
+Özel İş Tanımları
+İSG mevzuatı kapsamındaki kanun, yönetmelik vb.
+6331 Sayılı İş Sağılığı ve Güvenliği Kanunu
+Çalışanların İş Sağlığı ve Güvenliği Eğitimlerinin Usul ve Esasları Hakkındaki Yönetmelik
+PROSEDÜR
+Şirket Genel Eğitimleri, Bireysel Gelişim Uygulama ve Programları; Fonksiyon Eğitimleri
+Eğitim ve gelişim programları;
+• Organizasyonel Başarı Planı- Organizasyon ve Çalışan Gözden Geçirme Süreci bulguları ile belirlenen
+şirket öncelikli gelişim alanları,
+• Performans Değerlendirme çıktıları;
+• Gelişim Görüşmeleri;
+• Çalışan Bağlılığı Anketi,
+• Kanuni Zorunluluklar,
+• Teknik ve Mesleki Eğitim Matrisleri
+vb. veriler ışığında, şirketin ve bireylerin gelişim ihtiyaçları göz önünde bulundurularak ihtiyaca göre
+planlanır ve uygulanır. Eğitim, şirketi ve çalışanları hedeflerine ulaştıracak, çalışanın potansiyelini açığa
+çıkartacak bir araç olarak değerlendirilir.Yönetim Sistemleri kapsamında eğitimler;
+• Yönetim sistemlerinin performansını ve etkinliğini etkileyen kendi kontrolü altında çalışan kişi ve
+kişilerin gerekli yeterliliğini belirlediği,
+• Bu kişilerin eğitim, öğrenim ve tecrübelerini dikkate alarak yeterliliğini güvence altına alındığını,
+• İhtiyaç duyulan yeterliliği kazanması için gerekli faaliyetleri yaptığını ve bu faaliyetlerin etkinliğinin
+değerlendirildiğini tanımlar.
+Mühendis, uzman ve üzeri pozisyonlarda çalışanlar için gelişim süreci Gelişim Prosedürü kapsamında
+tanımlanmıştır.
+Eğitim Faaliyetleri 3 farklı başlık altında gruplandırılmıştır:
+Şirket Genel Eğitimleri: Şirket öncelikli gelişim alanı olarak belirlenen yetkinliklere göre planlanacak
+aktivite ve eğitimler. Örneğin: Şirkete Özel Grup Eğitimleri ve Programları
+Şirket Genel Eğitimleri eğitimden sorumlu İK İş Ortağı tarafından Yıllık Eğitim Planı ve Raporu planlanır,
+yönetilir ve bütçelenir.
+Fonksiyon Eğitimleri: Çalışanın uzmanlık alanındaki bilgi ve becerilerini geliştirmeye yönelik işe özel
+aktivite ve eğitimler Örneğin: Teknik ve Uzmanlık bazlı eğitimler; Kongre ve Konferanslar Fonksiyon
+Eğitimleri ilgili fonksiyon tarafından Yıllık Eğitim Planı ve Raporu üzerinde planlanır ve bütçelenir.
+Koordinasyon ve takip İK tarafından yapılır.
+Bireysel Gelişim Eğitimleri: Bireylerin gelişim alanlarına özel planlanan aktivite ve eğitimler
+Örneğin: Bireysel Eğitimler; Koçluk Uygulamaları
+Bireysel Gelişim Talepleri, ilgili fonksiyon tarafından yapılır. Talepler İK İş Ortakları tarafından
+değerlendirilerek (uygunluğuna bağlı olarak) Yıllık Eğitim Planı ve Raporuna alınır.
+Kapsam İçi Çalışanlar İçin Teknik Mesleki Eğitimlerin Uygulanması:
+Kapsam İçi çalışanlarımızın mesleki ve teknik bilgi/beceri seviyelerinin arttırılması amacı ile Teknik Mesleki
+Eğitimleri düzenlenmektedir.
+Kasım-Aralık döneminde Teknik Mesleki Eğitim Koordinatörleri ile Fabrika Departmanları koordineli olarak
+Kapsam İçi’ nin Kariyer yollarına göre bir sonraki yıl için Teknik Mesleki Eğitim ve Yetkinlik Matrisini
+oluştururlar. Oluşturulan matris İK İş Ortakları ve eğitimi verecek çalışanlarla paylaşılır. İK İş Ortakları bir
+sonraki yıl için Teknik Mesleki Eğitim ve Yetkinlik Matrisine göre departman yöneticileri ile görüşerek
+Eğitim Planını oluşturur. Plan dahilinde şirket dışı firmalar ve eğitmenlerden talep edilen eğitimler olması
+durumunda talep eden departman ve İK İş Ortakları ilgili eğitim organizasyonunu gerçekleştirir.
+Eğitim matrislerinin belirlenmesi akabinde Teknik Mesleki Eğitim Koordinatörlerinin organizasyonunda
+verilecek eğitimlerin dokümanları ve sınav soruları hazırlanır.
+Eğitim tarihleri, katılımcı listeleri ve eğitimlerin sonunda yapılan sınavların puanları eğitimi veren
+teknisyen/mühendis ve şefler tarafından İK İş Ortaklarına bağlı İK Uzmanı ’na iletilir. Teknik Mesleki
+Eğitimler Departman yöneticileri tarafından takip edilir.Teknik Mesleki Eğitim ve Yetkinlik matrisinde mevcut pozisyon için belirlenmiş gerekli eğitimlerin her bir
+kategori için an az 50 puan almış olmak şartı ile elde edilen puanların ortalaması her yıl Temmuz- Ağustos
+aylarında Kapsam içi çalışanların terfileri değerlendirilirken kullanılan kriterlerden biridir.
+Oryantasyon Eğitimi
+İşe başlayacak yeni veya bölüm değiştiren çalışanların organizasyona ve görevlerine en kısa zamanda
+uyumlarının sağlanması için Oryantasyon Prosedürü uygulanır.
+İşbaşı ve İşe Başlama Eğitimi
+İşbaşı Eğitimleri yeni göreve başlayan personele ya da görev değişikliği yapılan personele ilk amiri ya da
+müdürü tarafından fiilen çalışmaya başlamadan önce işini yapabilmesi için gerekli temel bilgilerin verildiği
+ve yönetim sistemleri hakkında genel bilgilendirme yapılan eğitimdir. İşbaşı eğitim süreleri görevin
+niteliğine göre bölümler tarafından belirlenir. İşbaşı eğitimlerinin verilmesi, kayıtların İK İş ortaklarına
+bağlı İK Uzmanı ‘na gönderilmesinden bölümler sorumludur. İş Başı Eğitim Katılım Formu bölüm amirleri
+tarafından İK İş ortaklarına bağlı İK Uzmanı ’na verilmelidir.
+İşe Başlama eğitimleri, İSG temel eğitimlerinin gerçekleştirilmesine kadar geçen sürede çalışanın tehlike
+ve risklere karşı korunmasını sağlayacak nitelikte olmalı ve uygulamalı olarak verilmelidir. İşe başlama
+eğitimi her çalışan için en az iki saat olarak uygulanacak olup, bu eğitimde geçen süreler temel İSG eğitim
+sürelerinden sayılmayacaktır.
+İş Sağlığı ve Güvenliği Eğitimleri
+İş sağlığı ve güvenliği ile ilgili eğitimler “6331 sayılı İş Sağlığı ve Güvenliği Kanunu” ve aynı kanuna bağlı
+“Çalışanların İş Sağlığı ve Güvenliği Eğitimlerinin Usul ve Esasları Hakkında Yönetmelik “gereklerine uygun
+olarak yapılmaktadır.
+Bu kapsamda eğitimler;
+Yeni göreve başlayanlara işe başlarken Temel İş Sağlığı ve Güvenliği Eğitimi verilir. Eğitim talebi İSG
+departmanına İK departmanı tarafından iletilir.
+Sahaya çalışmak üzere gelen kişi/kişiler veya taşeron firma çalışanlarına yapılacak işlerde karşılaşılacak
+sağlık ve güvenlik riskleri ile ilgili konuları ve sahadaki genel güvenlik kurallarımızı içeren
+Temel İş Sağlığı ve Güvenliği Eğitimi verilir. Saatlik çalışma dahi olsa, sahamıza (Tüm Tesislerimiz) gelen kişi
+/ kişiler veya taşeron firmalar, İK Departmanı tarafından İSG Departmanına yönlendirilir.
+Sahaya giriş yapacak ziyaretçiler girişteki ziyaretçi kartlarını imzalayarak, mutlaka şirket Personeli
+refakatinde (İSG Ziyaretçi Eğitimi aldıktan veya İSG Ziyaretçi Videosunu izledikten sonra) zorunlu kişisel
+koruyucularını giyerek saha ziyaretinde bulunabileceklerdir. Üniversite veya Devlet, Kamu kuruluşları, vb.
+gelen grup ziyaretçilerimizin Otobüs veya Minibüs ile yapılacak ziyaretçi saha turlarında, aynı şekilde
+şirket personeli refakatinde ve araçtan inmeksizin saha turu yapılabilecektir. Ziyaretçi sahaya alınmadan
+önce güvenlikteki ziyaretçi salonunda bulunan televizyondan İSG Ziyaretçi Eğitimi Videosunu izlemeden
+sahaya giremez. Söz konusu video görevli güvenlik personeli tarafından izlettirilir.
+İSG birimi tarafından hazırlanan İSG Ziyaretçi Eğitimi Videosunda acil durum uygulamalarımız, KKD
+kullanımı ve önemi, saha içerisinde uyulması gereken İş Sağlığı ve Güvenliği kurallarımız hakkında bilgiverilmektedir. Güvenlik personeli tarafından video izlettirildikten sonra Eğitim Katılım Formu
+imzalattırılarak’ İK İş Ortaklarına bağlı İK Uzmanı ’na bildirilir. Ziyaretçiler yabancı ise aynı videonun
+İngilizce hali kendilerine güvenlik personeli tarafından izlettirilerek kayıt altına alınır. Teknik ziyaretçi
+personele İSG birimi tarafından ihtiyaç duyulması halinde söz konusu eğitim konuları şirket İSG Kuralları
+başlığı altından eğitim verilebilir. Ayrıca yabancılar için İSG biriminin uygun görmesi halinde video eğitime
+ek olarak İngilizce Safety Brief for Visitors içerisindeki bilgiler ile sahaya giriş öncesi eğitim verilir.
+İş kazası geçiren veya meslek hastalığına yakalanan çalışana işe başlamadan önce, söz konusu kazanın
+veya meslek hastalığının sebepleri, korunma yolları ve güvenli çalışma yöntemleri ile ilgili ilave eğitim
+verilir. Ayrıca, herhangi bir sebeple altı aydan fazla süreyle işten uzak kalanlara, tekrar işe başlatılmadan
+önce bilgi yenileme eğitimi verilir. Eğitim talebi İSG Uzmanına İK departmanı tarafından yapılır.
+Tüm çalışanlara düzenli olarak “6331 sayılı İş Sağlığı ve Güvenliği Kanunu” nda yer alan süre ve
+periyotlarda ve aynı kanuna bağlı “Çalışanların İş Sağlığı ve Güvenliği Eğitimlerinin Usul ve Esasları
+Hakkında Yönetmelik EK -1” konularını içeren eğitimler düzenlenmektedir. Bu eğitim süreleri ve periyotları
+Yönetimin Gözden Geçirmesi toplantılarında yeniden belirlenerek min. yasal gereklilikleri sağlamak üzere
+daha fazla olarak da belirlenebilir. Tüm eğitimlerini tamamlayan çalışanlara İSG Eğitim Katılım Belgesi İSG
+departmanı tarafından verilir.
+Haftalık olarak İSG Departmanı tarafından mail yolu ile yayınlanan konularla ilgili bölüm sorumluları
+tarafından personellere Toolbox (İşbaşı eğitimleri), eğitim bültenleri verilir. Eğitim bültenleri hazırlanırken
+son yaşanan kazalar, hastalıklar veya olaylar ile İSG departmanına raporlanan Tehlikeli Durum / Davranış
+ve Ramakkala raporları değerlendirilir ve iyileştirmeye açık konular işlenir. Toolboxlar Bölüm
+Müdürü/Yöneticisi/Mühendisi/Tekniker veya Teknisyeni katılımıyla yapılan bir sabah toplantısında bir
+çalışan veya amir tarafından çalışanlara anlatılır ve imza + fotoğraf ile kayıt altına alınır. Bu kayıtlar ilgili
+ayın sonuna kadar İş Ortaklarına bağlı İK Uzmanı ’na bildirilir. İhtiyaç duyulması halinde toolbox
+eğitimlerine İSG Uzmanı/ ve İşyeri Hekimi de katılabilir. Eğitimler sahanın İSG Uzmanı ve İşyeri Hekimi
+tarafından verilir.
+Verilen eğitim ile ilgili bilgiler Eğitim Katılım Formuna işlenir. İhtiyaç duyulması halinde eğitim katılım
+formunda eğitimlerin detayları verilebilir. İş sağlığı ve güvenliği eğitimi sonrası, katılımcı tarafından Eğitim
+Katılım Formu EYS-ORT-07-P01-B imzalanır ve İK İş Ortaklarına bağlı İK Uzmanı ’na gönderilerek, eğitim
+kayıtlarına işlenir.
+Eğitimler sonrasında Ölçme Değerlendirme amacıyla sınav yapılır. İhtiyaç duyulması halinde Eğitim öncesi
+de sınav yapılarak eğitim sonrası ayrıca bir değerlendirme yapılabilir. Sınavdan 70 puanın üzerinde alanlar
+başarılı kabul edilir. Daha düşük not alanlar tekrar eğitimine alınır.
+Verilen İSG eğitimlere ait bilgiler personellerin İSG eğitim pasaportlarına eğitimi veren kişi tarafından
+işlenir. Personel kurum dışından İSG içerikli bir eğitim almışsa aldığı eğitimi de İSG eğitim pasaportuna
+işletir.
+İSG Uzmanları vermiş oldukları eğitimlerle ilgili verileri İSG Müdürlüğünce belirlenmiş formatta düzenli
+periyotlarla raporlayarak eğitim performansının ölçülmesini sağlarlar.
+Personellere verilen tüm İSG eğitimlerinin “Yıllık İSG Eğitim Planı” na uygunluğu İSG Uzmanı tarafından
+İSG Yıllık Eğitim Matrisine işlenerek takip edilir. Eğitimler sonrasında katılımcılar “İSG Akademi Eğitici
+Eğitim Değerlendirme Formu” nu kullanarak verilen eğitimi ve eğitimciyi değerlendirme imkânınasahiptirler. Gerekli görüldüğü takdirde eğitimlerin sonunda çalışanlara eğitimle ilgili broşür kitapçık vb.
+bilgi bukletleri verilebilir.
+Çevre Eğitimleri
+Çevre ile ilgili eğitimler “5491 sayılı kanun ile güncel 2872 Sayılı Çevre Kanunu” ve aynı kanuna bağlı
+“Çevre Görevlisi, Çevre Yönetim Birimi ve Çevre Danışmanlık Firmaları Hakkında Yönetmelik “Madde 10
+gereklerine uygun olarak yapılmaktadır. 21.11.2013 tarihli ve 28828 sayılı Resmî Gazete’ de yayımlanan ve
+01.01.2014 tarihinde yürürlüğe giren Çevre Görevlisi, Çevre Yönetim Birimi ve Çevre Danışmanlık
+Firmaları Hakkında Yönetmelik gereğince işletmelerde çevre mevzuatı ve çevresel konularda yapılması
+zorunlu eğitim programları aşağıdaki konu başlıkları dikkate alınarak hazırlanır ve düzenlenir.
+1- “Çevre” kavramı,
+2- Çevre kirliliği ve sonuçları,
+2.1 Hava kirliliği ve kontrolü
+2.2 İklim değişikliği,
+2.3 Gürültü kirliliği ve kontrolü
+2.4 Su kirliliği ve kontrolü,
+2.6 Toprak kirliliği ve kontrolü
+2.6 Atık yönetimi- Genel (tehlikeli, tehlikesiz, evsel, özel vb.)
+2.6.1 Atık kodları
+2.6.2 Kaynağında ayrı toplama
+2.6.3 Geçici depolama
+3- İşletme atık yönetimi (İşletmenin rutin faaliyetlerinden ve proseslerinden kaynaklanan atıklar üzerinde
+işletmeye özel bilgiler verilir).
+4- Çevre mevzuatı kapsamında yükümlülükler (İşletme yetkilileri için düzenlenecek eğitimlerde dikkate
+alınır).
+5- Çevre mevzuatı kapsamında idari yaptırımlar (İşletme yetkilileri için düzenlenecek eğitimlerde dikkate
+alınır).
+Çevre Eğitimleri Beyaz Yaka ve Mavi Yaka eğitimleri olarak gerçekleştirilir. Beyaz Yaka için hazırlanan
+Eğitim formatında Çevre Bakanlığı tarafından belirlenmiş, Çevre Mevzuatı kapsamındaki konular da dahil
+edilir.
+Tüm Beyaz ve Mavi Yaka çalışanları yılda en az 1 defa olmak üzere Çevre Eğitimlerine katılmakla
+mükelleftirler. Eğitimler işletmeden sorumlu Çevre Mühendisi/Çevre Görevlisi tarafından verilir.
+7.5.3. Verilen eğitim ile ilgili bilgiler Çevre Bakanlığınca belirlenmiş formatta Çevre Eğitim Katılım Formuna
+işlenir. Eğitim katılım formunda eğitimlerin detayları verilebilir. Çevre eğitimi sonrasında katılımcı
+tarafından Eğitim Katılım Formu imzalanır ve İK İş Ortakları’ na bağlı İK Uzmanları’ na gönderilerek, eğitimkayıtlarına işlenir. Eğitimleri sonrasında Ölçme Değerlendirme amacıyla sınav yapılır. Sınavdan 70 puanın
+üzerinde alanlar başarılı kabul edilir. Daha düşük not alanlar tekrar eğitimine alınır. Gerekli görüldüğü
+takdirde eğitimlerin sonunda çalışanlara eğitimle ilgili broşür kitapçık vb. bilgi bukletleri verilebilir.
+Personellere verilen tüm Çevre Eğitimlerinde katılımcılar Çevre Mühendisi tarafından Çevre Eğitim
+Matrisine eğitim aldığı tarih girilerek takip edilir.
+Çevre Mühendisi/Çevre Görevlisi ilave olarak özel ve ayrıntılı hususlarda Toolbox Eğitimleri hazırlayabilir
+ve ilgili bölümlere elektronik ortamda iletir. Çevresel Konularda hazırlanacak Toolbox Eğitim konuları
+işletmeye özel eğitim ihtiyaçları göz önünde bulundurularak Çevre Mühendisi tarafından hazırlanır.
+Toolbox eğitimleri Çevre Mühendisi/Çevre Görevlisi veya ilgili departmanın amiri tarafından verilir.
+Sürdürülebilirlik Eğitimi
+Şirket vizyonu ve stratejisi ile uyumlu olarak sürdürülebilirliği bir iş modeli olarak almaktadır.
+Sürdürülebilirlik hedeflerine ulaşmak ve sürdürülebilirlik yönetiminin etkin işlemesi amacı ile şirket içi
+sürdürülebilirlik eğitimleri verilmektedir.
+Eğitimlerin temel amacı şirket çalışanlarının sürdürülebilirlik konusunda farkındalıklarını artırmaktır.
+Sürdürülebilirlik eğitimi "Sürdürülebilirlik ve Çevre Mühendisi” tarafından verilmektedir.
+Eğitim hem beyaz yaka hem mavi yaka çalışanlara verilmektedir.
+Eğitim içeriği;
+• Sürdürülebilirlik temel kavramının anlatılması,
+• Dünya ve Türkiye genelinde çevresel, sosyal ve ekonomik boyutların paylaşımı,
+o İklim değişikliği,
+o Doğal kaynak kullanımı,
+o Sürdürülebilir Kalkınma Hedefleri,
+o Uluslararası anlaşmalar
+o Sürdürülebilirlik trendleri
+o Yenilenebilir enerji
+o Raporlamalar
+• Şirket Sürdürülebilirlik yönetimi ve iyi uygulama paylaşımı
+• Farkındalık artırıcı soru-cevap bölümü
+Sürdürülebilirlik eğitimi sonrasında katılımcı tarafından Eğitim Katılım Formu imzalanır ve İK İş Ortakları’
+na bağlı İK Uzmanı’ na gönderilerek, eğitim kayıtlarına işlenir.Rekabete Uyum Eğitimi
+4054 sayılı Rekabetin korunması Hakkındaki Kanun’da şirketin rekabet hassas birimlerinin (finans, satış,
+pazarlama, satın alma vb.) bilgilendirilmesi ve sürekli izlenmesi yıllık periyotlarla sağlanmaktadır. Bu
+kapsamda belirlenen beyaz yaka çalışanlara her yıl ilgili eğitim verilir. Söz konusu eğitimlere katılması
+gereken çalışanların kademelerini, seviyelerini ve birimlerini/departmanlarını eğitimi sağlayan Hukuk
+departmanı belirler ve İK İş Ortakları bu kapsamda eğitim organizasyonunu gerçekleştirir.
+Eğitim sonrası eğitimi sağlayan Hukuk departmanı Eğitim katılım Formunu eğitim sonunda ilgili İK İş
+Ortağının eğitim kayıtlarından sorumlu İK Uzmanı ’na iletir.
+Eğitim sonunda “Rekabet Kuralları Uyum Beyanı” ve “Rekabet Hukuku Uyum Kuralları” formları çalışan
+tarafından imzalanır ve eğitimi gerçekleştiren Hukuk departman tarafından özlük dosyalarında saklanmak
+üzere İK İş Ortakları ‘na iletilir.
+Eğitim Organizasyonu
+Yıllık eğitim planı ve şirket eğitim bütçesi, İK İş Ortakları tarafından hazırlanır.
+Hazırlanan eğitim planı ve bütçesi Üst Yönetim onayına sunulur. Plan ve bütçe dışı eğitim talepleri İK İş
+Ortakları tarafından ihtiyaç ve şirket genel eğitim bütçesinin durumu göz önüne alınarak onaylanır veya
+reddedilir. Bölüm bütçesinde eğitim dışında yeterli kaynak varsa İK İş Ortakları ve fonksiyon yöneticisinin
+onayı alınarak eğitim gerçekleştirilir.
+Dış kuruluşlardan alınacak eğitim ile ilgili kişi / kuruluşlar ve eğiticilerin seçimi İK İş Ortakları ve ilgili
+departman tarafından belirlenir. Eğitim yapılacak yer, grup büyüklüğüne ve amaca uygun olarak seçilir.
+Eğitim yeri ve eğitici belirlendikten sonra, eğitimin içeriği ve diğer bilgiler katılımcılara bildirilir.
+Sorumluluklar
+Yönetici,
+• Bölüm/Departman öncelikli gelişim alanlarının şirket hedefleri ve stratejisine paralel olarak çalışanlarla
+birlikte belirlenmesinden ve bu öncelikler doğrultusunda çalışanların kişisel ve mesleki gelişimine yönelik
+gelişim planlarının çalışanlar ile birlikte hazırlanmasından sorumludur.
+• Eğitim öncesi çalışanın gelişimi ile ilgili beklentilerin çalışanla paylaşılması ve eğitim sonrasında da
+çalışanın eğitimden kazanımlarının uygulamaya dönüşmesinin takibi yönetici tarafından gerçekleştirilir.
+• Çalışanların katıldığı eğitimlerden edindiği bilgi ve tecrübeyi diğer çalışanlar ile paylaşacağı fırsat ve
+ortamların yaratılması yönetici sorumluluğunda olup çalışanın eğitimden aldığı bilgi ve beceriyi
+özümsemesi ve bilginin kurum içerisinde yayılması açısından bu konuda çalışanların teşvik edilmesi kritik
+önem taşımaktadır.
+• Çalışanın eğitime zamanında katılımının sağlanması ve eğitimde verimli bir süre geçirebilmesi için
+çalışanın iş yükü ve sorumluluklarıyla ilgili geçici düzenlemelerin yapılması yönetici sorumluluğundadır.
+• Departman içinde yapılacak herhangi bir eğitim faaliyetinin bağlı olduğu İK İş Ortağına bağlı İK
+Uzmanı ’na planlama aşamasında bildirilmesi ve “Eğitim Katılım Formu” nu imzalatılarak İK İş Ortağına
+bağlı İK Uzmanı ile paylaşılması gerekmektedir.Çalışan,
+• Kişisel ve mesleki gelişimine yönelik eğitim ihtiyaçlarını yöneticisiyle birlikte belirlemekten ve gelişim
+planını yıl boyunca takip ederek gerekli durumlarda yöneticiyle konuşarak revize etmekten sorumludur.
+• Eğitimlere belirlenen gün ve saatte zamanında ve devamlı ve etkin olarak katılması beklenmektedir.
+• Zorunlu teknik eğitimler alındığında sertifika, katılım belgesi, vb. evrakların bir kopyasının saklanmak
+üzere İK İş Ortaklarına bağlı İK Uzmanlarına verilmesi öncelikle çalışanın sonrasında ilgili yöneticinin
+sorumluluğundadır
+• Katıldığı eğitimlerden edindiği bilgi ve tecrübenin diğer çalışanlar ile paylaşılması çalışanın ve kurumun
+gelişimine önemli katlı sağlayacağından çalışanın gerekli paylaşımları yöneticisinin bilgisi dahilinde
+gerçekleştirmesi beklenmektedir.
+İnsan Kaynakları,
+• Hazırlanan Yıllık Eğitim Planının İcra Komitesine sunulması İK İş Ortaklarının sorumluluğundadır.
+• Onaylanan Yıllık Eğitim Planı Doğrultusunda, şirket eğitim bütçesinin yapılması ve takibi, eğitim
+önceliklerinin tespiti, koordine edilmesi, yürütülmesi, kayıtların tutularak takip edilmesi, raporlanması,
+eğitim firmalarının değerlendirilmesi ve eğitimlerin etkinliğinin ölçülmesi İK İş
+Ortaklarına bağlı İK Uzmanlarının sorumluluğundadır.
+• Eğitim planlarını yayınlanması ve taleplerin toplanması İK İş Ortakları tarafından gerçekleştirilir.
+• Bölümlerden talep geldiğinde gereken danışmanlık ve destek hizmetlerinin verilmesi iş ortağı
+yaklaşımının önemli bir göstergesi ve sorumluluğudur.
+• Şirket stratejileri ve öncelikli hedefleri doğrultusunda özel eğitim programları tasarlanır ve hayata
+geçirilir.
+Tedarikçi Belirleme
+• Kurum dışından alınacak şirket genel eğitimlerinde ve bireysel gelişim eğitimlerinde satın alma talebi İK
+İş Ortakları tarafından fonksiyonel eğitimlerde satın alma talebi ilgili bölüm tarafından oluşturulur.
+• Fonksiyonel eğitimlerde eğitim firması ve eğitmenin belirlenmesi İK İş Ortaklarını bağlı İK Uzmanıonayı
+ve bilgisi dâhilinde gerçekleştirilir.
+• Dış kuruluşlardan alınacak grup eğitimlerinde eğitim firmasının ve eğitmenin performansı hakkında
+daha önce eğitim almış kişi ve kuruluşlardan referans istenir.
+Eğitim ve Tedarikçinin Değerlendirilmesi
+Şirket dışından alınan eğitim hizmetlerinde eğitimin verimliliği, malzeme ve gereçlerin yeterliliği, eğitmen
+hakkında bilgiler, eğitimin yeri ve süresini kapsayan “Eğitim Değerlendirme Formu”, İK İş Ortağına bağlı İK
+Uzmanı tarafından katılımcılarla paylaşılır. 6 saati geçen Mesleki, İSG ve Çevre eğitimlerinin etkinlik
+değerlendirmesi gerekli görülürse bölümler tarafından yapılır ve saklanır. Eğitim Değerlendirme Formu
+dışarıdan alınan 8 saat ve üzeri tüm eğitimlerde eğitim sahibi departman tarafından uygulanıp İK İş
+Ortağına bağlı İK Uzmanı’ na iletilir.Sınavlı olarak gerçekleşen eğitimlerde (mesleki yeterlilik eğitimleri, ilk yardım eğitimleri vs.) ve
+sertifikasyonu yapılan, fonksiyonel, kişisel gelişim ve liderler için alınan gelişim eğitimlerinde eğitim
+etkinliği değerlendirme formunun doldurulmasına gerek yoktur.
+Anketler 5 tavan puanı üzerinden değerlendirilir.
+Eğitim & Eğitim Gereçleri Puanı
+0 - 1,9
+2 - 3,4
+3,5 ve üzeri
+Eğitim tekrar edilir.
+Tekrarı olacak bir eğitim ise düzeltici faaliyet başlatılır.
+Eğitim başarılı kabul edilir.
+Eğitmen Puanı
+0 - 1,9
+2 - 3,4
+3,5 ve üzeri
+Eğitmen ile tekrar çalışılmaz.
+Eğitmen gelişim sağladığında tekrar çalışılır.
+Eğitmen başarılı kabul edilir.
+Eğitim Etkinliğinin Değerlendirmesi
+Kapsam içi personelin gerçekleşen eğitimlerinin etkinliğini değerlendirmek için, personelin yıl içerisinde
+almış olduğu eğitimlerin listesi ve Eğitim Etkinliği Değerlendirme Formu İK İş Ortağına bağlı İK Uzmanı
+tarafından bağlı olduğu yöneticisine ilgili yılın sonunda tüm eğitim kayıtları girildikten sonra gönderilir.
+Ürün Kalitesini, İş güvenliğini etkileyen eğitimler ve dışarıdan alınan eğitimlerin sınavsız olanları için; iş
+kazasının yaşanıp yaşanmadığı, saha kontrolleri sonucu (apek, davranış odaklı denetleme) uygunsuzluk
+olup olmadığı, gibi durumlar göz önünde bulundurularak yönetici 6 aylık değerlendirme yapabilir.
+Departman Yöneticisi bu form üzerinde her eğitim için gelişim durumunu belirler.
+İmzalı bir şekilde formu İK İş Ortağına bağlı İK Uzmanı arşivlenmek üzere gönderir. Departman Yöneticisi,
+Eğitim Etkinliği Değerlendirme Formunu bir sonraki senenin eğitim planlarını oluştururken kaynak olarak
+kullanır.
+Eğitimin hedeflenen bilgi, beceri ve yetkinlikleri geliştirdiğinin tespiti için Eğitim Etkinliği Değerlendirme
+Formu dışında aşağıdaki araçlar kullanılmaktadır.
+• Ön test ve son testler
+• Sınavlar
+• Sertifikasyon
+• Eğitim Değerlendirme FormlarıEğitim Sertifikası
+Zorunlu teknik eğitimler alındığında sertifika, katılım belgesi, vb. evrakların bir kopyasının saklanmak
+üzere İK İş Ortağına bağlı İK Uzmanı ’na verilmesi ilk önce çalışanın ardından ilgili yöneticinin
+sorumluluğundadır.
+Eğitim Kaydı
+Yönetim Sistemleri için uygun dokümante edilmiş bilginin yeterliliğinin kanıtı olarak muhafaza edilir.
+Eğitim kayıtları İK İş Ortağına bağlı İK Uzmanı tarafından sisteme girilir.
+Sorular
+•
+•
+Seyahat emri nasıl oluşturabilirim?
+Seyahat emri oluşturabilir misin?
+SEYAHAT PROSEDÜRÜ
+Bu prosedür çalışanların yurt dışında ve yurt içinde (şehir içinde ve şehirlerarası) yapacakları iş
+seyahatlerinde uyulması gereken kuralları, seyahat harcamalarının kapsamını, harcamalar için
+uygulanacak limitleri ve yapılacak ödemelerin esaslarını düzenlemek amacıyla hazırlanmıştır.
+- İş Seyahati: İş amaçlı, esas iş yeri dışındaki lokasyonlara / bölgelere görevlendirme ile yapılan tüm
+seyahatleri kapsar.
+- Seyahat Limiti: yurt dışında konaklama ve yemek, yurt içinde ise yemek harcamalarını karşılamak üzere
+belirtilmiş olan günlük harcama limitleridir.
+- Diğer Görevler: Mavi yaka ve mavi yaka olmayıp idari görevde bulunan güvenlik görevlisi, teknisyen,
+hizmet elemanı vb. pozisyonlarda görevli tüm çalışanlardır.
+- Belge: Harcama tutarını gösteren resmi yazıdır.
+- İK-Portal: http://futuriseprogram.com linki üzerinden ulaşılan çalışan bilgi yönetimi sistemidir.
+PROSEDÜR
+Seyahate Çıkmadan Önce Yapılacaklar:
+Seyahate çıkacak çalışan, gidilecek yer, seyahat nedeni, muhtemel seyahat süresi ve seyahat avansını
+belirtecek şekilde İK-Portal uygulaması üzerinden “Seyahat Emri” oluşturmalıdır. Yurt içi ve yurt dışı
+seyahatlerde verilecek seyahat avansı miktarı, seyahat şartları da dikkate alınarak 7.8.1. ve 7.8.2.
+maddelerinde yer alan yetkililerce belirlenerek onaylanır. Yurt dışı seyahat avansları, 7.8. maddesinde
+belirtilen limitlerde Euro karşılığı Türk Lirası olarak, TCMB efektif satış kuru esas alınarak ya da limitler
+dahilinde yabancı para birimi olarak ödenebilir.
+7.2. Seyahat Yönetimi ve Planlama:
+İş seyahati yapan astları olan yönetici;
+• İş yolculuğu sırasında araç kullanıp kullanmamak gerektiğini sorgulamakla
+• Riski makul seviyede azaltmak amacıyla ulaşım yöntemini ya da çeşidini (hava, kara, tren ya da deniz
+yolu) sorgulamakla yükümlüdürler.
+Seyahat süresince olası değişiklikler ilgili yöneticilere bildirilmelidir.
+7.3. Seyahat İptal, Değişiklik ve Acil Seyahatler:
+• Yapılan mevcut rezervasyonların iptal ve değişiklik durumlarında bağlı bulunan yönetici
+bilgilendirilmelidir.
+• Çalışma saatleri dışında ve hafta sonları oluşan acil talepler, değişiklikler için ilgili çalışan tarafından
+anlaşmalı acente/otel ile direkt iletişime geçilmelidir.
+7.4. Ulaşım Aracı:• Seyahat sırasında seyahat edilecek lokasyon göz önünde bulundurularak seyahat güvenliği açısından en
+uygun ve en ekonomik olacak ulaşım araçları seçilir.
+• Seyahat, iki mahal arasında en az masrafı gerektiren araç ve güzergâh ile yapılır. Diğer görevlerdeki
+çalışanların ulaşım aracı, bağlı bulundukları yönetici tarafından belirlenir. Diğer tüm çalışanlar, işin gereği
+seyahat edecekleri aracı kendileri seçerler.
+• Ulaşım ile ilgili yapılacak her türlü uçak bileti alımı, araç kiralama ve hızlı tren işlemleri anlaşmalı
+acenteler üzerinden yapılır. Uçak ile yapılacak yurtiçi / yurtdışı seyahatlerde aşağıda belirtilen uçuş
+sınıfları geçerlidir:
+Unvan
+Genel Müdür
+Genel Müdür Yardımcısı, Fabrika Müdürü, Grup
+Müdürü, Müdür
+Diğer tüm çalışanlar
+Uçuş Sınıfı
+Business
+Eknomoi
+(5 saat ve üzeri uçuşlarda
+Business)
+Ekonomi
+Her durumda ilgili uçuş sınıfı için mevcut en ekonomik uçuş güzergahı seçilir. Uçuş sınıfı ile ilgili
+yapılabilecek istisnai uygulamalar, Şirket Genel Müdür onayına tabidir.
+• Alınacak riskler değerlendirilerek Fabrika Müdürü ve üzeri yöneticilerin uçak ile seyahatlerinde, aynı
+uçakta en fazla 3 çalışanın birlikte seyahat etmesi tavsiye edilir.
+• Seyahat süresi içindeki ulaşım aracı giderleri ayrıca ödenir. Bu giderlerin bilet veya makbuz ile
+belgelendirilmesi esastır. Şirket araçları ile yapılan seyahatler için ulaşım aracı bedeli ödenmez.
+• Kendi aracı ile seyahat edenlere her km için en fazla 1.80.-TL üzerinden ödeme yapılır. Seyahatin araçla
+yapılmasına ilişkin olarak bağlı olduğu yöneticisinden önceden izin alması gerekir. Şirkette seyahate
+uygun bir havuz aracı bulunması durumunda öncelikle bu seçenek değerlendirilir, özel araçla seyahat
+edilmez.
+• İlgili km birim tutarı gerektiği durumlarda Holding tarafından gözden geçirilerek güncellenir. •
+Seyahatle ilgili otopark, paralı yol, arabalı yol ve/veya köprü geçiş ücretleri de Şirket tarafından ayrıca
+ödenir.
+• Seyahat süresince kullanılacak ulaşım araçlarına çalışanın ihmalinden kaynaklanan bir durum sonucu
+yetişememesi, seyahatin iptali durumunda bilgi verilmemesi gibi hallerde çalışan her türlü cezai durumu
+ödemekle sorumlu olacaktır. Çalışandan tahsil edilememesi durumunda bordrosuna yansıtılacaktır.
+Satın alınan uçak biletinde saat / gün değişiklikleri yapılması durumunda çalışanın bağlı olduğu yönetici
+onayı aranır. İş seyahatleri bitiminde veya başlangıcında, iş amaçlı yapılmayan gidiş veya dönüş ulaşım
+masrafının arasındaki farkı çalışandan tahsil edilir.
+7.5. Konaklama:
+• Konaklamalar prensip olarak anlaşmalı turizm şirketi portföyünde yer alan otellerde gerçekleştirilir.
+Tüm konaklamalarda standart oda seçeneği benimsenir. Konaklama harcamalarına kahvaltı dahil edilir. •
+Seyahat edilecek yerde anlaşmalı otel bulunmaması ve/veya seyahat edecek çalışanın iş ihtiyacı gereği
+farklı bir otelde kalmak istemesi halinde aşağıda yer alan limitler dahilinde ve turizm şirketinin önerdiği
+oteller kapsamında olmak kaydı ile konaklama yapılabilir. • Eğitim için yapılan konaklamalarda, eğitiminyapıldığı otelde, yurt dışı seyahatlerde konaklama limitleri dahilinde, yurt içinde ise anlaşmalı oteller
+listesindeki emsal otel fiyatına uygunsa konaklama yapılabilir. Ancak, eğitimin yapıldığı otel civarında
+anlaşmalı daha uygun fiyatlı otel olması durumunda yol masrafı ve konaklama ücreti göz önünde
+bulundurularak tercih yapılır. • Fabrika Müdürü ve üzeri ünvanlı çalışanların konaklama harcamaları 7.8.
+kapsamındaki limitler dahilinde “full credit” olarak, diğer unvanlardaki çalışanların ise konaklama +
+kahvaltı standart olmak üzere, yine 7.8. kapsamındaki limitler dahilinde Şirket tarafından karşılanır. • 2
+gece ve üzeri konaklama gerektiren seyahatlerde ütü giderleri ve 3 gece ve üzeri konaklama gerektiren
+seyahatlerde kuru temizleme giderleri Şirket tarafından karşılanır. Otelde yapılan kişisel harcamalar ayrı
+fatura ile çalışan tarafından ödenir. • Şirket tarafından rezervasyon yapılan otelde, çalışanın ihmalinden
+kaynaklanan bir durum sonucu otelin uyguladığı “no show” ücretini çalışan ödemekle sorumludur ve
+çalışandan tahsil edilememesi durumunda bordrosuna yansıtılır.
+7.6. Vize İşlemleri:
+Çalışanın Şirket tarafından görevlendirilmesi durumunda; • Pasaport çıkartma / yenileme / uzatma
+başvuru işlemleri yasal zorunluluk nedeniyle şahsen yapılmalıdır. Pasaport ücretleri, Şirket tarafından,
+Şirket’in belirleyeceği limit dahilinde karşılanabilir. • Yurtdışı seyahat öncesinde gerekli vize işlemleri ve
+yurtdışı çıkış harcı ile ilgili masraflar Şirket tarafından çalışanın yöneticisinin onayına istinaden karşılanır. •
+Vize başvuruları çalışan tarafından yapılır. • Vize başvuruları için gerekli tüm evrak, belge ve formların
+temini ve hazırlanması sorumluluğu çalışan üzerindedir. • Vize süreleri konusunda inisiyatif tamamen
+konsolosluklarda olup, Schengen vizesi alınması durumunda, vizenin alındığı ülkeye öncelikle giriş
+yapılması bir sonraki olası vize başvuruları için önem arz etmektedir.
+7.7. Seyahatten Döndükten Sonra Yapılacaklar:
+• Çalışan, seyahat dönüşünü izleyen 5 gün içinde; seyahat lokasyonu ve gidiş-dönüş tarihini içerecek
+şekilde, seyahate ilişkin masraf belgelerini ekleyerek gider bildiriminde bulunur. Bu aşamada yöneticiler
+kendilerine onaya gelen masraf belgelerinin doğruluğunu ve uygunluğunu kontrol etmekten
+sorumludurlar. • Finans Fonksiyonu, yapılan gider bildirimine istinaden oluşturacağı tahakkuk sonrasında
+çalışanın alacağı kalmışsa ilgili çalışana öder veya tahsil eder. • Beyan edilen harcama belgelerinin yasal
+olarak Şirket adına düzenlenmiş olması gerekir. • Eğer çalışan borçlu ise bakiyesi bulunan avans tutarını
+en geç 1 hafta içinde Şirket banka hesabına yatırmaktan sorumludur. Finans Fonksiyonu, kendisine gelen
+bilgiler doğrultusunda avans hesabını kapatır. Borçlu olunan miktarın iade edilmemesi durumunda Finans
+Fonksiyonu, İnsan Kaynakları Fonksiyonunu bilgilendirir ve bakiye tutar çalışanın ilgili ay sonundaki
+ücretinden mahsup edilir. • Seyahat avansının kapanmasından çalışan ve seyahati onaylayan yöneticisi,
+kapanmasının kontrolünden ise Finans Fonksiyonu sorumludur.
+7.8. Seyahat Limitleri:
+• İl sınırları içinde ve dışında görev amaçlı seyahat yapan veya geçici görev verilen, • Yurt içinde ve yurt
+dışında görev amaçlı seyahat yapan, • Eğitim, kurs, seminer, vb. toplantılara katılan çalışanların yurtdışı
+ve yurtiçi seyahatlerde konaklama ve yemek giderleri için ödenecek fiili harcama limitlerini
+kapsamaktadır.
+7.8.1. Yurtdışı Seyahatler: • Yurtdışı seyahat limitleri için aşağıda listelenen ülkeler ve ülkelerin yer aldığı
+grup dikkate alınacaktır. • Söz konusu gruplama ve grup limitleri her yıl Holding tarafından gözden
+geçirilerek gerekli hallerde güncelleme yapılacaktır.ÜlkeGrup
+ABD, Kanada, Uzak Doğu (Kore, Hong Kong, Singapur, Japonya), İsrail, Avusturalya,
+Yeni Zelanda, Birleşik KrallıkGrup 1
+İsviçre, Güney Amerika, Avrupa1 (Almanya, Fransa, Hollanda, Danimarka, Norveç,
+Monako, Finlandiya, İzlanda)Grup 2
+Avrupa 2 (Avrupa 1 hariç AB üyesi ülkeler), Çin, Hindistan, Pakistan, Afganistan,
+İran, Irak, Suriye, Rusya, Ukranya, Belarus, Afrika ÜlkeleriGrup 3
+Konaklama ve Harcama Limitleri (EUR)
+Uzman ve Diğer GörevlerMüdür / Grup Müdürü / Fabrika
+Müdürü / GMYGenel Müdür
+Grup 1300375500
+Grup 2250350450
+Grup 3225300350
+Grup
+Ülke grupları ve unvanlara göre düzenlenmiş olan limitler Euro para birimi ile tanımlanmış olup, çalışana
+harcamaları karşılığı yapılacak ödemeler, ilgili tarihteki TCMB efektif satış kuru dikkate alınarak Türk Lirası
+(TL) olarak yapılacaktır. • Ülke listesi dışında bir ülkeye ziyaret edildiğinde, gidilecek yerin coğrafi
+konumuna bakılarak, listedeki en yakın ülkenin limitleri geçerli sayılacaktır. • Yurtdışı seyahatler, bütçe
+sınırları içinde kalmak kaydıyla Genel Müdür tarafından onaylanır. • Konaklama yapılacak otellerde,
+seyahat edilen şehirdeki yüksek turistik sezon, fuar vb. zorunlu nedenlerle fiili harcama limitinin aşılması
+halinde aşağıdaki onay mekanizması işletilir:
+o Genel Müdür → Holding Grup Başkanı
+o GM altı pozisyonlar → Genel Müdür
+Grup halinde yapılan seyahatlerde, grup içindeki en üst pozisyondaki kişinin tabi olduğu fiili harcama
+limiti ve uçuş sınıfı, Genel Müdür’ün onayı ile refakat eden diğer kişilere de uygulanabilir. • Ulaşım
+masrafları (taksi, tren, deniz otobüsü bileti vb.) belge karşılığı ayrıca ödenir. • Yurtdışına yapılan
+seyahatlerin ülke sınırına kadar olan bölümü yurtiçi seyahati sayılır.
+7.8.2. Yurtiçi Seyahatler: • Tüm çalışanların yurt içi seyahatleri bağlı bulundukları yönetici tarafından
+onaylanır. • Önceden izin alınması mümkün olmayan acil hallerde yöneticilere seyahat dönüşü bilgi
+verilir. • Tüm çalışanların anlaşmalı otellerde konaklaması esastır. Uzman ve üzeri pozisyonlar için gerçek
+beyan usulüne göre masraf ödemesi yapılır. Yemek ve diğer oluşabilecek masraflar için masraflar belge
+karşılığı ve beyan usulü ödenir. • Yurt içi seyahatlerde, diğer görevler için uygulanacak yemek vb. masraf
+limiti günlük 120TL olarak belirlenmiştir. • Seyahat acentesi üzerinden rezervasyon yapılan otellerde,
+seyahat edilen şehirdeki yüksek turistik sezon, fuar, vb. nedenlerle normal sezon üzerinde bir fiyatlama
+uygulaması halinde ilgili Fonksiyon Yöneticisinden onay alınır.7.9. Seyahatlerde Gün Hesabı: • Seyahatin başlama zamanı, yolculuk amacıyla bulunulan yerden hareket
+edilen andır. Seyahatin bitiş zamanı ise dönülen lokasyona varış anıdır (yerden kasıt, ev, otel, işyeri gibi
+bulunulan yerdir). • Görev seyahatlerinde gidiş – dönüş gün ve saatlerinin, seyahat edilecek yerin uzaklığı
+ile görevin özellikleri (çalışma saatleri vb.) dikkate alınarak yeterli olabilecek uygun değer süre içinde
+planlanması esastır. • Seyahat süresine rastlayan hafta tatili, ulusal bayram ve genel tatil günleri de gün
+hesabına dahil edilir. • Seyahat limitlerinin hesabında yolculuğun başlangıç ve bitiş zamanı arasında
+geçen süre dikkate alınır. • Seyahat gün hesabında yolculuğun başlangıç ve bitiş zamanı arasında geçen
+her 24 saat bir gün olarak kabul edilir. 24 saati geçen gün kesirlerinde ilk 8 saate kadar ½ oranında limit
+hesaplanır. 8 saati geçen gün kesirleri bir tam gün sayılır ve tam gün seyahat limiti geçerlidir. 7.10.
+Masrafların Şirketçe Karşılanması • Belge temini mümkün olmayan bahşiş, ulaşım giderleri, vb. ile
+kaybedilmiş, tahrip olmuş giderler 7.8.1. ve 7.8.2. maddelerinde belirtilen limitler dahilinde yolculuğun
+sebebi ve süresi ile uyumlu olmak üzere ilgili çalışanın yöneticisinin onayı ile beyana dayanarak ödenir.
+Belgelendirilmeyen harcamaların toplamı, belgeli harcama tutarının 10%’undan fazla olamaz. • Belgesiz
+harcamanın görevle ilişkilendirilmediği durumlarda ya da gerekliliği uygun bulunmadığı takdirde
+harcama, çalışanın kendi sorumluluğunda olacaktır. • Grup halinde yapılan seyahatlerde refakat eden
+çalışana kendi unvanına karşılık gelen seyahat limiti uygulanır. Birden fazla çalışanın yemek yediği
+durumlarda teamül olarak, masrafı yemeğe katılan en üst düzey yönetici öder. • Görevle
+ilişkilendirilmeyen ve/veya gider bildiriminde yeterli açıklama bulunmayan harcama belgeleri için ödeme
+yapılmaz, çalışana iade edilir ve çalışanın ücretinden tahsil edilir. Holding’e bağlı şirketlerin öğle yemeği
+hizmeti verdiği lokasyonlara yapılan ziyaretlerde öğle yemeği dışarıda yenilmek durumunda kalınırsa bu
+durumun gerekçesi ve kişi sayısı, gider bildiriminde mutlaka belirtilir. • İş seyahatinde bulunan çalışanın
+temsil amaçlı yaptığı harcamalar belge karşılığı ve yöneticisinin onayı ile ayrıca ödenir.
+Seyahat eden çalışanın iletişim giderleri (telefon, internet, fax, vb.) iş amaçlı olması ve belgelendirilmesi
+kaydıyla ödenir. 7.11. Şehir İçi Yolculuklar ve Günübirlik Seyahatler • Aynı il sınırları içinde; iş takibi, evrak
+dağıtımı ve benzer hizmetler nedeniyle, günübirlik yapılacak iş seyahatlerinde, nakil vasıtaları ile
+çalışanların, öğün (kahvaltı, öğle ve akşam yemeği) başına net 40TL’ye kadarki yemek giderleri (harcama
+belgesini beyan etmeleri kaydıyla) şirket tarafından karşılanır. • Günübirlik şehir içi yolculuklar; Holding’e,
+Holding’e bağlı şirketlere veya diğer resmi ve özel kurum ve kuruluşlara yapılan seyahatleri kapsayıp,
+çalışanın evi ile işyeri arasındaki gidiş gelişleri kapsamaz. Ancak mesai bitiminden sonra tekrar göreve
+çağırılanlarla ilgili mutat uygulamalar saklıdır.
+`,
 };
 
 const Demo: React.FC = () => {
