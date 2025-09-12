@@ -31,29 +31,13 @@ const InterviewContent: React.FC = () => {
   const uniDepartment = searchParams.get('uniDepartment') || 'Bilgisayar Mühendisliği';
   const grade = searchParams.get('grade') || '4. sınıf';
   
-  // Parse question pool from URL parameter (as JSON array) or use default
+  // Get question pool from URL parameter as a plain string or use default
   const questionsParam = searchParams.get('questions');
   let questionPool = '';
   
   if (questionsParam) {
-    try {
-      const questions = JSON.parse(questionsParam);
-      questionPool = questions.map((q: any) => 
-        `• Soru: ${q.question} Cevap: ${q.answer}`
-      ).join('\n');
-    } catch (e) {
-      // If parsing fails, use default questions
-      questionPool = `• Soru: Hangi algoritma, görüntülerde kenar tespiti (edge detection) yapmak için kullanılır? Cevap: Canny
-• Soru: Görüntülerde belirli bir bölgenin diğer bölgelere göre farklı olup olmadığını anlamak için hangi yöntem kullanılır? Cevap: Histogram Eşitleme
-• Soru: Hangi derin öğrenme tabanlı nesne tespit algoritması, görüntüler üzerinde nesneleri gerçek zamanlı olarak tespit etmek için bölgesiz bir yaklaşım kullanır? Cevap: YOLO
-• Soru: Görüntü işleme uygulamalarında genellikle gürültüyü azaltmak için hangi filtre kullanılır? Cevap: Gaussian Blur
-• Soru: Derin öğrenme tabanlı görüntü sınıflandırma modellerinde yaygın olarak kullanılan aktivasyon fonksiyonu nedir? Cevap: ReLU
-• Soru: Görüntüdeki bir nesnenin konumunu belirlemek için hangi koordinat formatı kullanılır? Cevap: Bounding Box
-• Soru: CNN mimarisinde özellik çıkarımı için kullanılan temel katman nedir? Cevap: Konvolüsyon Katmanı
-• Soru: Optik akış (optical flow) yöntemi ne için kullanılır? Cevap: Görüntüler arasındaki hareketi tahmin etmek
-• Soru: Görüntü segmentasyonunda her pikselin belirli bir sınıfa atanmasını sağlayan yöntem nedir? Cevap: Semantic Segmentation
-• Soru: Görüntüde parlaklık ve kontrast ayarlamaları yapmak için hangi yöntem kullanılır? Cevap: Histogram Eşitleme`;
-    }
+    // Use the questions string directly without parsing
+    questionPool = questionsParam;
   } else {
     // Default computer vision questions
     questionPool = `• Soru: Hangi algoritma, görüntülerde kenar tespiti (edge detection) yapmak için kullanılır? Cevap: Canny
@@ -158,12 +142,12 @@ KURALLAR
 
   return (
     <div className="bg-white min-h-screen flex flex-col font-abc-repro font-normal text-sm text-black">
-      <div className="flex-1 flex flex-col items-center p-8">
+      <div className="flex-1 flex flex-col">
         <Navbar />
-        <div className="flex flex-col items-center gap-6 bg-effect15White p-6 pb-[40px] rounded-xl w-full">
-          <div>
+        <div className="flex-1 flex items-center justify-center">
+          <div className="flex flex-col items-center gap-6 bg-effect15White rounded-xl">
             {showDottedFace && (
-              <div className="flex justify-center p-16">
+              <div className="flex justify-center">
                 <Image 
                   src="/havelsan-logo.jpeg"
                   alt="HAVELSAN Logo"
@@ -188,7 +172,7 @@ KURALLAR
       </div>
       
       {/* Footer */}
-      <footer className="w-full bg-gray-100 p-4 mt-auto">
+      <footer className="w-full bg-gray-100 mt-auto">
         <div className="flex justify-center">
           <Image 
             src="/havelsan-footer.jpeg"

@@ -37,7 +37,7 @@ const toolFunctions = {
     }
   },
   endSession: () => {
-    const redirectUrl = process.env.NEXT_PUBLIC_REDIRECT_URL || "https://www.google.com";
+    const redirectUrl = process.env.NEXT_PUBLIC_REDIRECT_URL || "https://havelsan.unicevap.com";
     console.log(`Ending session and redirecting to ${redirectUrl} in 20 seconds...`);
     // Navigate to configured URL after 20 seconds delay
     setTimeout(() => {
@@ -605,13 +605,6 @@ const SimliOpenAI: React.FC<SimliOpenAIProps> = ({
 
   return (
     <>
-      <div
-        className={`transition-all duration-300 ${
-          showDottedFace ? "h-0 overflow-hidden" : "h-auto"
-        }`}
-      >
-        <VideoBox video={videoRef} audio={audioRef} />
-      </div>
       <div className="flex flex-col items-center">
         {!isAvatarVisible ? (
           <button
@@ -646,6 +639,15 @@ const SimliOpenAI: React.FC<SimliOpenAIProps> = ({
             </div>
           </>
         )}
+      </div>
+      <div
+className={`transition-all duration-300 w-full ${
+  showDottedFace
+    ? "h-0 overflow-hidden"
+    : "fixed bottom-44 left-0 right-0 h-[calc(100vh-150px)]"
+}`}
+      >
+        <VideoBox video={videoRef} audio={audioRef} />
       </div>
     </>
   );
