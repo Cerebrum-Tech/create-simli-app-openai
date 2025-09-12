@@ -5,6 +5,9 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+      args:
+        - NEXT_PUBLIC_SIMLI_API_KEY=${NEXT_PUBLIC_SIMLI_API_KEY}
+        - NEXT_PUBLIC_REDIRECT_URL=${NEXT_PUBLIC_REDIRECT_URL:-https://www.google.com}
     container_name: simli-interview-app
     environment:
       - NODE_ENV=production

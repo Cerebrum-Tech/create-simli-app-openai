@@ -6,13 +6,9 @@ RUN apk add --no-cache libc6-compat
 WORKDIR /app
 
 # Copy package files
-COPY package.json package-lock.json* yarn.lock* ./
-# Install dependencies
-RUN \
-  if [ -f yarn.lock ]; then yarn install --frozen-lockfile; \
-  elif [ -f package-lock.json ]; then npm ci; \
-  else echo "Lockfile not found." && exit 1; \
-  fi
+COPY package.json package-lock.json* ./
+# Install dependencies using npm
+RUN npm ci
 
 # Stage 2: Builder
 FROM node:18-alpine AS builder
@@ -26,12 +22,8 @@ ARG NEXT_PUBLIC_REDIRECT_URL
 ENV NEXT_PUBLIC_SIMLI_API_KEY=${NEXT_PUBLIC_SIMLI_API_KEY}
 ENV NEXT_PUBLIC_REDIRECT_URL=${NEXT_PUBLIC_REDIRECT_URL}
 
-# Build the application
-RUN \
-  if [ -f yarn.lock ]; then yarn build; \
-  elif [ -f package-lock.json ]; then npm run build; \
-  else echo "Lockfile not found." && exit 1; \
-  fi
+# Build the application using npm
+RUN npm run build
 
 # Stage 3: Runner
 FROM node:18-alpine AS runner
