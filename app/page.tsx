@@ -1,5 +1,5 @@
 "use client";
-import React, { use, useEffect, useState } from "react";
+import React, { use, useEffect, useState, Suspense } from "react";
 import SimliOpenAI from "./SimliOpenAI";
 import Navbar from "./Components/Navbar";
 import { useSearchParams } from 'next/navigation';
@@ -13,7 +13,7 @@ const DEFAULT_CONFIG = {
   simli_faceid: "b2ca517e-187c-4d39-9b65-d24cea8df4dd"
 };
 
-const Demo: React.FC = () => {
+const InterviewContent: React.FC = () => {
   const [showDottedFace, setShowDottedFace] = useState(true);
   const searchParams = useSearchParams();
 
@@ -200,6 +200,19 @@ KURALLAR
         </div>
       </footer>
     </div>
+  );
+};
+
+// Main component with Suspense wrapper
+const Demo: React.FC = () => {
+  return (
+    <Suspense fallback={
+      <div className="bg-white min-h-screen flex flex-col items-center justify-center font-abc-repro">
+        <div className="text-lg">Yükleniyor...</div>
+      </div>
+    }>
+      <InterviewContent />
+    </Suspense>
   );
 };
 
