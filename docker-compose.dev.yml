@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+  simli-interview-app-dev:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    container_name: simli-interview-app-dev
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=development
+      - NEXT_PUBLIC_SIMLI_API_KEY=${NEXT_PUBLIC_SIMLI_API_KEY}
+      - NEXT_PUBLIC_REDIRECT_URL=${NEXT_PUBLIC_REDIRECT_URL:-https://www.google.com}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - SERPAPI_API_KEY=${SERPAPI_API_KEY}
+      - WATCHPACK_POLLING=true  # For hot reload in Docker
+    volumes:
+      - ./app:/app/app
+      - ./public:/app/public
+      - ./styles:/app/styles
+      - ./components:/app/components
+      - ./utils:/app/utils
+      - /app/node_modules  # Prevent overwriting node_modules
+      - /app/.next  # Prevent overwriting build directory
+    restart: unless-stopped
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge

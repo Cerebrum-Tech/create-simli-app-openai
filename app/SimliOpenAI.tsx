@@ -35,6 +35,18 @@ const toolFunctions = {
       console.error("Error searching Google:", error);
       return { success: false, error: "Failed to search Google" };
     }
+  },
+  endSession: () => {
+    const redirectUrl = process.env.NEXT_PUBLIC_REDIRECT_URL || "https://www.google.com";
+    console.log(`Ending session and redirecting to ${redirectUrl} in 20 seconds...`);
+    // Navigate to configured URL after 20 seconds delay
+    setTimeout(() => {
+      window.location.href = redirectUrl;
+    }, 20000); // 20 seconds delay
+    return { 
+      success: true, 
+      message: `Session ended successfully. You will be redirected in 20 seconds...` 
+    };
   }
 };
 
@@ -114,6 +126,29 @@ const SimliOpenAI: React.FC<SimliOpenAIProps> = ({
       dataChannel.onopen = () => {
         console.log('Data channel opened');
         configureTools();
+        
+        // Send initial greeting message after tools are configured
+        setTimeout(() => {
+          dataChannel.send(JSON.stringify({
+            type: 'conversation.item.create',
+            item: {
+              type: 'message',
+              role: 'assistant',
+              content: [{
+                type: 'input_text',
+                text: 'Merhaba, Teknofest HAVELSAN İnsan Kaynakları Yapay Zekâ Mülakat Simülasyonu\'na hoş geldiniz. Sizinle kısa bir mülakat yaparak hem sizi tanımak hem de gerçek bir mülakat deneyimi yaşatmak istiyoruz. Hazırsanız başlayabiliriz.'
+              }]
+            }
+          }));
+          
+          // Request the AI to speak the greeting
+          dataChannel.send(JSON.stringify({ 
+            type: 'response.create',
+            response: {
+              modalities: ['text', 'audio']
+            }
+          }));
+        }, 500);
       };
 
       dataChannel.onmessage = async (event) => {
@@ -168,6 +203,11 @@ const SimliOpenAI: React.FC<SimliOpenAIProps> = ({
                   },
                   required: ['query'],
                 },
+              },
+              {
+                type: 'function',
+                name: 'endSession',
+                description: 'Ends the conversation session when the interview or conversation is complete. Call this when the user says goodbye, the interview is finished, or when all questions have been answered and the conversation has naturally concluded.',
               },
             ],
           },
