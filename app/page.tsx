@@ -10,7 +10,7 @@ import Image from 'next/image';
 const DEFAULT_CONFIG = {
   openai_voice: "sage" as const,
   openai_model: "gpt-4o-realtime-preview-2024-12-17", // Use "gpt-4o-mini-realtime-preview-2024-12-17" for cheaper and faster responses
-  simli_faceid: "b2ca517e-187c-4d39-9b65-d24cea8df4dd"
+  simli_faceid: "b2ca517e-187c-4d39-9b65-d24cea8df4dd" //"b2ca517e-187c-4d39-9b65-d24cea8df4dd"
 };
 
 const InterviewContent: React.FC = () => {

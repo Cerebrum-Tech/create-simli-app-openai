@@ -155,6 +155,8 @@ const SimliOpenAI: React.FC<SimliOpenAIProps> = ({
   const isFirstRun = useRef(true);
   const dataChannelRef = useRef<RTCDataChannel | null>(null);
   const isIntentionalDisconnect = useRef(false);
+  const assistantSpeakingRef = useRef(false);
+  const enableSemanticGateRef = useRef(true);
 
   // New refs for managing audio chunk delay
   const audioChunkQueueRef = useRef<Int16Array[]>([]);
@@ -207,6 +209,16 @@ const SimliOpenAI: React.FC<SimliOpenAIProps> = ({
           type: 'session.update',
           session: {
             modalities: ['text', 'audio'],
+            // Enable server-side VAD and realtime transcription so we can semantically gate barge-in
+            turn_detection: {
+              type: 'server_vad',
+              threshold: 0.5,
+              prefix_padding_ms: 300,
+              silence_duration_ms: 300,
+            },
+            input_audio_transcription: {
+              model: 'gpt-4o-mini-transcribe',
+            },
             tools: [
               {
                 type: 'function',
@@ -284,6 +296,37 @@ const SimliOpenAI: React.FC<SimliOpenAIProps> = ({
 
       dataChannel.onmessage = async (event) => {
         const msg = JSON.parse(event.data);
+        // Track assistant speaking state for barge-in gating
+        if (msg.type === 'response.created') {
+          assistantSpeakingRef.current = true;
+        }
+        if (
+          msg.type === 'response.completed' ||
+          msg.type === 'response.output_audio.done'
+        ) {
+          assistantSpeakingRef.current = false;
+        }
+
+        // When user speech is transcribed, decide whether it's intentful before interrupting
+        if (msg.type === 'conversation.item.created' && msg.item?.role === 'user') {
+          try {
+            const transcript = extractTranscript(msg.item);
+            if (transcript) {
+              const intentful = isIntentfulUtterance(transcript);
+              console.log('[SemanticGate] transcript=', transcript, 'intentful=', intentful, 'assistantSpeaking=', assistantSpeakingRef.current);
+              if (assistantSpeakingRef.current && enableSemanticGateRef.current) {
+                if (intentful) {
+                  interruptConversation();
+                } else {
+                  // Ignore accidental noises while assistant is speaking
+                }
+              }
+              setUserMessage(transcript);
+            }
+          } catch (e) {
+            // noop
+          }
+        }
         if (msg.type === 'response.function_call_arguments.done') {
           console.log(`[Tool Call] Calling function ${msg.name} with arguments:`, msg.arguments);
           const args = JSON.parse(msg.arguments);
@@ -444,6 +487,59 @@ const SimliOpenAI: React.FC<SimliOpenAIProps> = ({
     console.warn("User interrupted the conversation");
     simliClient?.ClearBuffer();
     openAIClientRef.current?.cancelResponse("");
+  };
+
+  // Extract a transcript string from a user item payload regardless of content format
+  const extractTranscript = (item: any): string | null => {
+    if (!item || !item.content) return null;
+    try {
+      for (const c of item.content) {
+        if (typeof c?.transcript === 'string' && c.transcript.trim().length > 0) {
+          return c.transcript.trim();
+        }
+        if (c?.type === 'input_text' && typeof c?.text === 'string') {
+          return c.text.trim();
+        }
+        if (c?.type === 'input_audio' && typeof c?.transcript === 'string') {
+          return c.transcript.trim();
+        }
+      }
+    } catch (_) {
+      // ignore
+    }
+    return null;
+  };
+
+  // Lightweight semantic gate: returns true only for intentful utterances
+  const isIntentfulUtterance = (transcript: string): boolean => {
+    const t = transcript.toLowerCase().trim();
+    if (t.length === 0) return false;
+
+    // Obvious non-speech or laughter/coughs/fillers/background markers
+    const noisePatterns: RegExp[] = [
+      /\b(h+a+){1,}\b|\b(ha){2,}\b|\b(lol)\b|\b(hehe)+\b/, // laughter
+      /\b(ö+h+|uh+|um+|ıı+|hmm+|mm+|mmm+)\b/, // fillers in tr/en
+      /\b(öhm+|ehm+|hı+hı+|ıı+hı+)\b/,
+      /\b(öksür|cough|hapş|sneeze|burp)\b/, // cough/sneeze
+      /\b(background|noise|static|wind|traffic|keyboard|typing)\b/,
+    ];
+    if (noisePatterns.some((re) => re.test(t))) return false;
+
+    // Very short single-token or no alphanumeric words
+    const words = t.split(/\s+/).filter(Boolean);
+    const alphaWords = words.filter((w) => /[a-zğüşıöç0-9]/i.test(w));
+    if (alphaWords.length === 0) return false;
+    if (alphaWords.length === 1 && alphaWords[0].length <= 2) return false;
+
+    // Phrases dominated by fillers
+    const fillerTokens = [
+      'uh', 'um', 'hmm', 'hı', 'ıı', 'şey', 'yani', 'eee', 'hmmm', 'hıhı', 'hmmhmm'
+    ];
+    const fillerCount = alphaWords.filter((w) => fillerTokens.includes(w)).length;
+    if (fillerCount / Math.max(1, alphaWords.length) > 0.6) return false;
+
+    // Otherwise consider intentful
+    return true;
   };
 
   /**
