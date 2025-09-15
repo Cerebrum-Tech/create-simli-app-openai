@@ -22,13 +22,14 @@ const InterviewContent: React.FC = () => {
   const protocolText = searchParams.get('protocolText');
 
   // Get standard parameters from URL with defaults
-  const name = searchParams.get('name') || 'Alp Eren Özalp';
-  const position = searchParams.get('position') || 'DEEP LEARNING Mühendisi';
-  const department = searchParams.get('department') || 'Yazılım Geliştirme';
+  const candidateId = searchParams.get('candidateId') || '';
+  const name = searchParams.get('name') || '';
+  const position = searchParams.get('position') || '';
+  const department = searchParams.get('department') || '';
   const company = searchParams.get('company') || 'HAVELSAN';
-  const cvSummary = searchParams.get('cvSummary') || 'Bilkent Üniversitesi Bilgisayar Mühendisliği bölümü öğrencisi';
-  const university = searchParams.get('university') || 'Bilkent Üniversitesi';
-  const uniDepartment = searchParams.get('uniDepartment') || 'Bilgisayar Mühendisliği';
+  const cvSummary = searchParams.get('cvSummary') || '';
+  const university = searchParams.get('university') || '';
+  const uniDepartment = searchParams.get('uniDepartment') || '';
   const grade = searchParams.get('grade') || '4. sınıf';
   
   // Get question pool from URL parameter as a plain string or use default
@@ -64,14 +65,17 @@ Gerçek bir insan gibi doğal, akıcı ve samimi bir şekilde konuş. Robot gibi
 
 PROTOKOL ADI: ${protocolName}
 
-PROTOKOL İÇERİĞİ:
+PROTOKOL Karşılama mesajı:
 ${protocolText}
 
 ÖNEMLI NOTLAR:
 • Protokol içeriğini takip et ve bu çerçevede görüşmeyi yürüt.
+• Konuşma başladığında önce karşılama mesajını ver.
 • Dili daima Türkçe kullan.
 • Konuşmanı doğal ve insan gibi yap.
-• Sonrasında endSession fonksiyonunu çağırarak oturumu sonlandır.`;
+• Sonrasında endSession fonksiyonunu çağırarak oturumu sonlandır.
+• Konuşmanın sonunda endSession fonksiyonu ile gönder.
+• Sadece Havelsan ve Teknofest ile ilgili konularda konuş. Başka sorulara cevap verme. Başka konularda soru sorulduğunda konuyu yeniden Teknofest ve Havelsan'a yönlendir.`;
   } else {
     // Use standard interview template
     dynamicPrompt = `ROLÜN
@@ -81,6 +85,7 @@ Gerçek bir insan kaynakları uzmanı ve teknik mülakatçı gibi davran.
 Konuşmanı doğal, akıcı, kısa-orta uzunlukta cümlelerle yap. Gerektiğinde açıklayıcı örnekler ver, asla robot gibi cevap verme.
 
 ADAY BİLGİSİ
+Aday ID: ${candidateId}
 İsim: ${name}
 Başvurduğu pozisyon: ${position}
 Departman: ${department}
@@ -166,6 +171,7 @@ KURALLAR
               onStart={onStart}
               onClose={onClose}
               showDottedFace={showDottedFace}
+              candidateId={candidateId}
             />
           </div>
         </div>

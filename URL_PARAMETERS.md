@@ -12,6 +12,7 @@ These parameters are used for the structured interview format:
 
 | Parameter | Description | Default Value | Example |
 |-----------|-------------|---------------|---------|
+| `candidateId` | Unique candidate identifier | `CAND-001` | `CAND-2024-0542` |
 | `name` | Candidate's full name | `Alp Eren Özalp` | `Mehmet Yılmaz` |
 | `position` | Position applying for | `DEEP LEARNING Mühendisi` | `Frontend Developer` |
 | `department` | Department name | `Yazılım Geliştirme` | `AI Research` |
@@ -40,7 +41,12 @@ These parameters override all standard parameters when both are provided:
 http://localhost:3000/?name=Ayşe%20Demir
 ```
 
-#### 2. Position and Department
+#### 2. Candidate ID and Name
+```
+http://localhost:3000/?candidateId=CAND-2024-0542&name=Ayşe%20Demir
+```
+
+#### 3. Position and Department
 ```
 http://localhost:3000/?position=Backend%20Developer&department=Cloud%20Services
 ```

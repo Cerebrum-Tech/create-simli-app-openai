@@ -14,6 +14,7 @@ interface SimliOpenAIProps {
   onStart: () => void;
   onClose: () => void;
   showDottedFace: boolean;
+  candidateId: string;
 }
 
 const simliClient = new SimliClient();
@@ -36,16 +37,93 @@ const toolFunctions = {
       return { success: false, error: "Failed to search Google" };
     }
   },
-  endSession: () => {
-    const redirectUrl = process.env.NEXT_PUBLIC_REDIRECT_URL || "https://havelsan.unicevap.com";
-    console.log(`Ending session and redirecting to ${redirectUrl} in 20 seconds...`);
-    // Navigate to configured URL after 20 seconds delay
+  endSession: async (candidateId: string, interviewNotes: string, interviewScore: number) => {
+    try {
+      // Log the parameters being sent
+      console.log('========================================');
+      console.log('ENDING SESSION - API CALL DETAILS');
+      console.log('========================================');
+      console.log('Request Parameters:');
+      console.log('- Candidate ID:', candidateId);
+      console.log('- Interview Score:', interviewScore);
+      console.log('- Interview Notes:', interviewNotes);
+      console.log('----------------------------------------');
+      
+      const requestBody = {
+        candidateId: Number(candidateId),
+        interviewNotes: interviewNotes,
+        interviewScore: Number(interviewScore)
+      };
+      
+      console.log('Full Request Body:', JSON.stringify(requestBody, null, 2));
+      console.log('API Endpoint:', 'https://havelsanapi.havelsanyetenekkapsulu.com/candidates/update-interview-results');
+      console.log('----------------------------------------');
+      
+      // Update interview results via API
+      console.log('Sending request to API...');
+      
+      const apiResponse = await fetch('https://havelsanapi.havelsanyetenekkapsulu.com/candidates/update-interview-results', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(requestBody)
+      });
+
+      console.log('----------------------------------------');
+      console.log('API Response Status:', apiResponse.status);
+      console.log('API Response Status Text:', apiResponse.statusText);
+      console.log('API Response Headers:', Object.fromEntries(apiResponse.headers.entries()));
+      
+      if (!apiResponse.ok) {
+        console.error(`❌ Failed to update interview results: ${apiResponse.status} ${apiResponse.statusText}`);
+        // Try to get error details from response body
+        const errorText = await apiResponse.text().catch(() => 'Could not read error response');
+        console.error('Error Response Body:', errorText);
+      } else {
+        console.log('✅ Interview results updated successfully');
+        const responseText = await apiResponse.text();
+        console.log('Raw Response Body:', responseText);
+        
+        // Try to parse as JSON if possible
+        try {
+          const responseData = JSON.parse(responseText);
+          console.log('Parsed Response Data:', JSON.stringify(responseData, null, 2));
+        } catch (parseError) {
+          console.log('Response is not JSON format');
+        }
+      }
+      console.log('========================================');
+    } catch (error) {
+      console.error('========================================');
+      console.error('❌ ERROR DURING API CALL');
+      console.error('Error Type:', error instanceof Error ? error.constructor.name : typeof error);
+      console.error('Error Message:', error instanceof Error ? error.message : String(error));
+      console.error('Error Stack:', error instanceof Error ? error.stack : 'No stack trace available');
+      console.error('========================================');
+      // Continue with redirect even if API call fails
+    }
+
+    // Proceed with redirect
+    const baseRedirectUrl = process.env.NEXT_PUBLIC_REDIRECT_URL || "https://havelsan.unicevap.com";
+    // Append candidateId as a query parameter to the redirect URL
+    const redirectUrl = `${baseRedirectUrl}?candidateId=${encodeURIComponent(candidateId)}`;
+    console.log('----------------------------------------');
+    console.log('REDIRECT CONFIGURATION');
+    console.log('Base Redirect URL:', baseRedirectUrl);
+    console.log('Full Redirect URL:', redirectUrl);
+    console.log('Redirect Delay: 60 seconds');
+    console.log('========================================');
+    
+    // Navigate to configured URL after 60 seconds delay
     setTimeout(() => {
+      console.log('Redirecting now to:', redirectUrl);
       window.location.href = redirectUrl;
-    }, 20000); // 20 seconds delay
+    }, 30000); // 60 seconds delay
+    
     return { 
       success: true, 
-      message: `Session ended successfully. You will be redirected in 20 seconds...` 
+      message: `Session ended successfully. Interview results have been saved. You will be redirected in 60 seconds...` 
     };
   }
 };
@@ -58,6 +136,7 @@ const SimliOpenAI: React.FC<SimliOpenAIProps> = ({
   onStart,
   onClose,
   showDottedFace,
+  candidateId,
 }) => {
   // State management
   const [isLoading, setIsLoading] = useState(false);
@@ -122,6 +201,58 @@ const SimliOpenAI: React.FC<SimliOpenAIProps> = ({
       const dataChannel = peerConnection.createDataChannel('oai-events');
       dataChannelRef.current = dataChannel;
 
+      // Configure tools
+      const configureTools = () => {
+        const event = {
+          type: 'session.update',
+          session: {
+            modalities: ['text', 'audio'],
+            tools: [
+              {
+                type: 'function',
+                name: 'getCurrentTime',
+                description: 'Gets the current time',
+              },
+              {
+                type: 'function',
+                name: 'searchGoogle',
+                description: 'Searches Google for information about flight times, weather and other information',
+                parameters: {
+                  type: 'object',
+                  properties: {
+                    query: { 
+                      type: 'string', 
+                      description: 'The search query to look up on Google' 
+                    },
+                  },
+                  required: ['query'],
+                },
+              },
+              {
+                type: 'function',
+                name: 'endSession',
+                description: 'Ends the conversation session when the interview or conversation is complete. Call this when the user says goodbye, the interview is finished, or when all questions have been answered and the conversation has naturally concluded. You MUST provide an evaluation of the interview.',
+                parameters: {
+                  type: 'object',
+                  properties: {
+                    interviewNotes: {
+                      type: 'string',
+                      description: 'Detailed notes about the candidate\'s performance during the interview in Turkish. Include strengths, weaknesses, technical competencies, and soft skills assessment. Example: "Teknik yeterliliği yüksek, takım çalışmasına uyum sağlayabilir. İletişim becerileri geliştirilebilir."'
+                    },
+                    interviewScore: {
+                      type: 'number',
+                      description: 'Overall interview score from 0 to 100 based on the candidate\'s performance. Consider technical knowledge, communication skills, problem-solving ability, and overall fit for the position.'
+                    }
+                  },
+                  required: ['interviewNotes', 'interviewScore']
+                }
+              },
+            ],
+          },
+        };
+        dataChannel.send(JSON.stringify(event));
+      };
+
       // Set up data channel event handlers
       dataChannel.onopen = () => {
         console.log('Data channel opened');
@@ -154,69 +285,43 @@ const SimliOpenAI: React.FC<SimliOpenAIProps> = ({
       dataChannel.onmessage = async (event) => {
         const msg = JSON.parse(event.data);
         if (msg.type === 'response.function_call_arguments.done') {
-          const fn = toolFunctions[msg.name as keyof typeof toolFunctions];
-          if (fn) {
-            console.log(`[Tool Call] Calling function ${msg.name} with arguments:`, msg.arguments);
-            const args = JSON.parse(msg.arguments);
-            const result = await fn(args);
-            console.log(`[Tool Response] Function ${msg.name} returned:`, result);
-            
-            // Send function result back to OpenAI
-            dataChannel.send(JSON.stringify({
-              type: 'conversation.item.create',
-              item: {
-                type: 'function_call_output',
-                call_id: msg.call_id,
-                output: JSON.stringify(result),
-              },
-            }));
-            
-            // Request next response
-            dataChannel.send(JSON.stringify({ type: "response.create" }));
+          console.log(`[Tool Call] Calling function ${msg.name} with arguments:`, msg.arguments);
+          const args = JSON.parse(msg.arguments);
+          
+          let result;
+          // Handle each function with its specific signature
+          if (msg.name === 'endSession') {
+            // Extract interviewNotes and interviewScore from args
+            const { interviewNotes, interviewScore } = args;
+            result = await toolFunctions.endSession(candidateId, interviewNotes, interviewScore);
+          } else if (msg.name === 'searchGoogle') {
+            result = await toolFunctions.searchGoogle(args);
+          } else if (msg.name === 'getCurrentTime') {
+            result = toolFunctions.getCurrentTime();
+          } else {
+            console.error(`Unknown function: ${msg.name}`);
+            result = { success: false, error: `Unknown function: ${msg.name}` };
           }
+          
+          console.log(`[Tool Response] Function ${msg.name} returned:`, result);
+          
+          // Send function result back to OpenAI
+          dataChannel.send(JSON.stringify({
+            type: 'conversation.item.create',
+            item: {
+              type: 'function_call_output',
+              call_id: msg.call_id,
+              output: JSON.stringify(result),
+            },
+          }));
+          
+          // Request next response
+          dataChannel.send(JSON.stringify({ type: "response.create" }));
         }
       };
 
-      // Configure tools
-      const configureTools = () => {
-        const event = {
-          type: 'session.update',
-          session: {
-            modalities: ['text', 'audio'],
-            tools: [
-              {
-                type: 'function',
-                name: 'getCurrentTime',
-                description: 'Gets the current time',
-              },
-              {
-                type: 'function',
-                name: 'searchGoogle',
-                description: 'Searches Google for information about flight times, weather and other information',
-                parameters: {
-                  type: 'object',
-                  properties: {
-                    query: { 
-                      type: 'string', 
-                      description: 'The search query to look up on Google' 
-                    },
-                  },
-                  required: ['query'],
-                },
-              },
-              {
-                type: 'function',
-                name: 'endSession',
-                description: 'Ends the conversation session when the interview or conversation is complete. Call this when the user says goodbye, the interview is finished, or when all questions have been answered and the conversation has naturally concluded.',
-              },
-            ],
-          },
-        };
-        dataChannel.send(JSON.stringify(event));
-      };
-
       // Set up audio handling for OpenAI response
-      peerConnection.ontrack = (event) => {
+      peerConnection.ontrack = (event: RTCTrackEvent) => {
         if (audioRef.current) {
           const audioStream = event.streams[0];
           
@@ -309,7 +414,7 @@ const SimliOpenAI: React.FC<SimliOpenAIProps> = ({
       console.error("Error initializing OpenAI client:", error);
       setError(`Failed to initialize OpenAI client: ${error.message}`);
     }
-  }, [initialPrompt, openai_model, openai_voice]);
+  }, [initialPrompt, openai_model, openai_voice, candidateId]);
 
   /**
    * Handles conversation updates, including user and assistant messages.
