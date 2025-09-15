@@ -1,20 +1,18 @@
 "use client";
-import React, { use, useEffect, useState, Suspense } from "react";
-import SimliOpenAI from "./SimliOpenAI";
-import Navbar from "./Components/Navbar";
+import React, { useEffect, useState, Suspense } from "react";
+import OpenAIVoice from "../OpenAIVoice";
+import Navbar from "../Components/Navbar";
 import { useSearchParams } from 'next/navigation';
 import Image from 'next/image';
-
 
 // Default configuration values
 const DEFAULT_CONFIG = {
   openai_voice: "sage" as const,
   openai_model: "gpt-4o-realtime-preview-2024-12-17", // Use "gpt-4o-mini-realtime-preview-2024-12-17" for cheaper and faster responses
-  simli_faceid: "b2ca517e-187c-4d39-9b65-d24cea8df4dd"
 };
 
-const InterviewContent: React.FC = () => {
-  const [showDottedFace, setShowDottedFace] = useState(true);
+const InterviewAudioContent: React.FC = () => {
+  const [showLogo, setShowLogo] = useState(true);
   const searchParams = useSearchParams();
 
   // Check for custom protocol parameters first
@@ -30,7 +28,7 @@ const InterviewContent: React.FC = () => {
   const cvSummary = searchParams.get('cvSummary') || '';
   const university = searchParams.get('university') || '';
   const uniDepartment = searchParams.get('uniDepartment') || '';
-  const grade = searchParams.get('grade') || '';
+  const grade = searchParams.get('grade') || '4. sınıf';
   
   // Get question pool from URL parameter as a plain string or use default
   const questionsParam = searchParams.get('questions');
@@ -136,13 +134,13 @@ KURALLAR
   }
 
   const onStart = () => {
-    console.log("Setting setshowDottedface to false...");
-    setShowDottedFace(false);
+    console.log("Setting showLogo to false...");
+    setShowLogo(false);
   };
 
   const onClose = () => {
-    console.log("Setting setshowDottedface to true...");
-    setShowDottedFace(true);
+    console.log("Setting showLogo to true...");
+    setShowLogo(true);
   };
 
   return (
@@ -150,9 +148,9 @@ KURALLAR
       <div className="flex-1 flex flex-col">
         <Navbar />
         <div className="flex-1 flex items-center justify-center">
-          <div className="flex flex-col items-center gap-6 bg-effect15White rounded-xl">
-            {showDottedFace && (
-              <div className="flex justify-center">
+          <div className="flex flex-col items-center gap-6 bg-effect15White rounded-xl p-8 max-w-4xl w-full mx-4">
+            {showLogo && (
+              <div className="flex justify-center mb-4">
                 <Image 
                   src="/havelsan-logo.jpeg"
                   alt="HAVELSAN Logo"
@@ -163,14 +161,13 @@ KURALLAR
                 />
               </div>
             )}
-            <SimliOpenAI
+            <OpenAIVoice
               openai_voice={DEFAULT_CONFIG.openai_voice}
               openai_model={DEFAULT_CONFIG.openai_model}
-              simli_faceid={DEFAULT_CONFIG.simli_faceid}
               initialPrompt={dynamicPrompt}
               onStart={onStart}
               onClose={onClose}
-              showDottedFace={showDottedFace}
+              showAnimation={!showLogo}
               candidateId={candidateId}
             />
           </div>
@@ -194,16 +191,16 @@ KURALLAR
 };
 
 // Main component with Suspense wrapper
-const Demo: React.FC = () => {
+const AudioDemo: React.FC = () => {
   return (
     <Suspense fallback={
       <div className="bg-white min-h-screen flex flex-col items-center justify-center font-abc-repro">
         <div className="text-lg">Yükleniyor...</div>
       </div>
     }>
-      <InterviewContent />
+      <InterviewAudioContent />
     </Suspense>
   );
 };
 
-export default Demo;
+export default AudioDemo;
