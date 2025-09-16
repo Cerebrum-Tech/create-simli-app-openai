@@ -159,6 +159,10 @@ const SimliOpenAI: React.FC<SimliOpenAIProps> = ({
   // New refs for managing audio chunk delay
   const audioChunkQueueRef = useRef<Int16Array[]>([]);
   const isProcessingChunkRef = useRef(false);
+  
+  // Retry counter for Simli connection
+  const simliRetryCount = useRef(0);
+  const MAX_SIMLI_RETRIES = 3;
 
   /**
    * Initializes the Simli client with the provided configuration.
@@ -593,6 +597,24 @@ const SimliOpenAI: React.FC<SimliOpenAIProps> = ({
   }, []);
 
   /**
+   * Builds the redirect URL with all current URL parameters
+   * This ensures that when redirecting to /audio page, all interview parameters
+   * (candidateId, name, position, etc.) are preserved for continuity
+   * 
+   * Note: The /audio page should handle the same interview flow but without video,
+   * using only audio communication with OpenAI's realtime API
+   */
+  const buildRedirectUrl = useCallback((path: string) => {
+    // Get current URL parameters
+    const currentUrl = new URL(window.location.href);
+    const params = new URLSearchParams(currentUrl.search);
+    
+    // Build new URL with all parameters
+    const redirectUrl = `${path}?${params.toString()}`;
+    return redirectUrl;
+  }, []);
+
+  /**
    * Handles the start of the interaction, initializing clients and starting recording.
    */
   const handleStart = useCallback(async () => {
@@ -602,18 +624,73 @@ const SimliOpenAI: React.FC<SimliOpenAIProps> = ({
     onStart();
 
     try {
-      console.log("Starting...");
+      console.log('========================================');
+      console.log(`SIMLI CONNECTION ATTEMPT ${simliRetryCount.current + 1}/${MAX_SIMLI_RETRIES}`);
+      console.log('========================================');
+      
       initializeSimliClient();
-      await simliClient?.start();
+      
+      // Add timeout for Simli start
+      const startTimeout = new Promise((_, reject) => {
+        setTimeout(() => reject(new Error('Simli connection timeout')), 10000);
+      });
+      
+      await Promise.race([
+        simliClient?.start(),
+        startTimeout
+      ]);
+      
       eventListenerSimli();
+      
+      // Reset retry counter on successful connection
+      simliRetryCount.current = 0;
+      console.log("✅ Simli connection successful");
+      console.log('========================================');
     } catch (error: any) {
-      console.error("Error starting interaction:", error);
-      setError(`Error starting interaction: ${error.message}`);
+      console.error("❌ Connection Error:", error.message || error);
+      console.error("Error Details:", error);
+      simliRetryCount.current++;
+      
+      if (simliRetryCount.current >= MAX_SIMLI_RETRIES) {
+        console.error('========================================');
+        console.error(`❌ SIMLI CONNECTION FAILED AFTER ${MAX_SIMLI_RETRIES} ATTEMPTS`);
+        console.error('========================================');
+        console.log("🔄 REDIRECTING TO AUDIO-ONLY MODE...");
+        
+        // Build redirect URL with all current parameters
+        const audioPageUrl = buildRedirectUrl('/audio');
+        console.log("📍 Audio Page URL:", audioPageUrl);
+        
+        // Get all parameters for logging
+        const currentUrl = new URL(window.location.href);
+        const params = Object.fromEntries(currentUrl.searchParams.entries());
+        console.log("📋 Preserved Parameters:", params);
+        
+        setError(`Video connection failed after ${MAX_SIMLI_RETRIES} attempts. Redirecting to audio-only mode in 2 seconds...`);
+        
+        // Redirect after a short delay to show the error message
+        setTimeout(() => {
+          console.log("➡️ Redirecting now to:", audioPageUrl);
+          window.location.href = audioPageUrl;
+        }, 2000);
+      } else {
+        console.log(`⚠️ Connection failed. Will retry in 2 seconds...`);
+        setError(`Connection failed (Attempt ${simliRetryCount.current}/${MAX_SIMLI_RETRIES}). Retrying in 2 seconds...`);
+        
+        // Retry after a delay
+        setTimeout(() => {
+          console.log(`🔁 Initiating retry ${simliRetryCount.current + 1}/${MAX_SIMLI_RETRIES}...`);
+          handleStart(); // Recursive retry
+        }, 2000);
+      }
     } finally {
-      setIsAvatarVisible(true);
-      setIsLoading(false);
+      if (simliRetryCount.current === 0) {
+        // Only set these if connection was successful
+        setIsAvatarVisible(true);
+        setIsLoading(false);
+      }
     }
-  }, [onStart]);
+  }, [onStart, buildRedirectUrl]);
 
   /**
    * Handles stopping the interaction, cleaning up resources and resetting states.
@@ -623,6 +700,9 @@ const SimliOpenAI: React.FC<SimliOpenAIProps> = ({
     isIntentionalDisconnect.current = true; // Mark as intentional disconnect
     setIsLoading(false);
     setError("");
+    
+    // Reset retry counter
+    simliRetryCount.current = 0;
     
     // Stop recording and clear audio buffers
     stopRecording();
