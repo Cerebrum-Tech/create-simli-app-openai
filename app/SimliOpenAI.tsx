@@ -37,11 +37,11 @@ const toolFunctions = {
       return { success: false, error: "Failed to search Google" };
     }
   },
-  endSession: async (candidateId: string, interviewNotes: string, interviewScore: number) => {
+  submitEvaluation: async (candidateId: string, interviewNotes: string, interviewScore: number) => {
     try {
       // Log the parameters being sent
       console.log('========================================');
-      console.log('ENDING SESSION - API CALL DETAILS');
+      console.log('SUBMITTING EVALUATION - API CALL DETAILS');
       console.log('========================================');
       console.log('Request Parameters:');
       console.log('- Candidate ID:', candidateId);
@@ -80,6 +80,11 @@ const toolFunctions = {
         // Try to get error details from response body
         const errorText = await apiResponse.text().catch(() => 'Could not read error response');
         console.error('Error Response Body:', errorText);
+        console.log('========================================');
+        return { 
+          success: false, 
+          message: `Değerlendirme kaydedilemedi. Lütfen tekrar deneyin.` 
+        };
       } else {
         console.log('✅ Interview results updated successfully');
         const responseText = await apiResponse.text();
@@ -94,6 +99,10 @@ const toolFunctions = {
         }
       }
       console.log('========================================');
+      return { 
+        success: true, 
+        message: `Değerlendirmeniz başarıyla kaydedildi. Teşekkür ederiz.` 
+      };
     } catch (error) {
       console.error('========================================');
       console.error('❌ ERROR DURING API CALL');
@@ -101,29 +110,38 @@ const toolFunctions = {
       console.error('Error Message:', error instanceof Error ? error.message : String(error));
       console.error('Error Stack:', error instanceof Error ? error.stack : 'No stack trace available');
       console.error('========================================');
-      // Continue with redirect even if API call fails
+      // Return error message
+      return { 
+        success: false, 
+        message: `Değerlendirme kaydedilemedi. Teknik bir hata oluştu.` 
+      };
     }
-
+  },
+  endSession: async (candidateId: string) => {
+    // Log the redirect action
+    console.log('========================================');
+    console.log('ENDING SESSION - REDIRECT');
+    console.log('========================================');
+    console.log('Candidate ID:', candidateId);
+    
     // Proceed with redirect
     const baseRedirectUrl = process.env.NEXT_PUBLIC_REDIRECT_URL || "https://havelsan.unicevap.com";
     // Append candidateId as a query parameter to the redirect URL
     const redirectUrl = `${baseRedirectUrl}?candidateId=${encodeURIComponent(candidateId)}`;
-    console.log('----------------------------------------');
-    console.log('REDIRECT CONFIGURATION');
     console.log('Base Redirect URL:', baseRedirectUrl);
     console.log('Full Redirect URL:', redirectUrl);
-    console.log('Redirect Delay: 60 seconds');
+    console.log('Redirect Delay: 30 seconds');
     console.log('========================================');
     
-    // Navigate to configured URL after 60 seconds delay
+    // Navigate to configured URL after 30 seconds delay
     setTimeout(() => {
       console.log('Redirecting now to:', redirectUrl);
       window.location.href = redirectUrl;
-    }, 30000); // 60 seconds delay
+    }, 10000); // 5 seconds delay
     
     return { 
       success: true, 
-      message: `Session ended successfully. Interview results have been saved. You will be redirected in 60 seconds...` 
+      message: `Mülakat tamamlandı. 5 saniye içinde yönlendirileceksiniz. İyi günler dilerim!` 
     };
   }
 };
@@ -234,8 +252,8 @@ const SimliOpenAI: React.FC<SimliOpenAIProps> = ({
               },
               {
                 type: 'function',
-                name: 'endSession',
-                description: 'Ends the conversation session when the interview or conversation is complete. Call this when the user says goodbye, the interview is finished, or when all questions have been answered and the conversation has naturally concluded. You MUST provide an evaluation of the interview.',
+                name: 'submitEvaluation',
+                description: 'Submits the interview evaluation with notes and score. Call this after completing the evaluation phase but before ending the session.',
                 parameters: {
                   type: 'object',
                   properties: {
@@ -249,6 +267,15 @@ const SimliOpenAI: React.FC<SimliOpenAIProps> = ({
                     }
                   },
                   required: ['interviewNotes', 'interviewScore']
+                }
+              },
+              {
+                type: 'function',
+                name: 'endSession',
+                description: 'Ends the conversation session and redirects the user. Only call this when the user explicitly says goodbye, thanks you, or uses farewell expressions like "güle güle", "teşekkürler", "iyi günler". NEVER call this automatically after evaluation.',
+                parameters: {
+                  type: 'object',
+                  properties: {}
                 }
               },
             ],
@@ -294,10 +321,13 @@ const SimliOpenAI: React.FC<SimliOpenAIProps> = ({
           
           let result;
           // Handle each function with its specific signature
-          if (msg.name === 'endSession') {
+          if (msg.name === 'submitEvaluation') {
             // Extract interviewNotes and interviewScore from args
             const { interviewNotes, interviewScore } = args;
-            result = await toolFunctions.endSession(candidateId, interviewNotes, interviewScore);
+            result = await toolFunctions.submitEvaluation(candidateId, interviewNotes, interviewScore);
+          } else if (msg.name === 'endSession') {
+            // endSession only needs candidateId
+            result = await toolFunctions.endSession(candidateId);
           } else if (msg.name === 'searchGoogle') {
             result = await toolFunctions.searchGoogle(args);
           } else if (msg.name === 'getCurrentTime') {
@@ -804,7 +834,7 @@ const SimliOpenAI: React.FC<SimliOpenAIProps> = ({
               <IconSparkleLoader className="h-[20px] animate-loader" />
             ) : (
               <span className="font-abc-repro-mono font-bold w-[164px]">
-                Start
+                Başla
               </span>
             )}
           </button>

@@ -444,9 +444,9 @@ const OpenAIVoice: React.FC<OpenAIVoiceProps> = ({
       
     
       
-      {/* Control Buttons */}
-      <div className="flex flex-col items-center">
-        {!isSessionActive ? (
+      {/* Control Button */}
+      {!isSessionActive && (
+        <div className="flex flex-col items-center">
           <button
             onClick={handleStart}
             disabled={isLoading}
@@ -463,19 +463,8 @@ const OpenAIVoice: React.FC<OpenAIVoiceProps> = ({
               </span>
             )}
           </button>
-        ) : (
-          <button
-            onClick={handleStop}
-            className={cn(
-              "mt-4 group text-white bg-red hover:rounded-sm hover:bg-white h-[52px] px-6 rounded-[100px] transition-all duration-300 min-w-[200px]"
-            )}
-          >
-            <span className="font-abc-repro-mono group-hover:text-black font-bold transition-all duration-300">
-              Durdur
-            </span>
-          </button>
-        )}
-      </div>
+        </div>
+      )}
       
       {/* Error Display */}
       {error && (
@@ -488,7 +477,7 @@ const OpenAIVoice: React.FC<OpenAIVoiceProps> = ({
       {isRecording && (
         <div className="flex items-center gap-2 text-sm text-gray-600">
           <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse" />
-          <span>Kayıt yapılıyor...</span>
+          <span></span>
         </div>
       )}
     </div>
