@@ -229,6 +229,15 @@ const SimliOpenAI: React.FC<SimliOpenAIProps> = ({
           type: 'session.update',
           session: {
             modalities: ['text', 'audio'],
+            // Enable semantic audio handling from OpenAI side
+            turn_detection: {
+              type: 'server_vad',
+              threshold: 0.75,
+              silence_duration_ms: 900,
+            },
+            input_audio_transcription: {
+              model: 'gpt-4o-mini-transcribe'
+            },
             tools: [
               {
                 type: 'function',
