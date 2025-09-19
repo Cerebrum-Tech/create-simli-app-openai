@@ -37,11 +37,13 @@ const toolFunctions = {
       return { success: false, error: "Failed to search Google" };
     }
   },
-  submitEvaluation: async (candidateId: string, interviewNotes: string, interviewScore: number) => {
+  endSession: async (candidateId: string, interviewNotes: string, interviewScore: number) => {
+    let evaluationSuccess = false;
+    
     try {
-      // Log the parameters being sent
+      // First, try to submit the evaluation
       console.log('========================================');
-      console.log('SUBMITTING EVALUATION - API CALL DETAILS');
+      console.log('ENDING SESSION - SUBMITTING EVALUATION AND REDIRECTING');
       console.log('========================================');
       console.log('Request Parameters:');
       console.log('- Candidate ID:', candidateId);
@@ -60,7 +62,7 @@ const toolFunctions = {
       console.log('----------------------------------------');
       
       // Update interview results via API
-      console.log('Sending request to API...');
+      console.log('Sending evaluation to API...');
       
       const apiResponse = await fetch('https://havelsanapi.havelsanyetenekkapsulu.com/candidates/update-interview-results', {
         method: 'POST',
@@ -81,10 +83,7 @@ const toolFunctions = {
         const errorText = await apiResponse.text().catch(() => 'Could not read error response');
         console.error('Error Response Body:', errorText);
         console.log('========================================');
-        return { 
-          success: false, 
-          message: `Değerlendirme kaydedilemedi. Lütfen tekrar deneyin.` 
-        };
+        evaluationSuccess = false;
       } else {
         console.log('✅ Interview results updated successfully');
         const responseText = await apiResponse.text();
@@ -97,12 +96,8 @@ const toolFunctions = {
         } catch (parseError) {
           console.log('Response is not JSON format');
         }
+        evaluationSuccess = true;
       }
-      console.log('========================================');
-      return { 
-        success: true, 
-        message: `Değerlendirmeniz başarıyla kaydedildi. Teşekkür ederiz.` 
-      };
     } catch (error) {
       console.error('========================================');
       console.error('❌ ERROR DURING API CALL');
@@ -110,39 +105,40 @@ const toolFunctions = {
       console.error('Error Message:', error instanceof Error ? error.message : String(error));
       console.error('Error Stack:', error instanceof Error ? error.stack : 'No stack trace available');
       console.error('========================================');
-      // Return error message
-      return { 
-        success: false, 
-        message: `Değerlendirme kaydedilemedi. Teknik bir hata oluştu.` 
-      };
+      evaluationSuccess = false;
     }
-  },
-  endSession: async (candidateId: string) => {
-    // Log the redirect action
-    console.log('========================================');
-    console.log('ENDING SESSION - REDIRECT');
-    console.log('========================================');
+    
+    // Always proceed with redirect regardless of API call success
+    console.log('----------------------------------------');
+    console.log('PROCEEDING WITH REDIRECT (Evaluation Success:', evaluationSuccess, ')');
     console.log('Candidate ID:', candidateId);
     
-    // Proceed with redirect
     const baseRedirectUrl = process.env.NEXT_PUBLIC_REDIRECT_URL || "https://havelsan.unicevap.com";
     // Append candidateId as a query parameter to the redirect URL
     const redirectUrl = `${baseRedirectUrl}?candidateId=${encodeURIComponent(candidateId)}`;
     console.log('Base Redirect URL:', baseRedirectUrl);
     console.log('Full Redirect URL:', redirectUrl);
-    console.log('Redirect Delay: 30 seconds');
+    console.log('Redirect Delay: 5 seconds');
     console.log('========================================');
     
-    // Navigate to configured URL after 30 seconds delay
+    // Navigate to configured URL after 5 seconds delay
     setTimeout(() => {
       console.log('Redirecting now to:', redirectUrl);
       window.location.href = redirectUrl;
-    }, 10000); // 5 seconds delay
+    }, 5000); // 5 seconds delay
     
-    return { 
-      success: true, 
-      message: `Mülakat tamamlandı. 5 saniye içinde yönlendirileceksiniz. İyi günler dilerim!` 
-    };
+    // Return appropriate message based on whether evaluation was successful
+    if (evaluationSuccess) {
+      return { 
+        success: true, 
+        message: `Değerlendirmeniz başarıyla kaydedildi. Mülakat tamamlandı. 5 saniye içinde yönlendirileceksiniz. İyi günler dilerim!` 
+      };
+    } else {
+      return { 
+        success: true, // Still return success to allow graceful completion
+        message: `Mülakat tamamlandı. 5 saniye içinde yönlendirileceksiniz. İyi günler dilerim!` 
+      };
+    }
   }
 };
 
@@ -261,8 +257,8 @@ const SimliOpenAI: React.FC<SimliOpenAIProps> = ({
               },
               {
                 type: 'function',
-                name: 'submitEvaluation',
-                description: 'Submits the interview evaluation with notes and score. Call this after completing the evaluation phase but before ending the session.',
+                name: 'endSession',
+                description: 'Ends the conversation session, submits the evaluation, and redirects the user. Only call this when the user explicitly says goodbye, thanks you, or uses farewell expressions like "güle güle", "teşekkürler", "iyi günler". This function should include the evaluation notes and score.',
                 parameters: {
                   type: 'object',
                   properties: {
@@ -276,15 +272,6 @@ const SimliOpenAI: React.FC<SimliOpenAIProps> = ({
                     }
                   },
                   required: ['interviewNotes', 'interviewScore']
-                }
-              },
-              {
-                type: 'function',
-                name: 'endSession',
-                description: 'Ends the conversation session and redirects the user. Only call this when the user explicitly says goodbye, thanks you, or uses farewell expressions like "güle güle", "teşekkürler", "iyi günler". NEVER call this automatically after evaluation.',
-                parameters: {
-                  type: 'object',
-                  properties: {}
                 }
               },
             ],
@@ -330,13 +317,10 @@ const SimliOpenAI: React.FC<SimliOpenAIProps> = ({
           
           let result;
           // Handle each function with its specific signature
-          if (msg.name === 'submitEvaluation') {
+          if (msg.name === 'endSession') {
             // Extract interviewNotes and interviewScore from args
             const { interviewNotes, interviewScore } = args;
-            result = await toolFunctions.submitEvaluation(candidateId, interviewNotes, interviewScore);
-          } else if (msg.name === 'endSession') {
-            // endSession only needs candidateId
-            result = await toolFunctions.endSession(candidateId);
+            result = await toolFunctions.endSession(candidateId, interviewNotes, interviewScore);
           } else if (msg.name === 'searchGoogle') {
             result = await toolFunctions.searchGoogle(args);
           } else if (msg.name === 'getCurrentTime') {

@@ -9,7 +9,7 @@ import Image from 'next/image';
 // Default configuration values
 const DEFAULT_CONFIG = {
   openai_voice: "sage" as const,
-  openai_model: "gpt-4o-realtime-preview-2024-12-17", // Use "gpt-4o-mini-realtime-preview-2024-12-17" for cheaper and faster responses
+  openai_model: "gpt-realtime", // Use "gpt-4o-mini-realtime-preview-2024-12-17" for cheaper and faster responses
   simli_faceid: "b2ca517e-187c-4d39-9b65-d24cea8df4dd"
 };
 
@@ -73,8 +73,9 @@ ${protocolText}
 • Konuşma başladığında önce karşılama mesajını ver.
 • Dili daima Türkçe kullan.
 • Konuşmanı doğal ve insan gibi yap.
-• Sonrasında endSession fonksiyonunu çağırarak oturumu sonlandır.
-• Konuşmanın sonunda endSession fonksiyonu ile gönder.
+• YALNIZCA kullanıcı veda ettikten SONRA endSession fonksiyonunu çağır (teşekkür, güle güle, vb. ifadeler sonrası).
+• endSession'ı çağırırken uygun bir değerlendirme notu (interviewNotes) ve puanı (interviewScore) gönder.
+• ÖNEMLİ: endSession'ı çağırmadan önce MUTLAKA kullanıcının veda etmesini bekle!
 • Sadece Havelsan ve Teknofest ile ilgili konularda konuş. Başka sorulara cevap verme. Başka konularda soru sorulduğunda konuyu yeniden Teknofest ve Havelsan'a yönlendir.`;
   } else {
     // Use standard interview template
@@ -120,7 +121,7 @@ ${questionPool}
 4. MÜLAKAT DEĞERLENDİRME AŞAMASI (ÇOK ÖNEMLİ!)
    - 3 teknik soru bittikten sonra MUTLAKA bu aşamaya geç.
    - Adaya şunu söyle: "Tüm sorularımız tamamlandı. Şimdi sizinle ilgili kısa bir değerlendirme paylaşmak istiyorum."
-   - Sonrasında aşağıdaki kriterlere göre kapsamlı bir değerlendirme yap:
+   - Sonrasında aşağıdaki kriterlere göre kapsamlı bir değerlendirme yap ve ADAYA SÖZLü OLARAK İLET:
      • Teknik yeterlilik (verdiği teknik cevapların doğruluğu ve derinliği)
      • İletişim becerileri (kendini ifade etme, açık ve anlaşılır konuşma)
      • Problem çözme yaklaşımı (sorulara yaklaşım tarzı)
@@ -130,7 +131,10 @@ ${questionPool}
    - Değerlendirmeyi destekleyici ve motive edici bir tonda yap.
    - Değerlendirme en az 3-4 cümle olmalı.
    - Örnek: "Teknik sorulara verdiğiniz cevaplar oldukça tatmin ediciydi. Özellikle [konu] hakkındaki bilginiz dikkat çekici. İletişim becerileriniz güçlü, kendinizi net bir şekilde ifade ediyorsunuz. [Pozisyon] pozisyonu için uygun bir profil sergiliyorsunuz. Gelişim alanı olarak [konu] üzerinde daha fazla çalışmanızı öneririm."
-   - DEĞERLENDİRMEYİ YAPTIKTAN SONRA: submitEvaluation fonksiyonunu çağır (interviewNotes ve interviewScore parametreleri ile)
+   - ÇOK ÖNEMLİ: Bu aşamada değerlendirmeyi SADECE ADAYA SÖZLÜ OLARAK İLET!
+   - HAFIZANDA TUT: Değerlendirme notlarını ve puanı (0-100) hafızanda tut, HENÜZ HİÇBİR FONKSİYON ÇAĞIRMA!
+   - API'YE GÖNDERME: Değerlendirme bu aşamada API'ye GÖNDERİLMEYECEK, sadece aday ile paylaşılacak!
+   - Değerlendirmede adaya puanından bahsetme.
 
 5. Kapanış (DEĞERLENDİRMEDEN SONRA!)
    - ÖNEMLİ: Bu aşamaya SADECE değerlendirme tamamlandıktan sonra geç!
@@ -148,7 +152,11 @@ ${questionPool}
      • "İyi günler" / "İyi çalışmalar"
      • "Görüşmek üzere" / "Görüşürüz"
      • Veya herhangi bir veda/minnettarlık ifadesi
-   - NOT: endSession fonksiyonu parametre almaz, sadece çağır
+   - YALNIZCA VEDA SONRASI: Aday veda ettikten SONRA endSession'ı çağır
+   - PARAMETRE GÖNDER: 4. adımda hazırladığın ve hafızanda tuttuğun değerlendirme notlarını ve puanı kullan:
+     • interviewNotes: 4. adımda hazırladığın Türkçe detaylı notlar (güçlü yönler, gelişim alanları, teknik yeterlilik vb.)
+     • interviewScore: 4. adımda belirlediğin 0-100 arası puan
+   - ÖNEMLİ: Bu değerlendirme bilgileri ancak ADAY VEDA ETTİKTEN SONRA API'ye gönderilecek!
 
 KURALLAR
 • Dili daima Türkçe kullan.
@@ -166,18 +174,20 @@ MÜLAKAT AKIŞI ÖZETİ (BU SIRAYI KESİNLİKLE TAKİP ET!)
 2. CV doğrulama
 3. 3 davranışsal soru (soft skills)
 4. 3 teknik soru (soru havuzundan)
-5. DEĞERLENDİRME (adayın performansını değerlendir - ATLAMA!)
-6. submitEvaluation fonksiyonunu çağır (değerlendirme notu ve puanı ile)
-7. Kapanış mesajı ve veda
-8. BEKLE - Adayın yanıtını bekle (teşekkür, güle güle, vb.)
-9. endSession fonksiyonunu SADECE aday veda ettikten sonra çağır (parametre yok)
+5. DEĞERLENDİRME (adaya SÖZLÜ olarak değerlendirme ver, notları HAFIZANDA tut - API'ye GÖNDERME!)
+6. Kapanış mesajı ve veda
+7. BEKLE - Adayın yanıtını bekle (teşekkür, güle güle, vb.)
+8. endSession fonksiyonunu SADECE aday veda ettikten sonra çağır (hafızandaki değerlendirme notu ve puanı ile - ŞİMDİ API'ye gönderilecek)
 
 KRİTİK NOTLAR:
 • Değerlendirme aşamasını ASLA atlama!
-• submitEvaluation'ı değerlendirmeden HEMEN SONRA çağır!
+• DEĞERLENDİRME ZAMANLAMA: 
+  - Adım 4'te değerlendirmeyi SADECE SÖZLÜ olarak adaya ilet
+  - Notları ve puanı HAFIZANDA tut, API'ye GÖNDERME
+  - YALNIZCA aday veda ettikten SONRA endSession ile API'ye gönder
 • endSession'ı ASLA otomatik olarak çağırma, MUTLAKA aday veda etsin!
-• İki fonksiyon AYRI: submitEvaluation (değerlendirme için), endSession (kapanış için)
-• Adayın "güle güle", "teşekkürler", "iyi günler" gibi bir yanıt vermesini BEKLE!`;
+• Adayın "güle güle", "teşekkürler", "iyi günler" gibi bir yanıt vermesini BEKLE!
+• API'YE GÖNDERİM: Değerlendirme YALNIZCA veda SONRASI endSession ile gönderilir!`;
   }
 
   const onStart = () => {
