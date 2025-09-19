@@ -173,6 +173,8 @@ const SimliOpenAI: React.FC<SimliOpenAIProps> = ({
   // New refs for managing audio chunk delay
   const audioChunkQueueRef = useRef<Int16Array[]>([]);
   const isProcessingChunkRef = useRef(false);
+  // Q&A capture log
+  const qaLogRef = useRef<Array<{ question: string; answer?: string }>>([]);
   
   // Retry counter for Simli connection
   const simliRetryCount = useRef(0);
@@ -287,20 +289,8 @@ const SimliOpenAI: React.FC<SimliOpenAIProps> = ({
         
         // Send initial greeting message after tools are configured
         setTimeout(() => {
+          // Trigger model response (greeting will be generated from instructions)
           dataChannel.send(JSON.stringify({
-            type: 'conversation.item.create',
-            item: {
-              type: 'message',
-              role: 'assistant',
-              content: [{
-                type: 'input_text',
-                text: 'Merhaba, Teknofest HAVELSAN İnsan Kaynakları Yapay Zekâ Mülakat Simülasyonu\'na hoş geldiniz. Sizinle kısa bir mülakat yaparak hem sizi tanımak hem de gerçek bir mülakat deneyimi yaşatmak istiyoruz. Hazırsanız başlayabiliriz.'
-              }]
-            }
-          }));
-          
-          // Request the AI to speak the greeting
-          dataChannel.send(JSON.stringify({ 
             type: 'response.create',
             response: {
               modalities: ['text', 'audio']
@@ -320,7 +310,15 @@ const SimliOpenAI: React.FC<SimliOpenAIProps> = ({
           if (msg.name === 'endSession') {
             // Extract interviewNotes and interviewScore from args
             const { interviewNotes, interviewScore } = args;
-            result = await toolFunctions.endSession(candidateId, interviewNotes, interviewScore);
+            // Build Q&A summary to append to notes
+            const qaSummary = qaLogRef.current
+              .filter(entry => entry.question && entry.answer)
+              .map((entry, idx) => `• Soru ${idx + 1}: ${entry.question}\n  Cevap: ${entry.answer}`)
+              .join("\n");
+            const notesWithQA = qaSummary
+              ? `${interviewNotes}\n\nSoru-Cevap Özeti:\n${qaSummary}`
+              : interviewNotes;
+            result = await toolFunctions.endSession(candidateId, notesWithQA, interviewScore);
           } else if (msg.name === 'searchGoogle') {
             result = await toolFunctions.searchGoogle(args);
           } else if (msg.name === 'getCurrentTime') {
@@ -344,6 +342,40 @@ const SimliOpenAI: React.FC<SimliOpenAIProps> = ({
           
           // Request next response
           dataChannel.send(JSON.stringify({ type: "response.create" }));
+        } else if (msg.type === 'conversation.item.created' && msg.item) {
+          try {
+            const role = msg.item.role;
+            const contentArray = msg.item.content || [];
+            // Extract text from various content payload shapes
+            const extractText = (content: any[]): string => {
+              const parts: string[] = [];
+              for (const c of content) {
+                if (typeof c?.text === 'string') parts.push(c.text);
+                if (typeof c?.transcript === 'string') parts.push(c.transcript);
+                if (typeof c?.content === 'string') parts.push(c.content);
+              }
+              return parts.join(' ').trim();
+            };
+            const text = extractText(contentArray);
+            if (!text) return;
+            if (role === 'assistant') {
+              // Consider assistant messages ending with ? as questions to capture
+              const isQuestion = /\?$/.test(text) || /^soru[:\-\s]/i.test(text);
+              if (isQuestion) {
+                qaLogRef.current.push({ question: text });
+              }
+            } else if (role === 'user') {
+              // Attach user's response to the latest question without an answer
+              for (let i = qaLogRef.current.length - 1; i >= 0; i--) {
+                if (!qaLogRef.current[i].answer) {
+                  qaLogRef.current[i].answer = text;
+                  break;
+                }
+              }
+            }
+          } catch (e) {
+            console.warn('Failed to capture Q&A from message:', e);
+          }
         }
       };
 
@@ -356,39 +388,46 @@ const SimliOpenAI: React.FC<SimliOpenAIProps> = ({
           const audioContext = new AudioContext({ sampleRate: 16000 });
           const source = audioContext.createMediaStreamSource(audioStream);
           const processor = audioContext.createScriptProcessor(1024, 1, 1);
-          
-          // Create a buffer to accumulate audio data
-          const audioBuffer: Int16Array[] = [];
-          let lastProcessTime = 0;
-          
+
+          // Accumulate samples and emit fixed 20ms frames at 16kHz (320 samples)
+          const FRAME_SIZE_SAMPLES = 320; // 20ms at 16kHz
+          let accumulator = new Int16Array(0);
+
           processor.onaudioprocess = (e) => {
             const inputData = e.inputBuffer.getChannelData(0);
-            const audioData = new Int16Array(inputData.length);
-            
-            // Convert float32 to int16
+            const converted = new Int16Array(inputData.length);
+
+            // Convert Float32 [-1,1] to PCM16
             for (let i = 0; i < inputData.length; i++) {
-              const sample = Math.max(-1, Math.min(1, inputData[i]));
-              audioData[i] = Math.floor(sample * 32767);
+              let s = inputData[i];
+              if (s > 1) s = 1;
+              else if (s < -1) s = -1;
+              converted[i] = (s * 32767) | 0;
             }
-            
-            // Add to buffer
-            audioBuffer.push(audioData);
-            
-            // Process buffer every 50ms to maintain sync
-            const now = Date.now();
-            if (now - lastProcessTime >= 50) {
-              while (audioBuffer.length > 0) {
-                const chunk = audioBuffer.shift();
-                if (chunk) {
-                  // Convert to Uint8Array for Simli
-                  const uint8Array = new Uint8Array(chunk.buffer);
-                  simliClient.sendAudioData(uint8Array);
-                }
+
+            // Append to accumulator
+            const merged = new Int16Array(accumulator.length + converted.length);
+            merged.set(accumulator, 0);
+            merged.set(converted, accumulator.length);
+            accumulator = merged;
+
+            // Emit fixed-size frames
+            while (accumulator.length >= FRAME_SIZE_SAMPLES) {
+              const frame = accumulator.subarray(0, FRAME_SIZE_SAMPLES);
+              const remainder = accumulator.subarray(FRAME_SIZE_SAMPLES);
+              accumulator = new Int16Array(remainder.length);
+              accumulator.set(remainder, 0);
+
+              // Serialize as little-endian PCM16
+              const bytes = new Uint8Array(FRAME_SIZE_SAMPLES * 2);
+              const view = new DataView(bytes.buffer);
+              for (let i = 0; i < FRAME_SIZE_SAMPLES; i++) {
+                view.setInt16(i * 2, frame[i], true);
               }
-              lastProcessTime = now;
+              simliClient.sendAudioData(bytes);
             }
           };
-          
+
           source.connect(processor);
           processor.connect(audioContext.destination);
         }
