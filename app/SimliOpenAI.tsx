@@ -198,6 +198,12 @@ const SimliOpenAI: React.FC<SimliOpenAIProps> = ({
           if (videoRef.current) {
             videoRef.current.srcObject = stream;
             videoRef.current.play();
+            // Switch to a 4px dot cursor while the Simli video is playing
+            try {
+              if (typeof document !== 'undefined') {
+                document.body.classList.add('simli-cursor-dot');
+              }
+            } catch {}
           }
         }
       };
@@ -684,6 +690,12 @@ const SimliOpenAI: React.FC<SimliOpenAIProps> = ({
     setError("");
     isIntentionalDisconnect.current = false; // Reset the flag when starting
     onStart();
+    // Apply 4px dot cursor immediately on Başla click
+    try {
+      if (typeof document !== 'undefined') {
+        document.body.classList.add('simli-cursor-dot');
+      }
+    } catch {}
 
     try {
       console.log('========================================');
@@ -808,6 +820,13 @@ const SimliOpenAI: React.FC<SimliOpenAIProps> = ({
       dataChannelRef.current = null;
     }
     
+    // Restore default cursor when session stops
+    try {
+      if (typeof document !== 'undefined') {
+        document.body.classList.remove('simli-cursor-dot');
+      }
+    } catch {}
+    
     // Call onClose callback
     onClose();
     console.log("Interaction stopped and all resources cleaned up");
@@ -833,6 +852,12 @@ const SimliOpenAI: React.FC<SimliOpenAIProps> = ({
 
       simliClient?.on("disconnected", () => {
         console.log("SimliClient disconnected");
+        // Ensure custom cursor is removed on disconnect
+        try {
+          if (typeof document !== 'undefined') {
+            document.body.classList.remove('simli-cursor-dot');
+          }
+        } catch {}
         openAIClientRef.current?.disconnect();
         if (audioContextRef.current) {
           audioContextRef.current?.close();
