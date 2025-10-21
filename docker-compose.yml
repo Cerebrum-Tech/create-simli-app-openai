@@ -1,14 +1,14 @@
 version: '3.8'
 
 services:
-  simli-interview-app:
+  doin-realtime-app:
     build:
       context: .
       dockerfile: Dockerfile
       args:
         - NEXT_PUBLIC_SIMLI_API_KEY=${NEXT_PUBLIC_SIMLI_API_KEY}
         - NEXT_PUBLIC_REDIRECT_URL=${NEXT_PUBLIC_REDIRECT_URL:-https://www.google.com}
-    container_name: simli-interview-app
+    container_name: doin-realtime-app
     environment:
       - NODE_ENV=production
       - NEXT_PUBLIC_SIMLI_API_KEY=${NEXT_PUBLIC_SIMLI_API_KEY}

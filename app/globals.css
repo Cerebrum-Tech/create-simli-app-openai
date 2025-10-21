@@ -38,8 +38,8 @@ body.cursor-none * {
   cursor: none !important;
 }
 
-/* 4px dot cursor when Simli connection is active */
-body.simli-cursor-dot,
+/* Removed - 4px dot cursor is no longer needed */
+/* body.simli-cursor-dot,
 body.simli-cursor-dot * {
   cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='1' height='1' viewBox='0 0 1 1'><circle cx='4' cy='4' r='2' fill='black'/></svg>") 4 4, auto !important;
-}
+} */

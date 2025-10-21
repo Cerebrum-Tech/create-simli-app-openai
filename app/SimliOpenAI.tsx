@@ -8,135 +8,66 @@ import { getJson } from "serpapi";
 
 interface SimliOpenAIProps {
   simli_faceid: string;
-  openai_voice: "alloy"|"ash"|"ballad"|"coral"|"echo"|"sage"|"shimmer"|"verse";
+  openai_voice: "alloy"|"ash"|"ballad"|"coral"|"echo"|"sage"|"shimmer"|"verse"|"onyx";
   openai_model: string;
   initialPrompt: string;
   onStart: () => void;
   onClose: () => void;
   showDottedFace: boolean;
-  candidateId: string;
+  userId: string;
 }
 
 const simliClient = new SimliClient();
 
-// Example tool functions
+// Tool functions for Odin
 const toolFunctions = {
-  getCurrentTime: () => {
-    return { success: true, time: new Date().toLocaleTimeString() };
-  },
-  searchGoogle: async ({ query }: { query: string }) => {
+  getCompanyProcedure: async ({ question }: { question: string }) => {
     try {
-      const response = await fetch(`/api/search?q=${encodeURIComponent(query)}`);
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      const data = await response.json();
-      return data;
-    } catch (error) {
-      console.error("Error searching Google:", error);
-      return { success: false, error: "Failed to search Google" };
-    }
-  },
-  endSession: async (candidateId: string, interviewNotes: string, interviewScore: number) => {
-    let evaluationSuccess = false;
-    
-    try {
-      // First, try to submit the evaluation
       console.log('========================================');
-      console.log('ENDING SESSION - SUBMITTING EVALUATION AND REDIRECTING');
+      console.log('CALLING COMPANY PROCEDURE API (via proxy)');
+      console.log('Question:', question);
       console.log('========================================');
-      console.log('Request Parameters:');
-      console.log('- Candidate ID:', candidateId);
-      console.log('- Interview Score:', interviewScore);
-      console.log('- Interview Notes:', interviewNotes);
-      console.log('----------------------------------------');
       
-      const requestBody = {
-        candidateId: Number(candidateId),
-        interviewNotes: interviewNotes,
-        interviewScore: Number(interviewScore)
-      };
-      
-      console.log('Full Request Body:', JSON.stringify(requestBody, null, 2));
-      console.log('API Endpoint:', 'https://havelsanapi.havelsanyetenekkapsulu.com/candidates/update-interview-results');
-      console.log('----------------------------------------');
-      
-      // Update interview results via API
-      console.log('Sending evaluation to API...');
-      
-      const apiResponse = await fetch('https://havelsanapi.havelsanyetenekkapsulu.com/candidates/update-interview-results', {
+      // Call our Next.js API route proxy instead of the external API directly
+      // This avoids CORS issues since the actual API call happens server-side
+      const response = await fetch('/api/company-procedure', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(requestBody)
+        body: JSON.stringify({
+          question: question,
+          history: []
+        })
       });
 
-      console.log('----------------------------------------');
-      console.log('API Response Status:', apiResponse.status);
-      console.log('API Response Status Text:', apiResponse.statusText);
-      console.log('API Response Headers:', Object.fromEntries(apiResponse.headers.entries()));
-      
-      if (!apiResponse.ok) {
-        console.error(`❌ Failed to update interview results: ${apiResponse.status} ${apiResponse.statusText}`);
-        // Try to get error details from response body
-        const errorText = await apiResponse.text().catch(() => 'Could not read error response');
-        console.error('Error Response Body:', errorText);
-        console.log('========================================');
-        evaluationSuccess = false;
-      } else {
-        console.log('✅ Interview results updated successfully');
-        const responseText = await apiResponse.text();
-        console.log('Raw Response Body:', responseText);
-        
-        // Try to parse as JSON if possible
-        try {
-          const responseData = JSON.parse(responseText);
-          console.log('Parsed Response Data:', JSON.stringify(responseData, null, 2));
-        } catch (parseError) {
-          console.log('Response is not JSON format');
-        }
-        evaluationSuccess = true;
+      if (!response.ok) {
+        console.error(`❌ API error: ${response.status} ${response.statusText}`);
+        return { 
+          success: false, 
+          error: `Failed to retrieve information: ${response.statusText}`,
+          answer: "I'm sorry, I couldn't retrieve that information at the moment. Please try again." 
+        };
       }
-    } catch (error) {
-      console.error('========================================');
-      console.error('❌ ERROR DURING API CALL');
-      console.error('Error Type:', error instanceof Error ? error.constructor.name : typeof error);
-      console.error('Error Message:', error instanceof Error ? error.message : String(error));
-      console.error('Error Stack:', error instanceof Error ? error.stack : 'No stack trace available');
-      console.error('========================================');
-      evaluationSuccess = false;
-    }
-    
-    // Always proceed with redirect regardless of API call success
-    console.log('----------------------------------------');
-    console.log('PROCEEDING WITH REDIRECT (Evaluation Success:', evaluationSuccess, ')');
-    console.log('Candidate ID:', candidateId);
-    
-    const baseRedirectUrl = process.env.NEXT_PUBLIC_REDIRECT_URL || "https://havelsan.unicevap.com";
-    // Append candidateId as a query parameter to the redirect URL
-    const redirectUrl = `${baseRedirectUrl}?candidateId=${encodeURIComponent(candidateId)}`;
-    console.log('Base Redirect URL:', baseRedirectUrl);
-    console.log('Full Redirect URL:', redirectUrl);
-    console.log('Redirect Delay: 5 seconds');
-    console.log('========================================');
-    
-    // Navigate to configured URL after 5 seconds delay
-    setTimeout(() => {
-      console.log('Redirecting now to:', redirectUrl);
-      window.location.href = redirectUrl;
-    }, 5000); // 5 seconds delay
-    
-    // Return appropriate message based on whether evaluation was successful
-    if (evaluationSuccess) {
+
+      const data = await response.json();
+      console.log('✅ API Response received:', data);
+      console.log('========================================');
+      
       return { 
         success: true, 
-        message: `Değerlendirmeniz başarıyla kaydedildi. Mülakat tamamlandı. 5 saniye içinde yönlendirileceksiniz. İyi günler dilerim!` 
+        answer: data.answer || data.response || "Information retrieved successfully.",
+        data: data
       };
-    } else {
+    } catch (error) {
+      console.error('========================================');
+      console.error('❌ ERROR CALLING COMPANY PROCEDURE API');
+      console.error('Error:', error);
+      console.error('========================================');
       return { 
-        success: true, // Still return success to allow graceful completion
-        message: `Mülakat tamamlandı. 5 saniye içinde yönlendirileceksiniz. İyi günler dilerim!` 
+        success: false, 
+        error: "Failed to retrieve company procedure information",
+        answer: "I apologize, but I'm having trouble accessing that information right now. Please try again in a moment." 
       };
     }
   }
@@ -150,7 +81,7 @@ const SimliOpenAI: React.FC<SimliOpenAIProps> = ({
   onStart,
   onClose,
   showDottedFace,
-  candidateId,
+  userId,
 }) => {
   // State management
   const [isLoading, setIsLoading] = useState(false);
@@ -173,8 +104,6 @@ const SimliOpenAI: React.FC<SimliOpenAIProps> = ({
   // New refs for managing audio chunk delay
   const audioChunkQueueRef = useRef<Int16Array[]>([]);
   const isProcessingChunkRef = useRef(false);
-  // Q&A capture log
-  const qaLogRef = useRef<Array<{ question: string; answer?: string }>>([]);
   
   // Retry counter for Simli connection
   const simliRetryCount = useRef(0);
@@ -198,12 +127,6 @@ const SimliOpenAI: React.FC<SimliOpenAIProps> = ({
           if (videoRef.current) {
             videoRef.current.srcObject = stream;
             videoRef.current.play();
-            // Switch to a 4px dot cursor while the Simli video is playing
-            try {
-              if (typeof document !== 'undefined') {
-                document.body.classList.add('simli-cursor-dot');
-              }
-            } catch {}
           }
         }
       };
@@ -245,42 +168,18 @@ const SimliOpenAI: React.FC<SimliOpenAIProps> = ({
             tools: [
               {
                 type: 'function',
-                name: 'getCurrentTime',
-                description: 'Gets the current time',
-              },
-              {
-                type: 'function',
-                name: 'searchGoogle',
-                description: 'Searches Google for information about flight times, weather and other information',
+                name: 'getCompanyProcedure',
+                description: 'Consult the cosmic well of divine knowledge about Nestle procedures, IT relatet solutions, HR related queries, policies, and sacred protocols. Use this when mortals seek wisdom about company procedures, policies, or guidance. Always invoke this with mystical acknowledgment before and after.',
                 parameters: {
                   type: 'object',
                   properties: {
-                    query: { 
+                    question: { 
                       type: 'string', 
-                      description: 'The search query to look up on Google' 
+                      description: 'The mortal\'s question about Nestle procedures or policies that requires divine insight. Examples: "How to connect to VPN?", "What is the vacation policy?", "How do I submit expenses?"' 
                     },
                   },
-                  required: ['query'],
+                  required: ['question'],
                 },
-              },
-              {
-                type: 'function',
-                name: 'endSession',
-                description: 'Ends the conversation session, submits the evaluation, and redirects the user. Only call this when the user explicitly says goodbye, thanks you, or uses farewell expressions like "güle güle", "teşekkürler", "iyi günler". This function should include the evaluation notes and score.',
-                parameters: {
-                  type: 'object',
-                  properties: {
-                    interviewNotes: {
-                      type: 'string',
-                      description: 'Detailed notes about the candidate\'s performance during the interview in Turkish. Include strengths, weaknesses, technical competencies, and soft skills assessment. Example: "Teknik yeterliliği yüksek, takım çalışmasına uyum sağlayabilir. İletişim becerileri geliştirilebilir."'
-                    },
-                    interviewScore: {
-                      type: 'number',
-                      description: 'Overall interview score from 0 to 100 based on the candidate\'s performance. Consider technical knowledge, communication skills, problem-solving ability, and overall fit for the position.'
-                    }
-                  },
-                  required: ['interviewNotes', 'interviewScore']
-                }
               },
             ],
           },
@@ -312,23 +211,9 @@ const SimliOpenAI: React.FC<SimliOpenAIProps> = ({
           const args = JSON.parse(msg.arguments);
           
           let result;
-          // Handle each function with its specific signature
-          if (msg.name === 'endSession') {
-            // Extract interviewNotes and interviewScore from args
-            const { interviewNotes, interviewScore } = args;
-            // Build Q&A summary to append to notes
-            const qaSummary = qaLogRef.current
-              .filter(entry => entry.question && entry.answer)
-              .map((entry, idx) => `• Soru ${idx + 1}: ${entry.question}\n  Cevap: ${entry.answer}`)
-              .join("\n");
-            const notesWithQA = qaSummary
-              ? `${interviewNotes}\n\nSoru-Cevap Özeti:\n${qaSummary}`
-              : interviewNotes;
-            result = await toolFunctions.endSession(candidateId, notesWithQA, interviewScore);
-          } else if (msg.name === 'searchGoogle') {
-            result = await toolFunctions.searchGoogle(args);
-          } else if (msg.name === 'getCurrentTime') {
-            result = toolFunctions.getCurrentTime();
+          // Handle getCompanyProcedure function
+          if (msg.name === 'getCompanyProcedure') {
+            result = await toolFunctions.getCompanyProcedure(args);
           } else {
             console.error(`Unknown function: ${msg.name}`);
             result = { success: false, error: `Unknown function: ${msg.name}` };
@@ -348,40 +233,6 @@ const SimliOpenAI: React.FC<SimliOpenAIProps> = ({
           
           // Request next response
           dataChannel.send(JSON.stringify({ type: "response.create" }));
-        } else if (msg.type === 'conversation.item.created' && msg.item) {
-          try {
-            const role = msg.item.role;
-            const contentArray = msg.item.content || [];
-            // Extract text from various content payload shapes
-            const extractText = (content: any[]): string => {
-              const parts: string[] = [];
-              for (const c of content) {
-                if (typeof c?.text === 'string') parts.push(c.text);
-                if (typeof c?.transcript === 'string') parts.push(c.transcript);
-                if (typeof c?.content === 'string') parts.push(c.content);
-              }
-              return parts.join(' ').trim();
-            };
-            const text = extractText(contentArray);
-            if (!text) return;
-            if (role === 'assistant') {
-              // Consider assistant messages ending with ? as questions to capture
-              const isQuestion = /\?$/.test(text) || /^soru[:\-\s]/i.test(text);
-              if (isQuestion) {
-                qaLogRef.current.push({ question: text });
-              }
-            } else if (role === 'user') {
-              // Attach user's response to the latest question without an answer
-              for (let i = qaLogRef.current.length - 1; i >= 0; i--) {
-                if (!qaLogRef.current[i].answer) {
-                  qaLogRef.current[i].answer = text;
-                  break;
-                }
-              }
-            }
-          } catch (e) {
-            console.warn('Failed to capture Q&A from message:', e);
-          }
         }
       };
 
@@ -486,7 +337,7 @@ const SimliOpenAI: React.FC<SimliOpenAIProps> = ({
       console.error("Error initializing OpenAI client:", error);
       setError(`Failed to initialize OpenAI client: ${error.message}`);
     }
-  }, [initialPrompt, openai_model, openai_voice, candidateId]);
+  }, [initialPrompt, openai_model, openai_voice, userId]);
 
   /**
    * Handles conversation updates, including user and assistant messages.
@@ -690,12 +541,6 @@ const SimliOpenAI: React.FC<SimliOpenAIProps> = ({
     setError("");
     isIntentionalDisconnect.current = false; // Reset the flag when starting
     onStart();
-    // Apply 4px dot cursor immediately on Başla click
-    try {
-      if (typeof document !== 'undefined') {
-        document.body.classList.add('simli-cursor-dot');
-      }
-    } catch {}
 
     try {
       console.log('========================================');
@@ -820,13 +665,6 @@ const SimliOpenAI: React.FC<SimliOpenAIProps> = ({
       dataChannelRef.current = null;
     }
     
-    // Restore default cursor when session stops
-    try {
-      if (typeof document !== 'undefined') {
-        document.body.classList.remove('simli-cursor-dot');
-      }
-    } catch {}
-    
     // Call onClose callback
     onClose();
     console.log("Interaction stopped and all resources cleaned up");
@@ -852,12 +690,6 @@ const SimliOpenAI: React.FC<SimliOpenAIProps> = ({
 
       simliClient?.on("disconnected", () => {
         console.log("SimliClient disconnected");
-        // Ensure custom cursor is removed on disconnect
-        try {
-          if (typeof document !== 'undefined') {
-            document.body.classList.remove('simli-cursor-dot');
-          }
-        } catch {}
         openAIClientRef.current?.disconnect();
         if (audioContextRef.current) {
           audioContextRef.current?.close();
@@ -891,7 +723,7 @@ const SimliOpenAI: React.FC<SimliOpenAIProps> = ({
               <IconSparkleLoader className="h-[20px] animate-loader" />
             ) : (
               <span className="font-abc-repro-mono font-bold w-[164px]">
-                Başla
+                Start
               </span>
             )}
           </button>
@@ -913,10 +745,10 @@ const SimliOpenAI: React.FC<SimliOpenAIProps> = ({
         )}
       </div>
       <div
-className={`transition-all duration-300 w-full ${
+className={`transition-all duration-300 ${
   showDottedFace
-    ? "h-0 overflow-hidden"
-    : "fixed bottom-44 left-0 right-0 h-[calc(100vh-150px)]"
+    ? "h-0 w-0 overflow-hidden"
+    : "w-[480px] h-[360px] mt-4"
 }`}
       >
         <VideoBox video={videoRef} audio={audioRef} />
@@ -926,3 +758,4 @@ className={`transition-all duration-300 w-full ${
 };
 
 export default SimliOpenAI;
+

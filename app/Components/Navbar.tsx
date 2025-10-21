@@ -1,9 +1,10 @@
 export default function Navbar() {
   return (
-    <div className="fixed bottom-[32px] left-[32px] z-50 w-full md:w-auto">
+    <div className="fixed top-[32px] left-[32px] z-50">
       <nav>
-        <ul className="font-medium flex p-4 md:p-0 mt-4 border border-black rounded-lg bg-gray-50 md:flex-row md:space-x-8 rtl:space-x-reverse md:mt-0 md:border-0 md:bg-white dark:bg-black md:dark:bg-black">
-        </ul>
+        <div className="font-abc-repro-mono font-bold text-white text-2xl">
+          <span className="text-blue-300">ODIN</span> <span className="text-gray-400 text-lg">the All-Father</span> | <span className="text-gray-300">Nestle Oracle</span>
+        </div>
       </nav>
     </div>
   );
