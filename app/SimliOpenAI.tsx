@@ -1,6 +1,6 @@
 import IconSparkleLoader from "@/media/IconSparkleLoader";
 import { RealtimeClient } from "@openai/realtime-api-beta";
-import React, { useCallback, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { SimliClient } from "simli-client";
 import VideoBox from "./Components/VideoBox";
 import cn from "./utils/TailwindMergeAndClsx";
@@ -99,6 +99,7 @@ const SimliOpenAI: React.FC<SimliOpenAIProps> = ({
     }
   }, [simli_faceid]);
 
+  
   /**
    * Initializes the OpenAI client with WebRTC and tool calling capabilities.
    */
@@ -119,8 +120,11 @@ const SimliOpenAI: React.FC<SimliOpenAIProps> = ({
         configureTools();
       };
 
+      
+
       dataChannel.onmessage = async (event) => {
         const msg = JSON.parse(event.data);
+        console.log('[Data Channel Message]', msg);
         if (msg.type === 'response.function_call_arguments.done') {
           const fn = toolFunctions[msg.name as keyof typeof toolFunctions];
           if (fn) {
@@ -142,6 +146,9 @@ const SimliOpenAI: React.FC<SimliOpenAIProps> = ({
             // Request next response
             dataChannel.send(JSON.stringify({ type: "response.create" }));
           }
+        } else if (msg.type === 'response.created') {
+          console.log('Response created, requesting next response...');
+
         }
       };
 
@@ -191,14 +198,13 @@ const SimliOpenAI: React.FC<SimliOpenAIProps> = ({
           const source = audioContext.createMediaStreamSource(audioStream);
           const processor = audioContext.createScriptProcessor(1024, 1, 1);
           
-          // Create a buffer to accumulate audio data
+          // Create a buffer to accumulate audio dataf
           const audioBuffer: Int16Array[] = [];
           let lastProcessTime = 0;
 
           processor.onaudioprocess = (e) => {
             const inputData = e.inputBuffer.getChannelData(0);
             const audioData = new Int16Array(inputData.length);
-            
             // Convert float32 to int16
             for (let i = 0; i < inputData.length; i++) {
               const sample = Math.max(-1, Math.min(1, inputData[i]));
@@ -217,7 +223,8 @@ const SimliOpenAI: React.FC<SimliOpenAIProps> = ({
                   if (chunk) {
                     // Convert to Uint8Array for Simli
                     const uint8Array = new Uint8Array(chunk.buffer);
-                    simliClient.sendAudioData(uint8Array);
+                    if (isListening) simliClient.sendAudioData(uint8Array);
+                    
                   }
                 }
                 lastProcessTime = now;
@@ -254,6 +261,7 @@ const SimliOpenAI: React.FC<SimliOpenAIProps> = ({
           model: openai_model,
           instructions: initialPrompt,
           voice: openai_voice,
+          modalities: ['text', 'audio'],
         }),
       });
       const data = await response.json();
@@ -301,6 +309,7 @@ const SimliOpenAI: React.FC<SimliOpenAIProps> = ({
       }
     } else if (item.type === "message" && item.role === "user") {
       setUserMessage(item.content[0].transcript);
+      console.log(item.content[0].transcript);
     }
   }, []);
 
@@ -556,17 +565,23 @@ const SimliOpenAI: React.FC<SimliOpenAIProps> = ({
     }
   }, [stopRecording, onClose]);
 
+ 
+
   const handleStopListening = useCallback(() => {
-      if (audioRef.current && audioRefBackup)  {
-            audioRefBackup.current = audioRef.current.srcObject as MediaStream;
-            setIsListening(false);
-            audioChunkQueueRef.current = [];
-            isProcessingChunkRef.current = false;
+    
+    if (audioRef.current){
+          audioRefBackup.current = audioRef.current.srcObject as MediaStream;
+        
+          setIsListening(false);
+          console.log("Paused sending audio to Simli");
+          audioChunkQueueRef.current = [];
+          isProcessingChunkRef.current = false;
+          streamRef?.current?.getAudioTracks().forEach((track) => track.enabled = false);
+          simliClient.isAvatarSpeaking = false; // Simli'ye avatarın konuşmadığını bildir
+          simliClient.ClearBuffer(); // Simli'nin ses tamponunu temizle
+          audioRef.current.srcObject = null; // Ses akışını kes
 
-
-            audioRef.current.srcObject = null; // Ses akışını kes
-
-          }
+        }
   }, []);
 
   const handleStartListening = useCallback(() => {
@@ -574,6 +589,8 @@ const SimliOpenAI: React.FC<SimliOpenAIProps> = ({
       setIsListening(true);
       audioChunkQueueRef.current = [];
       isProcessingChunkRef.current = true;
+      simliClient.isAvatarSpeaking = true; // Simli'ye avatarın konuşmadığını bildir
+      simliClient.ClearBuffer(); // Simli'nin ses tamponunu temizle
       audioRef.current.srcObject = audioRefBackup.current; // Geri yükle
     }
   }, []);
@@ -618,13 +635,30 @@ const SimliOpenAI: React.FC<SimliOpenAIProps> = ({
     if (dataChannelRef.current && dataChannelRef.current.readyState === "open") {
       
       const message = {
-        type: "conversation.item.create",
-        item: {
-          type: "message",
-          role: "user",
-          content: [{ type: "text", text: textInput }]
+        type: "response.create",
+        response: {
+          instructions: "Provide a concise answer.",
+          "tools": [], // clear any session tools
+          "conversation": "none",
+          output_modalities: ["text", "audio"],
+          "input": [
+            {
+              "type": "item_reference",
+              "id": "item_12345",
+            },
+            {
+              "type": "message",
+              "role": "user",
+              "content": [
+                {
+                  "type": "input_text",
+                  "text": "Summarize the above message in one sentence."
+                }
+              ]
+            }
+          ],
         }
-      };
+      }
       console.log(message)
       dataChannelRef.current.send(JSON.stringify(message));
     }
@@ -666,7 +700,7 @@ const SimliOpenAI: React.FC<SimliOpenAIProps> = ({
           <>
             <div className="flex items-center gap-4 w-full">
             
-              {!isListening ? <form 
+              {isListening ? <form 
                 className="flex gap-2 w-full"
                 onSubmit={handleSendTextMessage}
               >
@@ -691,8 +725,10 @@ const SimliOpenAI: React.FC<SimliOpenAIProps> = ({
                 onClick={() => {
                   if (isListening) { 
                     handleStopListening();
+                
                   } else if (!isListening) {
                     handleStartListening();
+                    
                   }
                 }}
                 style={{background: isListening ? "red" : "blue"}}
