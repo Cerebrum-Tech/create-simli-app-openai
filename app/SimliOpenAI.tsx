@@ -124,7 +124,6 @@ const SimliOpenAI: React.FC<SimliOpenAIProps> = ({
 
       dataChannel.onmessage = async (event) => {
         const msg = JSON.parse(event.data);
-        console.log('[Data Channel Message]', msg);
         if (msg.type === 'response.function_call_arguments.done') {
           const fn = toolFunctions[msg.name as keyof typeof toolFunctions];
           if (fn) {
@@ -146,10 +145,7 @@ const SimliOpenAI: React.FC<SimliOpenAIProps> = ({
             // Request next response
             dataChannel.send(JSON.stringify({ type: "response.create" }));
           }
-        } else if (msg.type === 'response.created') {
-          console.log('Response created, requesting next response...');
-
-        }
+        } 
       };
 
       // Configure tools
@@ -640,26 +636,21 @@ const SimliOpenAI: React.FC<SimliOpenAIProps> = ({
           instructions: "Provide a concise answer.",
           "tools": [], // clear any session tools
           "conversation": "none",
-          output_modalities: ["text", "audio"],
+          modalities: ["text", "audio"],
           "input": [
-            {
-              "type": "item_reference",
-              "id": "item_12345",
-            },
             {
               "type": "message",
               "role": "user",
               "content": [
                 {
                   "type": "input_text",
-                  "text": "Summarize the above message in one sentence."
+                  "text": textInput
                 }
               ]
             }
           ],
         }
       }
-      console.log(message)
       dataChannelRef.current.send(JSON.stringify(message));
     }
     setTextInput(""); 
