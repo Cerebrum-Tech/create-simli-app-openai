@@ -5,6 +5,7 @@ import { SimliClient } from "simli-client";
 import VideoBox from "./Components/VideoBox";
 import cn from "./utils/TailwindMergeAndClsx";
 import { getJson } from "serpapi";
+import Keyboard from "./Components/Keyboard";
 
 interface SimliOpenAIProps {
   simli_faceid: string;
@@ -625,6 +626,8 @@ const SimliOpenAI: React.FC<SimliOpenAIProps> = ({
 
   const handleSendTextMessage = useCallback((e: React.FormEvent) => {
     e.preventDefault();
+    console.log(textInput);
+
     if (!textInput.trim()) return;
     console.log(textInput);
 
@@ -658,6 +661,47 @@ const SimliOpenAI: React.FC<SimliOpenAIProps> = ({
   }, [textInput]);
 
 
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  const handleKeyPress = (key: string) => {
+    const input = inputRef.current;
+    if (!input) return;
+
+    let start = input.selectionStart ?? 0;
+    let end = input.selectionEnd ?? 0;
+    let value = input.value;
+
+    if (key === "BACKSPACE") {
+      if (start !== end) {
+        value = value.slice(0, start) + value.slice(end);
+        input.value = value;
+        input.focus();
+        input.setSelectionRange(start, start);
+      } else if (start > 0) {
+        value = value.slice(0, start - 1) + value.slice(end);
+        input.value = value;
+        input.focus();
+        input.setSelectionRange(start - 1, start - 1);
+      }
+    } else if (key === "LEFT") {
+      const newPos = start > 0 ? start - 1 : 0;
+      input.focus();
+      input.setSelectionRange(newPos, newPos);
+    } else if (key === "RIGHT") {
+      const newPos = start < value.length ? start + 1 : value.length;
+      input.focus();
+      input.setSelectionRange(newPos, newPos);
+    } else if (key === "SPACE") {
+      input.value = value.slice(0, start) + " " + value.slice(end);
+      input.focus();
+      input.setSelectionRange(start + 1, start + 1);
+    } else {
+      input.value = value.slice(0, start) + key + value.slice(end);
+      input.focus();
+      input.setSelectionRange(start + 1, start + 1);
+    }
+    setTextInput(input.value);
+  };
 
 
   return (
@@ -689,14 +733,16 @@ const SimliOpenAI: React.FC<SimliOpenAIProps> = ({
           </button>
         ) : (
           <>
-            <div className="flex items-center gap-4 w-full">
+            <div className="flex items-center gap-4 w-full justify-center">
             
-              {isListening ? <form 
+              {<div>
+                <form 
                 className="flex gap-2 w-full"
                 onSubmit={handleSendTextMessage}
               >
                 <input
                   type="text"
+                  ref={inputRef}
                   placeholder="Send your message..."
                   value={textInput}
                   onChange={(e) => setTextInput(e.target.value)}
@@ -706,11 +752,15 @@ const SimliOpenAI: React.FC<SimliOpenAIProps> = ({
                   type="submit"
                   className="bg-simliblue text-white rounded px-4 py-2 hover:bg-white hover:text-black transition-all duration-500"
                   disabled={!textInput.trim()}
+                  onClick={handleSendTextMessage}
                 >
                   Send
                 </button>
-              </form> : null}
-              <div className="flex items-center justify-center">
+              </form>
+              <Keyboard onKeyPress={handleKeyPress}></Keyboard>
+
+              </div>}
+              {/*<div className="flex items-center justify-center">
                 <button
                 className="text-white rounded-lg px-4 py-2 hover:bg-white hover:text-red-600 transition duration-500 w-[100px] font-bold transition-all"
                 onClick={() => {
@@ -726,15 +776,16 @@ const SimliOpenAI: React.FC<SimliOpenAIProps> = ({
               >
                 {isListening ? "Pause" : "Resume"}
                 </button>
-              </div>
+              </div>*/}
               
               <button
                 onClick={() => handleStop(false)}
                 className={cn(
-                  "group text-white flex-grow bg-red hover:rounded-sm hover:bg-white h-[52px] px-6 rounded-[100px] transition-all duration-300"
+                  "group text-white flex bg-red hover:rounded-sm hover:bg-white p-4 px-6 items-center justify-center rounded-3xl transition-all duration-500"
                 )}
+          
               >
-                <span className="font-abc-repro-mono group-hover:text-black font-bold w-[164px] transition-all duration-300">
+                <span className="font-abc-repro-mono group-hover:text-black font-bold transition-all duration-300">
                   Stop
                 </span>
               </button>
