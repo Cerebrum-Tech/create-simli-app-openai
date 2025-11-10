@@ -163,7 +163,7 @@ const OpenAIVoice: React.FC<OpenAIVoiceProps> = ({
             modalities: ['text', 'audio'],
             // Enable semantic audio handling: server-side VAD and transcription
             turn_detection: {
-              type: 'server_vad',
+              type: 'semantic_vad',
               threshold: 0.75,
               silence_duration_ms: 900,
             },

@@ -709,35 +709,35 @@ const SimliOpenAI: React.FC<SimliOpenAIProps> = ({
 
   return (
     <>
-      <div className="flex flex-col items-center">
+      <div className="flex flex-col items-center w-full">
         {!isAvatarVisible ? (
           <button
             onClick={handleStart}
             disabled={isLoading}
             className={cn(
-              "w-full h-[52px] mt-4 disabled:bg-[#343434] disabled:text-white disabled:hover:rounded-[100px] bg-simliblue text-white py-3 px-6 rounded-[100px] transition-all duration-300 hover:text-black hover:bg-white hover:rounded-sm",
-              "flex justify-center items-center"
+              "w-full max-w-md h-[60px] mt-4 disabled:bg-gray-700 disabled:text-gray-400 bg-gradient-to-r from-blue-600 to-blue-500 text-white py-3 px-8 rounded-xl transition-all duration-300 hover:from-blue-700 hover:to-blue-600 hover:shadow-lg hover:shadow-blue-500/50 transform hover:scale-[1.02]",
+              "flex justify-center items-center font-bold text-lg shadow-xl"
             )}
           >
             {isLoading ? (
-              <IconSparkleLoader className="h-[20px] animate-loader" />
+              <IconSparkleLoader className="h-[24px] animate-loader" />
             ) : (
-              <span className="font-abc-repro-mono font-bold w-[164px]">
-                Start
+              <span className="font-abc-repro-mono font-bold">
+                Summon Odin
               </span>
             )}
           </button>
         ) : (
           <>
-            <div className="flex items-center gap-4 w-full">
+            <div className="flex items-center gap-4 w-full max-w-md">
               <button
                 onClick={handleStop}
                 className={cn(
-                  "mt-4 group text-white flex-grow bg-red hover:rounded-sm hover:bg-white h-[52px] px-6 rounded-[100px] transition-all duration-300"
+                  "mt-4 group text-white flex-grow bg-gradient-to-r from-red-600 to-red-500 hover:from-red-700 hover:to-red-600 h-[60px] px-8 rounded-xl transition-all duration-300 shadow-xl hover:shadow-red-500/50 transform hover:scale-[1.02]"
                 )}
               >
-                <span className="font-abc-repro-mono group-hover:text-black font-bold w-[164px] transition-all duration-300">
-                  Stop
+                <span className="font-abc-repro-mono font-bold text-lg transition-all duration-300">
+                  End Session
                 </span>
               </button>
             </div>
@@ -748,7 +748,7 @@ const SimliOpenAI: React.FC<SimliOpenAIProps> = ({
 className={`transition-all duration-300 ${
   showDottedFace
     ? "h-0 w-0 overflow-hidden"
-    : "w-[480px] h-[360px] mt-4"
+    : "w-[700px] h-[700px] mt-6"
 }`}
       >
         <VideoBox video={videoRef} audio={audioRef} />

@@ -7,7 +7,7 @@ services:
       dockerfile: Dockerfile.dev
     container_name: simli-interview-app-dev
     ports:
-      - "3000:3000"
+      - "3019:3019"
     environment:
       - NODE_ENV=development
       - NEXT_PUBLIC_SIMLI_API_KEY=${NEXT_PUBLIC_SIMLI_API_KEY}
