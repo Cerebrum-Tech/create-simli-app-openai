@@ -17,6 +17,38 @@ interface SimliOpenAIProps {
   userId: string;
 }
 
+// Language options
+const LANGUAGES = [
+  { code: 'auto', name: 'Auto Detect', nativeName: 'Auto Detect' },
+  { code: 'en', name: 'English', nativeName: 'English' },
+  { code: 'tr', name: 'Turkish', nativeName: 'Türkçe' },
+  { code: 'es', name: 'Spanish', nativeName: 'Español' },
+  { code: 'fr', name: 'French', nativeName: 'Français' },
+  { code: 'de', name: 'German', nativeName: 'Deutsch' },
+  { code: 'it', name: 'Italian', nativeName: 'Italiano' },
+  { code: 'pt', name: 'Portuguese', nativeName: 'Português' },
+  { code: 'nl', name: 'Dutch', nativeName: 'Nederlands' },
+  { code: 'ru', name: 'Russian', nativeName: 'Русский' },
+  { code: 'zh', name: 'Chinese', nativeName: '中文' },
+  { code: 'ja', name: 'Japanese', nativeName: '日本語' },
+  { code: 'ko', name: 'Korean', nativeName: '한국어' },
+  { code: 'ar', name: 'Arabic', nativeName: 'العربية' },
+  { code: 'hi', name: 'Hindi', nativeName: 'हिन्दी' },
+  { code: 'bn', name: 'Bengali', nativeName: 'বাংলা' },
+  { code: 'pl', name: 'Polish', nativeName: 'Polski' },
+  { code: 'sv', name: 'Swedish', nativeName: 'Svenska' },
+  { code: 'no', name: 'Norwegian', nativeName: 'Norsk' },
+  { code: 'da', name: 'Danish', nativeName: 'Dansk' },
+  { code: 'fi', name: 'Finnish', nativeName: 'Suomi' },
+  { code: 'el', name: 'Greek', nativeName: 'Ελληνικά' },
+  { code: 'he', name: 'Hebrew', nativeName: 'עברית' },
+  { code: 'th', name: 'Thai', nativeName: 'ไทย' },
+  { code: 'vi', name: 'Vietnamese', nativeName: 'Tiếng Việt' },
+  { code: 'id', name: 'Indonesian', nativeName: 'Bahasa Indonesia' },
+  { code: 'ms', name: 'Malay', nativeName: 'Bahasa Melayu' },
+  { code: 'ro', name: 'Romanian', nativeName: 'Română' },
+];
+
 const simliClient = new SimliClient();
 
 // Tool functions for Odin
@@ -89,6 +121,7 @@ const SimliOpenAI: React.FC<SimliOpenAIProps> = ({
   const [error, setError] = useState("");
   const [isRecording, setIsRecording] = useState(false);
   const [userMessage, setUserMessage] = useState("...");
+  const [selectedLanguage, setSelectedLanguage] = useState('en');
 
   // Refs for various components and states
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -150,17 +183,48 @@ const SimliOpenAI: React.FC<SimliOpenAIProps> = ({
       const dataChannel = peerConnection.createDataChannel('oai-events');
       dataChannelRef.current = dataChannel;
 
+      // Get language instruction - VERY STRONG and SPECIFIC
+      const selectedLang = LANGUAGES.find(l => l.code === selectedLanguage);
+      
+      let languageInstruction = '';
+      
+      if (selectedLanguage === 'auto') {
+        languageInstruction = `🌍🌍🌍 ABSOLUTE LANGUAGE RULE - AUTO DETECT MODE:
+You MUST detect the user's language from their speech and respond in THE EXACT SAME LANGUAGE.
+- User speaks English → You respond in English
+- User speaks Turkish → You respond in Turkish  
+- User speaks French → You respond in French
+- User speaks ANY language → You respond in THAT SAME language
+This is your FIRST and PRIMARY instruction. Match their language precisely.`;
+      } else {
+        const langName = selectedLang?.name.toUpperCase() || 'ENGLISH';
+        const nativeName = selectedLang?.nativeName || 'English';
+        
+        languageInstruction = `🌍🌍🌍 ABSOLUTE LANGUAGE RULE - ${langName} ONLY MODE:
+You MUST speak EXCLUSIVELY in ${langName} (${nativeName}).
+- EVERY word must be in ${langName}
+- EVERY response must be in ${langName}
+- Do NOT use English unless ${langName} IS English
+- Do NOT mix languages
+- This is NON-NEGOTIABLE
+- ${langName} is your ONLY language
+This is your FIRST and PRIMARY instruction above all others.`;
+      }
+
+      console.log('🌍 Language setting:', selectedLanguage, selectedLang?.name);
+      console.log('📝 Language instruction:', languageInstruction);
+
       // Configure tools
       const configureTools = () => {
         const event = {
           type: 'session.update',
           session: {
             modalities: ['text', 'audio'],
+            instructions: `${languageInstruction}\n\n${initialPrompt}`,
             // Enable semantic audio handling from OpenAI side
             turn_detection: {
-              type: 'server_vad',
-              threshold: 0.75,
-              silence_duration_ms: 900,
+              type: 'semantic_vad',
+              eagerness: 'auto',
             },
             input_audio_transcription: {
               model: 'gpt-4o-mini-transcribe'
@@ -308,7 +372,7 @@ const SimliOpenAI: React.FC<SimliOpenAIProps> = ({
         },
         body: JSON.stringify({
           model: openai_model,
-          instructions: initialPrompt,
+          instructions: `${languageInstruction}\n\n${initialPrompt}`,
           voice: openai_voice,
         }),
       });
@@ -337,7 +401,7 @@ const SimliOpenAI: React.FC<SimliOpenAIProps> = ({
       console.error("Error initializing OpenAI client:", error);
       setError(`Failed to initialize OpenAI client: ${error.message}`);
     }
-  }, [initialPrompt, openai_model, openai_voice, userId]);
+  }, [initialPrompt, openai_model, openai_voice, userId, selectedLanguage]);
 
   /**
    * Handles conversation updates, including user and assistant messages.
@@ -537,6 +601,7 @@ const SimliOpenAI: React.FC<SimliOpenAIProps> = ({
    * Handles the start of the interaction, initializing clients and starting recording.
    */
   const handleStart = useCallback(async () => {
+    console.log('🚀 handleStart called - Current language state:', selectedLanguage);
     setIsLoading(true);
     setError("");
     isIntentionalDisconnect.current = false; // Reset the flag when starting
@@ -609,7 +674,7 @@ const SimliOpenAI: React.FC<SimliOpenAIProps> = ({
         setIsLoading(false);
       }
     }
-  }, [onStart, buildRedirectUrl]);
+  }, [onStart, buildRedirectUrl, selectedLanguage]);
 
   /**
    * Handles stopping the interaction, cleaning up resources and resetting states.
@@ -705,28 +770,57 @@ const SimliOpenAI: React.FC<SimliOpenAIProps> = ({
         }
       });
     }
-  }, [handleStart, handleStop]);
+  }, [initializeOpenAIClient, handleStart, handleStop]);
 
   return (
     <>
       <div className="flex flex-col items-center w-full">
         {!isAvatarVisible ? (
-          <button
-            onClick={handleStart}
-            disabled={isLoading}
-            className={cn(
-              "w-full max-w-md h-[60px] mt-4 disabled:bg-gray-700 disabled:text-gray-400 bg-gradient-to-r from-blue-600 to-blue-500 text-white py-3 px-8 rounded-xl transition-all duration-300 hover:from-blue-700 hover:to-blue-600 hover:shadow-lg hover:shadow-blue-500/50 transform hover:scale-[1.02]",
-              "flex justify-center items-center font-bold text-lg shadow-xl"
-            )}
-          >
-            {isLoading ? (
-              <IconSparkleLoader className="h-[24px] animate-loader" />
-            ) : (
-              <span className="font-abc-repro-mono font-bold">
-                Summon Odin
-              </span>
-            )}
-          </button>
+          <div className="w-full max-w-md space-y-4">
+            {/* Language Selector */}
+            <div className="flex flex-col gap-2">
+              <label htmlFor="language-select" className="text-sm font-medium text-gray-300">
+                Select Language
+              </label>
+              <select
+                id="language-select"
+                value={selectedLanguage}
+                onChange={(e) => {
+                  console.log('🔄 Language changed to:', e.target.value);
+                  setSelectedLanguage(e.target.value);
+                }}
+                className={cn(
+                  "w-full h-[50px] px-4 rounded-xl bg-gradient-to-r from-gray-800 to-gray-700 text-white",
+                  "border-2 border-gray-600 hover:border-blue-500 focus:border-blue-500 focus:outline-none",
+                  "transition-all duration-300 cursor-pointer font-medium"
+                )}
+              >
+                {LANGUAGES.map((lang) => (
+                  <option key={lang.code} value={lang.code}>
+                    {lang.name} {lang.nativeName !== lang.name ? `(${lang.nativeName})` : ''}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* Start Button */}
+            <button
+              onClick={handleStart}
+              disabled={isLoading}
+              className={cn(
+                "w-full h-[60px] disabled:bg-gray-700 disabled:text-gray-400 bg-gradient-to-r from-blue-600 to-blue-500 text-white py-3 px-8 rounded-xl transition-all duration-300 hover:from-blue-700 hover:to-blue-600 hover:shadow-lg hover:shadow-blue-500/50 transform hover:scale-[1.02]",
+                "flex justify-center items-center font-bold text-lg shadow-xl"
+              )}
+            >
+              {isLoading ? (
+                <IconSparkleLoader className="h-[24px] animate-loader" />
+              ) : (
+                <span className="font-abc-repro-mono font-bold">
+                  Summon Odin
+                </span>
+              )}
+            </button>
+          </div>
         ) : (
           <>
             <div className="flex items-center gap-4 w-full max-w-md">

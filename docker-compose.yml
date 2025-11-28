@@ -9,8 +9,7 @@ services:
         - NEXT_PUBLIC_SIMLI_API_KEY=${NEXT_PUBLIC_SIMLI_API_KEY}
         - NEXT_PUBLIC_REDIRECT_URL=${NEXT_PUBLIC_REDIRECT_URL:-https://www.google.com}
     container_name: doin-realtime-app
-    ports:
-      - "3019:3019"
+
     environment:
       - NODE_ENV=production
       - NEXT_PUBLIC_SIMLI_API_KEY=${NEXT_PUBLIC_SIMLI_API_KEY}
