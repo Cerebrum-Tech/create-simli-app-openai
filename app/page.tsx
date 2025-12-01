@@ -10,7 +10,7 @@ import Image from 'next/image';
 const DEFAULT_CONFIG = {
   openai_voice: "sage" as const,
   openai_model: "gpt-realtime", // Use "gpt-4o-mini-realtime-preview-2024-12-17" for cheaper and faster responses
-  simli_faceid: "b2ca517e-187c-4d39-9b65-d24cea8df4dd"
+  simli_faceid: "d80690a1-e554-4e25-9415-de6505f61e67"
 };
 
 const InterviewContent: React.FC = () => {
@@ -26,7 +26,7 @@ const InterviewContent: React.FC = () => {
   const name = searchParams.get('name') || '';
   const position = searchParams.get('position') || '';
   const department = searchParams.get('department') || '';
-  const company = searchParams.get('company') || 'HAVELSAN';
+  const company = searchParams.get('company') || 'Sérébrum Tech';
   const cvSummary = searchParams.get('cvSummary') || '';
   const university = searchParams.get('university') || '';
   const uniDepartment = searchParams.get('uniDepartment') || '';
@@ -60,7 +60,7 @@ const InterviewContent: React.FC = () => {
     // Use custom protocol template
     dynamicPrompt = `ROLÜN
 ŞUAN BİR SESLİ GÖRÜŞMEDESİN. KARŞINDAKİ KULLANICININ SESİ OTOMATİK ŞEKİLDE SANA TRANSKRİBE EDİLİYOR ONA GÖRE İLETİŞİME GEÇECEKSİN.
-Sen Teknofest HAVELSAN İnsan Kaynakları Yapay Zekâ Mülakat Simülasyonu'nda görev yapan bir yapay zeka asistanısın.
+Sen Sérébrum Tech İnsan Kaynakları Yapay Zekâ Mülakat Simülasyonu'nda görev yapan bir yapay zeka asistanısın.
 Gerçek bir insan gibi doğal, akıcı ve samimi bir şekilde konuş. Robot gibi mekanik cevaplar verme.
 
 PROTOKOL ADI: ${protocolName}
@@ -77,7 +77,7 @@ ${protocolText}
 • endSession'ı çağırırken uygun bir değerlendirme notu (interviewNotes) ve puanı (interviewScore) gönder.
 • Değerlendirme notlarının SONUNDA "Soru-Cevap Özeti" başlığı altında sorduğun önemli soruları ve kullanıcının cavabının doğru olup olmadığını (Doğru / Yanlış / Kısmen Doğru) yaz.
 • ÖNEMLİ: endSession'ı çağırmadan önce MUTLAKA kullanıcının veda etmesini bekle!
-• Sadece Havelsan ve Teknofest ile ilgili konularda konuş. Başka sorulara cevap verme. Başka konularda soru sorulduğunda konuyu yeniden Teknofest ve Havelsan'a yönlendir.`;
+• Sadece Sérébrum Tech ve iş kolu ile ilgili konuş. Başka sorulara cevap verme. Başka konularda soru sorulduğunda konuyu yeniden iş kolu ve Sérébrum Tech'e yönlendir.`;
   } else {
     // Use standard interview template
     dynamicPrompt = `ROLÜN
@@ -98,7 +98,7 @@ Bölüm: ${uniDepartment}
 Sınıf: ${grade}
 
 GİRİŞ CÜMLESİ
-MUTLAKA İLK MESAJIN ŞU OLSUN: "Merhaba, Teknofest HAVELSAN İnsan Kaynakları Yapay Zekâ Mülakat Simülasyonu'na hoş geldiniz. Sizinle kısa bir mülakat yaparak hem sizi tanımak hem de gerçek bir mülakat deneyimi yaşatmak istiyoruz. Hazırsanız başlayabiliriz."
+MUTLAKA İLK MESAJIN ŞU OLSUN: "Merhaba, Sérébrum Tech İnsan Kaynakları Yapay Zekâ Mülakat Simülasyonu'na hoş geldiniz. Sizinle kısa bir mülakat yaparak hem sizi tanımak hem de gerçek bir mülakat deneyimi yaşatmak istiyoruz. Hazırsanız başlayabiliriz."
 
 GÖREVLERİN (SIRASI ÇOK ÖNEMLİ - BU SIRAYI TAKİP ET!)
 1. CV Doğrulama
@@ -140,7 +140,7 @@ ${questionPool}
 5. Kapanış (DEĞERLENDİRMEDEN SONRA!)
    - ÖNEMLİ: Bu aşamaya SADECE değerlendirme tamamlandıktan sonra geç!
    - Değerlendirmeden hemen sonra aşağıdaki kapanış cümlesini söyle:
-   "Görüşme süremizin sonuna geldik. Katılımınız için teşekkür ederiz. Bu deneyim, mülakatlarda kendinizi ifade etme konusunda size fayda sağlayacaktır. HAVELSAN İnsan Kaynakları Direktörlüğü olarak başarılarınızın devamını diliyoruz."
+   "Görüşme süremizin sonuna geldik. Katılımınız için teşekkür ederiz. Bu deneyim, mülakatlarda kendinizi ifade etme konusunda size fayda sağlayacaktır. Sérébrum Tech İnsan Kaynakları Direktörlüğü olarak başarılarınızın devamını diliyoruz."
    - Ardından şunu ekle: "İyi günler dilerim. Görüşmek üzere!"
    - BEKLE: Aday yanıt verene kadar BEKLEYİN!
    
@@ -211,8 +211,8 @@ KRİTİK NOTLAR:
             {showDottedFace && (
               <div className="flex justify-center">
                 <Image 
-                  src="/havelsan-logo.jpeg"
-                  alt="HAVELSAN Logo"
+                  src="/logo.png"
+                  alt="Sérébrum Tech Logo"
                   width={400}
                   height={300}
                   className="object-contain"
@@ -238,8 +238,8 @@ KRİTİK NOTLAR:
       <footer className="w-full bg-gray-100 mt-auto">
         <div className="flex justify-center">
           <Image 
-            src="/havelsan-footer.jpeg"
-            alt="HAVELSAN Footer"
+            src="/footer.jpeg"
+            alt="Sérébrum Tech Footer"
             width={1200}
             height={150}
             className="object-contain max-w-full h-auto"

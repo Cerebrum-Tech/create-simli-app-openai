@@ -161,11 +161,12 @@ const OpenAIVoice: React.FC<OpenAIVoiceProps> = ({
           type: 'session.update',
           session: {
             modalities: ['text', 'audio'],
-            // Enable semantic audio handling: server-side VAD and transcription
+            // Enable semantic audio handling: semantic VAD and transcription
             turn_detection: {
-              type: 'server_vad',
-              threshold: 0.75,
-              silence_duration_ms: 900,
+              type: 'semantic_vad',
+              eagerness: 'high', // Options: 'low' | 'medium' | 'high' | 'auto'
+              create_response: true,
+              interrupt_response: true,
             },
             input_audio_transcription: {
               model: 'gpt-4o-mini-transcribe'
@@ -230,7 +231,7 @@ const OpenAIVoice: React.FC<OpenAIVoiceProps> = ({
               role: 'assistant',
               content: [{
                 type: 'input_text',
-                text: 'Merhaba, Teknofest HAVELSAN İnsan Kaynakları Yapay Zekâ Mülakat Simülasyonu\'na hoş geldiniz. Sizinle kısa bir mülakat yaparak hem sizi tanımak hem de gerçek bir mülakat deneyimi yaşatmak istiyoruz. Hazırsanız başlayabiliriz.'
+                text: 'Merhaba, Teknofest Sérébrum Tech İnsan Kaynakları Yapay Zekâ Mülakat Simülasyonu\'na hoş geldiniz. Sizinle kısa bir mülakat yaparak hem sizi tanımak hem de gerçek bir mülakat deneyimi yaşatmak istiyoruz. Hazırsanız başlayabiliriz.'
               }]
             }
           }));

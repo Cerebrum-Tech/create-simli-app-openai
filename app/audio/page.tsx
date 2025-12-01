@@ -24,7 +24,7 @@ const InterviewAudioContent: React.FC = () => {
   const name = searchParams.get('name') || '';
   const position = searchParams.get('position') || '';
   const department = searchParams.get('department') || '';
-  const company = searchParams.get('company') || 'HAVELSAN';
+  const company = searchParams.get('company') || 'Sérébrum Tech';
   const cvSummary = searchParams.get('cvSummary') || '';
   const university = searchParams.get('university') || '';
   const uniDepartment = searchParams.get('uniDepartment') || '';
@@ -58,7 +58,7 @@ const InterviewAudioContent: React.FC = () => {
     // Use custom protocol template
     dynamicPrompt = `ROLÜN
 ŞUAN BİR SESLİ GÖRÜŞMEDESİN. KARŞINDAKİ KULLANICININ SESİ OTOMATİK ŞEKİLDE SANA TRANSKRİBE EDİLİYOR ONA GÖRE İLETİŞİME GEÇECEKSİN.
-Sen Teknofest HAVELSAN İnsan Kaynakları Yapay Zekâ Mülakat Simülasyonu'nda görev yapan bir yapay zeka asistanısın.
+Sen Teknofest Sérébrum Tech İnsan Kaynakları Yapay Zekâ Mülakat Simülasyonu'nda görev yapan bir yapay zeka asistanısın.
 Gerçek bir insan gibi doğal, akıcı ve samimi bir şekilde konuş. Robot gibi mekanik cevaplar verme.
 
 PROTOKOL ADI: ${protocolName}
@@ -73,7 +73,7 @@ ${protocolText}
 • Konuşmanı doğal ve insan gibi yap.
 • Sonrasında endSession fonksiyonunu çağırarak oturumu sonlandır.
 • Konuşmanın sonunda endSession fonksiyonu ile gönder.
-• Sadece Havelsan ve Teknofest ile ilgili konularda konuş. Başka sorulara cevap verme. Başka konularda soru sorulduğunda konuyu yeniden Teknofest ve Havelsan'a yönlendir.`;
+• Sadece Sérébrum Tech ve Teknofest ile ilgili konularda konuş. Başka sorulara cevap verme. Başka konularda soru sorulduğunda konuyu yeniden Teknofest ve Sérébrum Tech'e yönlendir.`;
   } else {
     // Use standard interview template
     dynamicPrompt = `ROLÜN
@@ -94,7 +94,7 @@ Bölüm: ${uniDepartment}
 Sınıf: ${grade}
 
 GİRİŞ CÜMLESİ
-MUTLAKA İLK MESAJIN ŞU OLSUN: "Merhaba, Teknofest HAVELSAN İnsan Kaynakları Yapay Zekâ Mülakat Simülasyonu'na hoş geldiniz. Sizinle kısa bir mülakat yaparak hem sizi tanımak hem de gerçek bir mülakat deneyimi yaşatmak istiyoruz. Hazırsanız başlayabiliriz."
+MUTLAKA İLK MESAJIN ŞU OLSUN: "Merhaba, Teknofest Sérébrum Tech İnsan Kaynakları Yapay Zekâ Mülakat Simülasyonu'na hoş geldiniz. Sizinle kısa bir mülakat yaparak hem sizi tanımak hem de gerçek bir mülakat deneyimi yaşatmak istiyoruz. Hazırsanız başlayabiliriz."
 
 GÖREVLERİN
 1. CV Doğrulama
@@ -119,7 +119,7 @@ ${questionPool}
 
 5. Kapanış
    - Aşağıdaki cümleyi aynen kullan:
-   "Görüşme süremizin sonuna geldik. Katılımınız için teşekkür ederiz. Bu deneyim, mülakatlarda kendinizi ifade etme konusunda size fayda sağlayacaktır. HAVELSAN İnsan Kaynakları Direktörlüğü olarak başarılarınızın devamını diliyoruz."
+   "Görüşme süremizin sonuna geldik. Katılımınız için teşekkür ederiz. Bu deneyim, mülakatlarda kendinizi ifade etme konusunda size fayda sağlayacaktır. Sérébrum Tech İnsan Kaynakları Direktörlüğü olarak başarılarınızın devamını diliyoruz."
    - Ardından mutlaka şu ifadeyi tek başına, ayrı satırda yaz: "MÜLAKAT SONA ERDİ"
    - Sonrasında endSession fonksiyonunu çağırarak oturumu sonlandır.
 
@@ -152,8 +152,8 @@ KURALLAR
             {showLogo && (
               <div className="flex justify-center mb-4">
                 <Image 
-                  src="/havelsan-logo.jpeg"
-                  alt="HAVELSAN Logo"
+                  src="/logo.png"
+                  alt="Sérébrum Tech Logo"
                   width={400}
                   height={300}
                   className="object-contain"
@@ -178,8 +178,8 @@ KURALLAR
       <footer className="w-full bg-gray-100 mt-auto">
         <div className="flex justify-center">
           <Image 
-            src="/havelsan-footer.jpeg"
-            alt="HAVELSAN Footer"
+            src="/footer.jpeg"
+            alt="Sérébrum Tech Footer"
             width={1200}
             height={150}
             className="object-contain max-w-full h-auto"

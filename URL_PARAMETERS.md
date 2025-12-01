@@ -16,7 +16,7 @@ These parameters are used for the structured interview format:
 | `name` | Candidate's full name | `Alp Eren Özalp` | `Mehmet Yılmaz` |
 | `position` | Position applying for | `DEEP LEARNING Mühendisi` | `Frontend Developer` |
 | `department` | Department name | `Yazılım Geliştirme` | `AI Research` |
-| `company` | Company name | `HAVELSAN` | `TechCorp` |
+| `company` | Company name | `Sérébrum Tech` | `TechCorp` |
 | `cvSummary` | Brief CV summary | `Bilkent Üniversitesi Bilgisayar Mühendisliği bölümü öğrencisi` | `5 yıllık deneyimli yazılım uzmanı` |
 | `university` | University name | `Bilkent Üniversitesi` | `ODTÜ` |
 | `uniDepartment` | University department | `Bilgisayar Mühendisliği` | `Elektrik Elektronik Mühendisliği` |
@@ -330,7 +330,7 @@ const encoded = encodeURIComponent(value);
 Parameters not provided will use defaults:
 - Missing `name` → "Alp Eren Özalp"
 - Missing `position` → "DEEP LEARNING Mühendisi"
-- Missing `company` → "HAVELSAN"
+- Missing `company` → "Sérébrum Tech"
 
 ### 4. Question Format
 Questions must be valid JSON:
