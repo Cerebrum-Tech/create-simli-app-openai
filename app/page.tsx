@@ -5,6 +5,11 @@ import SimliHeaderLogo from "./Components/Logo";
 import Navbar from "./Components/Navbar";
 import Image from "next/image";
 import GitHubLogo from "@/media/github-mark-white.svg";
+import cn from "./utils/TailwindMergeAndClsx";
+import IconSparkleLoader from "@/media/IconSparkleLoader";
+import dynamic from "next/dynamic";
+
+const Mappedin = dynamic(() => import('./mappedin'), { ssr: false });
 
 interface avatarSettings {
   name: string;
@@ -612,16 +617,38 @@ Cami ve terminal çıkışlarında otopark ödeme otomatları mevcut.`,
 
 const Demo: React.FC = () => {
   const [showDottedFace, setShowDottedFace] = useState(true);
+  const [showMappedin, setShowMappedin] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const onStart = () => {
     console.log("Setting setshowDottedface to false...");
     setShowDottedFace(false);
   };
 
+  const handleManualClick = () => {
+    setIsLoading(true);
+    setTimeout(() => {
+      setShowMappedin(true);
+      setIsLoading(false);
+    }, 500);
+  };
+
   const onClose = () => {
     console.log("Setting setshowDottedface to true...");
     setShowDottedFace(true);
   };
+
+  const handleBackToMenu = () => {
+    setShowMappedin(false);
+  };
+
+  if (showMappedin) {
+    return (
+      <div className="bg-white h-screen flex flex-col font-abc-repro font-normal text-sm text-black">
+        <Mappedin onBackToMenu={handleBackToMenu} />
+      </div>
+    );
+  }
 
   return (
     <div className="bg-white min-h-screen flex flex-col items-center font-abc-repro font-normal text-sm text-black p-8">
@@ -650,6 +677,22 @@ const Demo: React.FC = () => {
             onClose={onClose}
             showDottedFace={showDottedFace}
           />
+          <button
+            onClick={handleManualClick}
+            disabled={isLoading}
+            className={cn(
+              "w-full h-[52px] mt-4 disabled:bg-[#343434] disabled:text-white disabled:hover:rounded-[100px] bg-simliblue text-white py-3 px-6 rounded-[100px] transition-all duration-300 hover:text-black hover:bg-white hover:rounded-sm",
+              "flex justify-center items-center"
+            )}
+          >
+            {isLoading ? (
+              <IconSparkleLoader className="h-[20px] animate-loader" />
+            ) : (
+              <span className="font-abc-repro-mono font-bold w-[164px]">
+                Manuel
+              </span>
+            )}
+          </button>
         </div>
       </div>
     </div>
