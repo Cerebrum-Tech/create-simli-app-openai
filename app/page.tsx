@@ -206,8 +206,8 @@ KRİTİK NOTLAR:
     <div className="bg-white min-h-screen flex flex-col font-abc-repro font-normal text-sm text-black">
       <div className="flex-1 flex flex-col">
         <Navbar />
-        <div className="flex-1 flex items-center justify-center">
-          <div className="flex flex-col items-center gap-6 bg-effect15White rounded-xl">
+        <div className="flex-1 flex items-center justify-center px-24 lg:px-48 xl:px-64">
+          <div className="flex flex-col items-center gap-6 bg-effect15White rounded-xl w-full max-w-md">
             {showDottedFace && (
               <div className="flex justify-center">
                 <Image 
@@ -235,8 +235,8 @@ KRİTİK NOTLAR:
       </div>
       
       {/* Footer */}
-      <footer className="w-full bg-gray-100 mt-auto">
-        <div className="flex justify-center">
+      <footer className="w-full bg-gray-100 mt-auto px-24 lg:px-48 xl:px-64">
+        <div className="flex justify-center max-w-md mx-auto">
           <Image 
             src="/footer.jpeg"
             alt="Sérébrum Tech Footer"

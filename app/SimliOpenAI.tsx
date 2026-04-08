@@ -1,7 +1,8 @@
 import IconSparkleLoader from "@/media/IconSparkleLoader";
 import { RealtimeClient } from "@openai/realtime-api-beta";
 import React, { useCallback, useRef, useState } from "react";
-import { SimliClient } from "simli-client";
+import { SimliClient, generateSimliSessionToken, generateIceServers, LogLevel } from "simli-client";
+import { getNoiseCancelledStream } from "./noiseCancellation";
 import VideoBox from "./Components/VideoBox";
 import cn from "./utils/TailwindMergeAndClsx";
 import { getJson } from "serpapi";
@@ -16,8 +17,6 @@ interface SimliOpenAIProps {
   showDottedFace: boolean;
   candidateId: string;
 }
-
-const simliClient = new SimliClient();
 
 // Example tool functions
 const toolFunctions = {
@@ -169,6 +168,8 @@ const SimliOpenAI: React.FC<SimliOpenAIProps> = ({
   const isFirstRun = useRef(true);
   const dataChannelRef = useRef<RTCDataChannel | null>(null);
   const isIntentionalDisconnect = useRef(false);
+  const simliClientRef = useRef<SimliClient | null>(null);
+  const noiseCancellationRef = useRef<{ stream: MediaStream; setReference: (s: MediaStream) => void; cleanup: () => void } | null>(null);
 
   // New refs for managing audio chunk delay
   const audioChunkQueueRef = useRef<Int16Array[]>([]);
@@ -183,34 +184,35 @@ const SimliOpenAI: React.FC<SimliOpenAIProps> = ({
   /**
    * Initializes the Simli client with the provided configuration.
    */
-  const initializeSimliClient = useCallback(() => {
-    if (videoRef.current && audioRef.current) {
-      const SimliConfig = {
-        apiKey: process.env.NEXT_PUBLIC_SIMLI_API_KEY,
-        faceID: simli_faceid,
-        handleSilence: true,
-        maxSessionLength: 6000, // in seconds
-        maxIdleTime: 6000, // in seconds
-        videoRef: videoRef.current,
-        audioRef: audioRef.current,
-        enableConsoleLogs: true,
-        onVideoStream: (stream: MediaStream) => {
-          if (videoRef.current) {
-            videoRef.current.srcObject = stream;
-            videoRef.current.play();
-            // Switch to a 4px dot cursor while the Simli video is playing
-            try {
-              if (typeof document !== 'undefined') {
-                document.body.classList.add('simli-cursor-dot');
-              }
-            } catch {}
-          }
-        }
-      };
+  const initializeSimliClient = useCallback(async () => {
+    if (!videoRef.current || !audioRef.current) return;
 
-      simliClient.Initialize(SimliConfig as any);
-      console.log("Simli Client initialized");
-    }
+    const SimliConfig = {
+      faceId: simli_faceid,
+      handleSilence: true,
+      maxSessionLength: 6000,
+      maxIdleTime: 6000,
+    };
+
+    const sessionToken = await generateSimliSessionToken({
+      apiKey: process.env.NEXT_PUBLIC_SIMLI_API_KEY as string,
+      config: SimliConfig,
+    });
+
+    const iceServers = await generateIceServers(
+      process.env.NEXT_PUBLIC_SIMLI_API_KEY as string,
+    );
+
+    simliClientRef.current = new SimliClient(
+      sessionToken.session_token,
+      videoRef.current,
+      audioRef.current,
+      iceServers,
+      LogLevel.DEBUG,
+      "p2p",
+    );
+
+    console.log("Simli Client initialized");
   }, [simli_faceid]);
 
   /**
@@ -235,9 +237,8 @@ const SimliOpenAI: React.FC<SimliOpenAIProps> = ({
             modalities: ['text', 'audio'],
             // Enable semantic audio handling from OpenAI side
             turn_detection: {
-              type: 'server_vad',
-              threshold: 0.75,
-              silence_duration_ms: 900,
+              type: 'semantic_vad',
+              eagerness: 'medium',
             },
             input_audio_transcription: {
               model: 'gpt-4o-mini-transcribe'
@@ -389,6 +390,9 @@ const SimliOpenAI: React.FC<SimliOpenAIProps> = ({
       peerConnection.ontrack = (event: RTCTrackEvent) => {
         if (audioRef.current) {
           const audioStream = event.streams[0];
+
+          // Set speaker stream as echo gate reference
+          noiseCancellationRef.current?.setReference(audioStream);
           
           // Convert the audio stream to audio data for Simli
           const audioContext = new AudioContext({ sampleRate: 16000 });
@@ -430,7 +434,7 @@ const SimliOpenAI: React.FC<SimliOpenAIProps> = ({
               for (let i = 0; i < FRAME_SIZE_SAMPLES; i++) {
                 view.setInt16(i * 2, frame[i], true);
               }
-              simliClient.sendAudioData(bytes);
+              simliClientRef.current?.sendAudioData(bytes);
             }
           };
 
@@ -439,8 +443,10 @@ const SimliOpenAI: React.FC<SimliOpenAIProps> = ({
         }
       };
 
-      // Get microphone access and add to peer connection
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      // Get noise-cancelled microphone stream and add to peer connection
+      const nc = await getNoiseCancelledStream();
+      noiseCancellationRef.current = nc;
+      const stream = nc.stream;
       stream.getTracks().forEach(track => {
         peerConnection.addTransceiver(track, { direction: 'sendrecv' });
       });
@@ -514,7 +520,7 @@ const SimliOpenAI: React.FC<SimliOpenAIProps> = ({
    */
   const interruptConversation = () => {
     console.warn("User interrupted the conversation");
-    simliClient?.ClearBuffer();
+    simliClientRef.current?.ClearBuffer();
     openAIClientRef.current?.cancelResponse("");
   };
 
@@ -532,7 +538,7 @@ const SimliOpenAI: React.FC<SimliOpenAIProps> = ({
         const chunkDurationMs = (audioChunk.length / 16000) * 1000; // Calculate chunk duration in milliseconds
 
         // Send audio chunks to Simli immediately
-        simliClient?.sendAudioData(audioChunk as any);
+        simliClientRef.current?.sendAudioData(audioChunk as any);
         console.log(
           "Sent audio chunk to Simli:",
           chunkDurationMs,
@@ -702,19 +708,23 @@ const SimliOpenAI: React.FC<SimliOpenAIProps> = ({
       console.log(`SIMLI CONNECTION ATTEMPT ${simliRetryCount.current + 1}/${MAX_SIMLI_RETRIES}`);
       console.log('========================================');
       
-      initializeSimliClient();
-      
+      await initializeSimliClient();
+
+      // Register event listeners BEFORE start so we don't miss the "start" event
+      eventListenerSimli();
+
       // Add timeout for Simli start
       const startTimeout = new Promise((_, reject) => {
         setTimeout(() => reject(new Error('Simli connection timeout')), 10000);
       });
-      
+
       await Promise.race([
-        simliClient?.start(),
+        simliClientRef.current?.start(),
         startTimeout
       ]);
-      
-      eventListenerSimli();
+
+      // Send initial silence required by v3
+      simliClientRef.current?.sendAudioData(new Uint8Array(6000).fill(0));
       
       // Reset retry counter on successful connection
       simliRetryCount.current = 0;
@@ -781,9 +791,14 @@ const SimliOpenAI: React.FC<SimliOpenAIProps> = ({
     // Stop recording and clear audio buffers
     stopRecording();
     
+    // Clean up noise cancellation
+    noiseCancellationRef.current?.cleanup();
+    noiseCancellationRef.current = null;
+
     // Clear Simli client buffers and close connection
-    simliClient?.ClearBuffer();
-    simliClient?.close();
+    simliClientRef.current?.ClearBuffer();
+    simliClientRef.current?.stop();
+    simliClientRef.current = null;
     
     // Close OpenAI client and WebSocket connection
     if (openAIClientRef.current) {
@@ -843,14 +858,21 @@ const SimliOpenAI: React.FC<SimliOpenAIProps> = ({
    * Simli Event listeners
    */
   const eventListenerSimli = useCallback(() => {
-    if (simliClient) {
-      simliClient?.on("connected", () => {
+    const client = simliClientRef.current;
+    if (client) {
+      client.on("start", () => {
         console.log("SimliClient connected");
+        // Apply cursor dot
+        try {
+          if (typeof document !== 'undefined') {
+            document.body.classList.add('simli-cursor-dot');
+          }
+        } catch {}
         // Initialize OpenAI client
         initializeOpenAIClient();
       });
 
-      simliClient?.on("disconnected", () => {
+      client.on("stop", () => {
         console.log("SimliClient disconnected");
         // Ensure custom cursor is removed on disconnect
         try {
@@ -862,7 +884,7 @@ const SimliOpenAI: React.FC<SimliOpenAIProps> = ({
         if (audioContextRef.current) {
           audioContextRef.current?.close();
         }
-        
+
         // If it was an unexpected disconnection, trigger restart
         if (!isIntentionalDisconnect.current) {
           console.log("Unexpected disconnection detected, triggering restart...");
@@ -913,11 +935,11 @@ const SimliOpenAI: React.FC<SimliOpenAIProps> = ({
         )}
       </div>
       <div
-className={`transition-all duration-300 w-full ${
-  showDottedFace
-    ? "h-0 overflow-hidden"
-    : "fixed bottom-44 left-0 right-0 h-[calc(100vh-150px)]"
-}`}
+        className={`transition-all duration-300 w-full ${
+          showDottedFace
+            ? "h-0 overflow-hidden"
+            : "h-[60vh] max-h-[600px]"
+        }`}
       >
         <VideoBox video={videoRef} audio={audioRef} />
       </div>
